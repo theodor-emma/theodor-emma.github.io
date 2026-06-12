@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,6 +34,7 @@
       padding: 2rem 1rem;
     }
 
+    /* Decorative border */
     .card {
       max-width: 680px;
       width: 100%;
@@ -55,6 +56,7 @@
       opacity: 0.5;
     }
 
+    /* Corner ornaments */
     .corner {
       position: absolute;
       width: 28px;
@@ -71,16 +73,20 @@
       position: absolute;
       top: 1.2rem;
       right: 1.4rem;
+      display: flex;
+      gap: 0.8rem;
       font-family: 'Cinzel', serif;
       font-size: 0.65rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
+    }
+    .lang-switcher a {
       color: var(--muted);
       text-decoration: none;
       border-bottom: 1px solid transparent;
       transition: color 0.2s, border-color 0.2s;
     }
-    .lang-switcher:hover {
+    .lang-switcher a:hover {
       color: var(--gold);
       border-bottom-color: var(--gold-light);
     }
@@ -182,6 +188,7 @@
       margin-top: 0.3rem;
     }
 
+    /* Countdown */
     .countdown {
       margin-top: 2rem;
       display: flex;
@@ -235,9 +242,12 @@
     <span class="corner bl"></span>
     <span class="corner br"></span>
 
-    <a class="lang-switcher" href="index.html">English</a>
+    <div class="lang-switcher">
+      <a href="fr.html">Français</a>
+      <a href="ro.html">Română</a>
+    </div>
 
-    <p class="save-the-date">Réservez la Date</p>
+    <p class="save-the-date">Save the Date</p>
 
     <div class="divider"><span class="divider-symbol">✦</span></div>
 
@@ -250,12 +260,12 @@
     <div class="divider"><span class="divider-symbol">✦</span></div>
 
     <div class="date-block">
-      <p class="date-label">Vous convient à leur mariage</p>
-      <p class="date">Vendredi 7 août 2027</p>
+      <p class="date-label">Are getting married on</p>
+      <p class="date">Friday, August 7<sup>th</sup>, 2027</p>
     </div>
 
     <div class="venue-block">
-      <p class="venue-label">Au</p>
+      <p class="venue-label">At</p>
       <a class="venue-link" href="https://www.beauvoir-bourbonnais.fr/accs" target="_blank" rel="noopener">
         Château de Beauvoir
       </a>
@@ -267,11 +277,11 @@
     <div class="countdown" id="countdown">
       <div class="countdown-unit">
         <span class="countdown-value" id="days">—</span>
-        <span class="countdown-label">Jours</span>
+        <span class="countdown-label">Days</span>
       </div>
       <div class="countdown-unit">
         <span class="countdown-value" id="hours">—</span>
-        <span class="countdown-label">Heures</span>
+        <span class="countdown-label">Hours</span>
       </div>
       <div class="countdown-unit">
         <span class="countdown-value" id="minutes">—</span>
@@ -279,12 +289,12 @@
       </div>
       <div class="countdown-unit">
         <span class="countdown-value" id="seconds">—</span>
-        <span class="countdown-label">Secondes</span>
+        <span class="countdown-label">Seconds</span>
       </div>
     </div>
 
     <p class="formal-invitation">
-      Invitation officielle à venir.
+      Formal invitation to follow.
     </p>
   </div>
 
@@ -297,7 +307,7 @@
       const now = new Date();
       const diff = wedding - now;
       if (diff <= 0) {
-        document.getElementById('countdown').innerHTML = '<p style="font-style:italic;color:var(--gold)">C\'est aujourd\'hui ! ✦</p>';
+        document.getElementById('countdown').innerHTML = '<p style="font-style:italic;color:var(--gold)">Today is the day! ✦</p>';
         return;
       }
       const days    = Math.floor(diff / 86400000);
