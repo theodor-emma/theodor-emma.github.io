@@ -1,5 +1,7 @@
 const WEDDING_DATE = new Date('2027-08-07T14:00:00');
 
+function pad(n) { return String(n).padStart(2, '0'); }
+
 // ── Countdown ────────────────────────────────────────────────────────────────
 
 function initCountdown() {
@@ -16,21 +18,19 @@ function initCountdown() {
       return;
     }
 
-    // Accurate calendar months + remaining days
-    let months = (WEDDING_DATE.getFullYear() - now.getFullYear()) * 12
-               + (WEDDING_DATE.getMonth() - now.getMonth());
-    const shifted = new Date(now);
-    shifted.setMonth(shifted.getMonth() + months);
-    if (shifted > WEDDING_DATE) months--;
-    const base = new Date(now);
-    base.setMonth(base.getMonth() + months);
-    const days = Math.floor((WEDDING_DATE - base) / 86400000);
+    const days    = Math.floor(diff / 86400000);
+    const hours   = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000)  / 60000);
+    const seconds = Math.floor((diff % 60000)    / 1000);
 
-    document.getElementById('cd-months').textContent = months;
-    document.getElementById('cd-days').textContent   = days;
+    document.getElementById('cd-days').textContent    = days;
+    document.getElementById('cd-hours').textContent   = pad(hours);
+    document.getElementById('cd-minutes').textContent = pad(minutes);
+    document.getElementById('cd-seconds').textContent = pad(seconds);
   }
 
   tick();
+  setInterval(tick, 1000);
 }
 
 // ── Add to Calendar ───────────────────────────────────────────────────────────
