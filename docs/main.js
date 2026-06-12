@@ -31,7 +31,6 @@ function initCountdown() {
   }
 
   tick();
-  setInterval(tick, 60000);
 }
 
 // ── Add to Calendar ───────────────────────────────────────────────────────────
