@@ -3,226 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Save the Date — Theodor & Emma</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --cream: #faf6ef;
-      --gold: #b8975a;
-      --gold-light: #d4b37a;
-      --dark: #2c2416;
-      --muted: #7a6e5f;
-    }
-
-    html, body { height: 100%; }
-
-    body {
-      background-color: var(--cream);
-      color: var(--dark);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-
-    .card {
-      max-width: 680px;
-      width: 100%;
-      border: 1px solid var(--gold);
-      padding: 3.5rem 3rem;
-      position: relative;
-      text-align: center;
-    }
-
-    .card::before, .card::after {
-      content: '';
-      position: absolute;
-      width: calc(100% - 16px);
-      height: calc(100% - 16px);
-      border: 1px solid var(--gold-light);
-      top: 7px;
-      left: 7px;
-      pointer-events: none;
-      opacity: 0.5;
-    }
-
-    .corner {
-      position: absolute;
-      width: 28px;
-      height: 28px;
-      border-color: var(--gold);
-      border-style: solid;
-    }
-    .corner.tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
-    .corner.tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
-    .corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
-    .corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
-
-    .lang-switcher {
-      position: absolute;
-      top: 1.2rem;
-      right: 1.4rem;
-      display: flex;
-      gap: 0.8rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .lang-switcher a {
-      color: var(--muted);
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .lang-switcher a:hover {
-      color: var(--gold);
-      border-bottom-color: var(--gold-light);
-    }
-
-    .save-the-date {
-      font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1.8rem;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 1rem auto;
-      max-width: 300px;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--gold-light);
-    }
-    .divider-symbol {
-      color: var(--gold);
-      font-size: 1rem;
-      line-height: 1;
-    }
-
-    .names {
-      font-size: clamp(2.6rem, 8vw, 4rem);
-      font-weight: 300;
-      font-style: italic;
-      line-height: 1.15;
-      letter-spacing: 0.02em;
-      color: var(--dark);
-    }
-
-    .ampersand {
-      font-size: clamp(1.8rem, 5vw, 2.6rem);
-      color: var(--gold);
-      display: block;
-      margin: 0.1em 0;
-    }
-
-    .date-block { margin: 2rem 0 1.8rem; }
-
-    .date-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.4rem;
-    }
-
-    .date {
-      font-size: clamp(1.5rem, 5vw, 2.1rem);
-      font-weight: 300;
-      letter-spacing: 0.05em;
-      color: var(--dark);
-    }
-
-    .venue-block { margin-bottom: 2rem; }
-
-    .venue-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .venue-link {
-      font-size: clamp(1rem, 3vw, 1.3rem);
-      font-style: italic;
-      color: var(--dark);
-      text-decoration: none;
-      border-bottom: 1px solid var(--gold-light);
-      padding-bottom: 1px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .venue-link:hover {
-      color: var(--gold);
-      border-bottom-color: var(--gold);
-    }
-
-    .venue-location {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-top: 0.3rem;
-    }
-
-    .countdown {
-      margin-top: 2rem;
-      display: flex;
-      justify-content: center;
-      gap: clamp(1rem, 4vw, 2.5rem);
-    }
-
-    .countdown-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .countdown-value {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(1.5rem, 5vw, 2.2rem);
-      font-weight: 500;
-      color: var(--dark);
-      line-height: 1;
-      min-width: 2.5ch;
-    }
-
-    .countdown-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .formal-invitation {
-      margin-top: 2rem;
-      font-size: 0.95rem;
-      font-style: italic;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    @media (max-width: 480px) {
-      .card { padding: 2.5rem 1.5rem; }
-    }
-  </style>
+  <title>Salvați Data — Theodor &amp; Emma</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="card">
@@ -241,9 +23,9 @@
     <div class="divider"><span class="divider-symbol">✦</span></div>
 
     <div class="names">
-      Theodor
+      Theodor Moroianu
       <span class="ampersand">&amp;</span>
-      Emma
+      Emma Chirlomez
     </div>
 
     <div class="divider"><span class="divider-symbol">✦</span></div>
@@ -265,52 +47,39 @@
 
     <div class="countdown" id="countdown">
       <div class="countdown-unit">
-        <span class="countdown-value" id="days">—</span>
+        <span class="countdown-value" id="cd-days">—</span>
         <span class="countdown-label">Zile</span>
       </div>
       <div class="countdown-unit">
-        <span class="countdown-value" id="hours">—</span>
+        <span class="countdown-value" id="cd-hours">—</span>
         <span class="countdown-label">Ore</span>
       </div>
       <div class="countdown-unit">
-        <span class="countdown-value" id="minutes">—</span>
+        <span class="countdown-value" id="cd-minutes">—</span>
         <span class="countdown-label">Minute</span>
       </div>
       <div class="countdown-unit">
-        <span class="countdown-value" id="seconds">—</span>
+        <span class="countdown-value" id="cd-seconds">—</span>
         <span class="countdown-label">Secunde</span>
       </div>
     </div>
 
-    <p class="formal-invitation">
-      Invitația oficială urmează.
-    </p>
+    <div id="calendar-container"></div>
+
+    <p class="formal-invitation">Invitația oficială urmează.</p>
   </div>
 
   <script>
-    const wedding = new Date('2027-08-07T14:00:00');
-
-    function pad(n) { return String(n).padStart(2, '0'); }
-
-    function tick() {
-      const now = new Date();
-      const diff = wedding - now;
-      if (diff <= 0) {
-        document.getElementById('countdown').innerHTML = '<p style="font-style:italic;color:var(--gold)">Astăzi e ziua ! ✦</p>';
-        return;
+    window.WEDDING_CONFIG = {
+      labels: {
+        addToCalendar:   'Adaugă în calendar',
+        googleCalendar:  'Google Calendar',
+        appleOutlook:    'Apple / Outlook (.ics)',
+        calendarDetails: 'Nunta lui Theodor Moroianu & Emma Chirlomez la Château de Beauvoir, Bourbonnais',
+        today:           'Astăzi e ziua ! ✦',
       }
-      const days    = Math.floor(diff / 86400000);
-      const hours   = Math.floor((diff % 86400000) / 3600000);
-      const minutes = Math.floor((diff % 3600000)  / 60000);
-      const seconds = Math.floor((diff % 60000)    / 1000);
-      document.getElementById('days').textContent    = days;
-      document.getElementById('hours').textContent   = pad(hours);
-      document.getElementById('minutes').textContent = pad(minutes);
-      document.getElementById('seconds').textContent = pad(seconds);
-    }
-
-    tick();
-    setInterval(tick, 1000);
+    };
   </script>
+  <script src="main.js"></script>
 </body>
 </html>

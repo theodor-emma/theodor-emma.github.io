@@ -1,0 +1,50 @@
+<svg viewBox="0 0 380 60" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Main branch -->
+  <path d="M8,30 C55,18 115,42 190,28 C265,14 315,38 372,28"
+        fill="none" stroke="#c9a96e" stroke-width="1.2" opacity="0.65"/>
+
+  <!-- ── Flower 1 — centre (65, 27) ── -->
+  <circle cx="65"   cy="20"   r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="71.7" cy="24.8" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="69.1" cy="32.7" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="60.9" cy="32.7" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="58.3" cy="24.8" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="65"   cy="27"   r="3.2" fill="#f0e0b0" opacity="0.90"/>
+
+  <!-- Leaves near flower 1 -->
+  <ellipse cx="100" cy="22" rx="11" ry="4.5" transform="rotate(-28,100,22)" fill="#b8975a" opacity="0.50"/>
+  <ellipse cx="110" cy="34" rx="10" ry="4"   transform="rotate( 22,110,34)" fill="#b8975a" opacity="0.45"/>
+
+  <!-- Small bud -->
+  <ellipse cx="138" cy="27" rx="4"   ry="5.5" fill="#c9a96e" opacity="0.50"/>
+  <ellipse cx="138" cy="20" rx="2.5" ry="3"   fill="#c9a96e" opacity="0.40"/>
+
+  <!-- ── Flower 2 — centre (190, 26) ── -->
+  <circle cx="190"   cy="19.5" r="4.2" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="196.2" cy="23.5" r="4.2" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="193.8" cy="31.3" r="4.2" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="186.2" cy="31.3" r="4.2" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="183.8" cy="23.5" r="4.2" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="190"   cy="26"   r="3"   fill="#f0e0b0" opacity="0.90"/>
+
+  <!-- Leaves in centre section -->
+  <ellipse cx="162" cy="19" rx="10" ry="4"   transform="rotate(-22,162,19)" fill="#b8975a" opacity="0.45"/>
+  <ellipse cx="218" cy="33" rx="11" ry="4.5" transform="rotate( 24,218,33)" fill="#b8975a" opacity="0.48"/>
+
+  <!-- Small bud right of centre -->
+  <ellipse cx="246" cy="24" rx="3.5" ry="5" fill="#c9a96e" opacity="0.48"/>
+
+  <!-- ── Flower 3 — centre (315, 27) ── -->
+  <circle cx="315"   cy="20"   r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="321.7" cy="24.8" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="319.1" cy="32.7" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="310.9" cy="32.7" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="308.3" cy="24.8" r="4.5" fill="#c9a96e" opacity="0.72"/>
+  <circle cx="315"   cy="27"   r="3.2" fill="#f0e0b0" opacity="0.90"/>
+
+  <!-- Leaves near flower 3 -->
+  <ellipse cx="280" cy="21" rx="10" ry="4"   transform="rotate(-20,280,21)" fill="#b8975a" opacity="0.44"/>
+  <ellipse cx="344" cy="33" rx="9"  ry="3.5" transform="rotate( 18,344,33)" fill="#b8975a" opacity="0.40"/>
+
+</svg>
