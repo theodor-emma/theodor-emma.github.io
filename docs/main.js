@@ -2,32 +2,36 @@ const WEDDING_DATE = new Date('2027-08-07T14:00:00');
 
 // ── Countdown ────────────────────────────────────────────────────────────────
 
-function pad(n) { return String(n).padStart(2, '0'); }
-
 function initCountdown() {
   const el = document.getElementById('countdown');
   if (!el) return;
 
-  const today = (window.WEDDING_CONFIG?.labels?.today) || 'Today is the day! ✦';
+  const today = window.WEDDING_CONFIG?.labels?.today || 'Today is the day! ✦';
 
   function tick() {
-    const diff = WEDDING_DATE - new Date();
+    const now  = new Date();
+    const diff = WEDDING_DATE - now;
     if (diff <= 0) {
       el.innerHTML = `<p style="font-style:italic;color:var(--gold)">${today}</p>`;
       return;
     }
-    const days    = Math.floor(diff / 86400000);
-    const hours   = Math.floor((diff % 86400000) / 3600000);
-    const minutes = Math.floor((diff % 3600000)  / 60000);
-    const seconds = Math.floor((diff % 60000)    / 1000);
-    document.getElementById('cd-days').textContent    = days;
-    document.getElementById('cd-hours').textContent   = pad(hours);
-    document.getElementById('cd-minutes').textContent = pad(minutes);
-    document.getElementById('cd-seconds').textContent = pad(seconds);
+
+    // Accurate calendar months + remaining days
+    let months = (WEDDING_DATE.getFullYear() - now.getFullYear()) * 12
+               + (WEDDING_DATE.getMonth() - now.getMonth());
+    const shifted = new Date(now);
+    shifted.setMonth(shifted.getMonth() + months);
+    if (shifted > WEDDING_DATE) months--;
+    const base = new Date(now);
+    base.setMonth(base.getMonth() + months);
+    const days = Math.floor((WEDDING_DATE - base) / 86400000);
+
+    document.getElementById('cd-months').textContent = months;
+    document.getElementById('cd-days').textContent   = days;
   }
 
   tick();
-  setInterval(tick, 1000);
+  setInterval(tick, 60000);
 }
 
 // ── Add to Calendar ───────────────────────────────────────────────────────────
@@ -38,8 +42,8 @@ function initCalendar() {
 
   const labels = window.WEDDING_CONFIG?.labels || {};
 
-  const eventTitle   = 'Mariage — Theodor Moroianu & Emma Chirlomez';
-  const eventDetails = labels.calendarDetails || 'Wedding of Theodor Moroianu & Emma Chirlomez';
+  const eventTitle    = 'Mariage — Theodor Moroianu & Emma Chirlomez';
+  const eventDetails  = labels.calendarDetails || 'Wedding of Theodor Moroianu & Emma Chirlomez';
   const eventLocation = 'Château de Beauvoir, Bourbonnais, France';
 
   const googleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
@@ -84,55 +88,9 @@ function initCalendar() {
   document.addEventListener('click', () => dropdown.classList.remove('open'));
 }
 
-// ── Background animations ─────────────────────────────────────────────────────
-
-function initAnimations() {
-  const layer = document.createElement('div');
-  layer.className = 'bg-anim-layer';
-  document.body.insertBefore(layer, document.body.firstChild);
-
-  // Romantic palette: rose, peach, gold, lavender, blush, sage, champagne
-  const colors = [
-    '#e8a0a0', '#f5c2a8', '#d4b37a',
-    '#d0b0d8', '#e8c8d0', '#c8d8b0', '#f0e0b0',
-  ];
-
-  // Balloon shape: tall oval. Flower shape: circle with soft shadow.
-  for (let i = 0; i < 24; i++) {
-    const el        = document.createElement('div');
-    el.className    = 'bg-particle';
-    const isBalloon = i % 2 === 0;
-    const size      = 16 + Math.random() * 52;
-    const color     = colors[i % colors.length];
-    const left      = Math.random() * 100;
-    const duration  = 20 + Math.random() * 25;
-    const delay     = -(Math.random() * duration); // stagger: start mid-animation
-    const blur      = 2 + Math.random() * 4;
-    const opacity   = 0.20 + Math.random() * 0.25;
-
-    // Flowers get a subtle box-shadow to suggest petals
-    const shadow = isBalloon ? '' : `box-shadow:0 0 ${(size * 0.4).toFixed(0)}px ${color};`;
-
-    el.style.cssText = `
-      width:${size.toFixed(1)}px;
-      height:${(isBalloon ? size * 1.35 : size).toFixed(1)}px;
-      border-radius:${isBalloon ? '50% 50% 50% 50% / 60% 60% 40% 40%' : '50%'};
-      background:${color};
-      left:${left.toFixed(2)}%;
-      filter:blur(${blur.toFixed(1)}px);
-      opacity:${opacity.toFixed(3)};
-      animation-duration:${duration.toFixed(1)}s;
-      animation-delay:${delay.toFixed(1)}s;
-      ${shadow}
-    `;
-    layer.appendChild(el);
-  }
-}
-
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
   initCountdown();
   initCalendar();
-  initAnimations();
 });
