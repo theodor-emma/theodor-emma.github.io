@@ -47,7 +47,7 @@ function initCalendar() {
 
   const googleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
     + '&text='     + encodeURIComponent(eventTitle)
-    + '&dates=20270807T140000/20270807T230000'
+    + '&dates=20270807/20270809'
     + '&details='  + encodeURIComponent(eventDetails)
     + '&location=' + encodeURIComponent(eventLocation);
 
@@ -56,8 +56,8 @@ function initCalendar() {
     'VERSION:2.0',
     'PRODID:-//Theodor & Emma//Wedding//EN',
     'BEGIN:VEVENT',
-    'DTSTART;TZID=Europe/Paris:20270807T140000',
-    'DTEND;TZID=Europe/Paris:20270807T230000',
+    'DTSTART;VALUE=DATE:20270807',
+    'DTEND;VALUE=DATE:20270809',
     'SUMMARY:Mariage — Theodor Moroianu & Emma Chirlomez',
     'LOCATION:Château de Beauvoir\\, Bourbonnais\\, France',
     'URL:https://www.beauvoir-bourbonnais.fr/accs',
