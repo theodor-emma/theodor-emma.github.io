@@ -153,6 +153,35 @@
 
     .export-btns { display: flex; gap: 0.6rem; }
 
+    .add-guest-form {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1.4rem;
+      border-bottom: 1px solid rgba(184,151,90,0.2);
+      background: var(--cream);
+      flex-shrink: 0;
+    }
+    .add-guest-form input {
+      border: 1px solid var(--gold-light);
+      background: var(--cream);
+      padding: 0.45rem 0.75rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.95rem;
+      color: var(--dark);
+      outline: none;
+      width: 240px;
+      transition: border-color 0.2s;
+    }
+    .add-guest-form input:focus { border-color: var(--gold); }
+    .add-guest-form input::placeholder { color: var(--muted); font-style: italic; }
+    .add-guest-msg {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+    .add-guest-msg.error { color: #a04040; }
+
     .dash-stats {
       display: flex;
       gap: 1.5rem;
@@ -184,6 +213,21 @@
       flex: 1;
       min-height: 0;
     }
+
+    .delete-cell { display: flex; align-items: center; }
+    .row-delete-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8b3a3a;
+      background: transparent;
+      border: 1px solid #c99;
+      padding: 0.25rem 0.7rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .row-delete-btn:hover { background: #8b3a3a; color: var(--cream); border-color: #8b3a3a; }
 
     /* AG Grid overrides to match site palette */
     .ag-theme-quartz {
@@ -226,6 +270,12 @@
       </div>
     </div>
 
+    <div class="add-guest-form">
+      <input id="new-guest-name" type="text" placeholder="Guest name…" />
+      <button id="add-guest-btn" class="btn btn-primary">Add Guest</button>
+      <span id="add-guest-msg" class="add-guest-msg"></span>
+    </div>
+
     <div class="dash-stats" id="dash-stats"></div>
 
     <div id="grid" class="ag-theme-quartz"></div>
@@ -251,7 +301,24 @@
       { field: 'responded_at',        headerName: 'Responded',         width: 160,
         valueFormatter: p => p.value ? new Date(p.value).toLocaleString() : '—' },
       { field: 'key',                 headerName: 'Key',               width: 110 },
+      { headerName: 'Invite link',    flex: 3, minWidth: 220,
+        valueGetter: p => p.data ? rsvpUrlFor(p.data.key) : '' },
+      { headerName: '', width: 100, pinned: 'right', sortable: false, filter: false,
+        resizable: false, cellClass: 'delete-cell',
+        cellRenderer: p => {
+          const btn = document.createElement('button');
+          btn.className = 'row-delete-btn';
+          btn.textContent = 'Delete';
+          btn.addEventListener('click', () => deleteGuest(p.data));
+          return btn;
+        } },
     ];
+
+    // ── Invite link helper ──────────────────────────────────────────────────
+    function rsvpUrlFor(key) {
+      // admin is at /rsvp/admin.html → /rsvp/?invite=KEY
+      return new URL('./?invite=' + encodeURIComponent(key), window.location.href).toString();
+    }
 
     // ── AG Grid init ────────────────────────────────────────────────────────
     function initGrid(rows) {
@@ -309,16 +376,30 @@
       initGrid(rows);
     }
 
+    function errorMessage(e) {
+      if (e.message === 'forbidden') return 'Invalid admin key.';
+      if (e.message === 'server')    return 'Server error — is the backend (and MongoDB) running?';
+      return 'Unable to reach the server. Please check your connection.';
+    }
+
     // ── Login ───────────────────────────────────────────────────────────────
     async function doLogin() {
-      const key = document.getElementById('admin-key').value.trim();
+      const key    = document.getElementById('admin-key').value.trim();
+      const btn    = document.getElementById('login-btn');
+      const errEl  = document.getElementById('login-error');
       if (!key) return;
+
+      errEl.textContent = '';
+      btn.disabled = true;
+      btn.textContent = 'Connecting…';
       try {
         await showDashboard(key);
       } catch (e) {
-        localStorage.removeItem(LS_KEY);
-        document.getElementById('login-error').textContent =
-          e.message === 'forbidden' ? 'Invalid admin key.' : 'Unable to connect.';
+        if (e.message === 'forbidden') localStorage.removeItem(LS_KEY);
+        errEl.textContent = errorMessage(e);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Access';
       }
     }
 
@@ -330,10 +411,85 @@
     // ── Auto-login from localStorage ────────────────────────────────────────
     const savedKey = localStorage.getItem(LS_KEY);
     if (savedKey) {
-      showDashboard(savedKey).catch(() => {
-        localStorage.removeItem(LS_KEY);
-        // fall through to login screen
+      document.getElementById('admin-key').value = savedKey;
+      showDashboard(savedKey).catch(e => {
+        if (e.message === 'forbidden') localStorage.removeItem(LS_KEY);
+        document.getElementById('login-error').textContent = errorMessage(e);
       });
+    }
+
+    // ── Add guest ───────────────────────────────────────────────────────────
+    async function doAddGuest() {
+      const nameInput = document.getElementById('new-guest-name');
+      const msgEl     = document.getElementById('add-guest-msg');
+      const name      = nameInput.value.trim();
+      if (!name) return;
+
+      msgEl.className = 'add-guest-msg';
+      msgEl.textContent = 'Adding…';
+
+      try {
+        const key = localStorage.getItem(LS_KEY) || '';
+        const res = await fetch(
+          API_BASE + '/admin/invites?admin_key=' + encodeURIComponent(key),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name }),
+          }
+        );
+        if (!res.ok) throw new Error(res.status === 403 ? 'forbidden' : 'server');
+        const invite = await res.json();
+
+        // Fill defaults so the new row matches the shape of DB-loaded rows
+        const row = {
+          attending: null, dietary_restrictions: '', notes: '',
+          plus_one: false, plus_one_name: '', plus_one_dietary: '',
+          responded_at: null, ...invite,
+        };
+
+        // Add row to grid and raw data
+        allRows.push(row);
+        gridApi.applyTransaction({ add: [row] });
+        renderStats(allRows);
+
+        nameInput.value   = '';
+        msgEl.textContent = `Added — ${rsvpUrlFor(invite.key)}`;
+      } catch (e) {
+        msgEl.className   = 'add-guest-msg error';
+        msgEl.textContent = e.message === 'forbidden' ? 'Forbidden.' : 'Error adding guest.';
+      }
+    }
+
+    document.getElementById('add-guest-btn').addEventListener('click', doAddGuest);
+    document.getElementById('new-guest-name').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doAddGuest();
+    });
+
+    // ── Delete guest ────────────────────────────────────────────────────────
+    async function deleteGuest(row) {
+      if (!row) return;
+      if (!confirm(`Delete the invitation for "${row.name}"? This cannot be undone.`)) return;
+
+      const msgEl = document.getElementById('add-guest-msg');
+      try {
+        const key = localStorage.getItem(LS_KEY) || '';
+        const res = await fetch(
+          API_BASE + '/admin/invites/' + encodeURIComponent(row.key) + '?admin_key=' + encodeURIComponent(key),
+          { method: 'DELETE' }
+        );
+        if (!res.ok) throw new Error(res.status === 403 ? 'forbidden' : 'server');
+
+        allRows = allRows.filter(r => r.key !== row.key);
+        gridApi.applyTransaction({ remove: [row] });
+        renderStats(allRows);
+
+        msgEl.className   = 'add-guest-msg';
+        msgEl.textContent = `Deleted ${row.name}.`;
+      } catch (e) {
+        msgEl.className   = 'add-guest-msg error';
+        msgEl.textContent = e.message === 'forbidden' ? 'Forbidden.' : 'Error deleting guest.';
+      }
     }
 
     // ── Export CSV ──────────────────────────────────────────────────────────
@@ -342,19 +498,24 @@
     });
 
     // ── Export XLSX ─────────────────────────────────────────────────────────
+    const EXPORT_COLS = [
+      ['Name',        r => r.name],
+      ['Attending',   r => r.attending === true ? 'Yes' : r.attending === false ? 'No' : ''],
+      ['Dietary',     r => r.dietary_restrictions || ''],
+      ['+1',          r => r.plus_one === true ? 'Yes' : 'No'],
+      ['+1 Name',     r => r.plus_one_name || ''],
+      ['+1 Dietary',  r => r.plus_one_dietary || ''],
+      ['Comments',    r => r.notes || ''],
+      ['Responded',   r => r.responded_at ? new Date(r.responded_at).toLocaleString() : ''],
+      ['Key',         r => r.key],
+      ['Invite link', r => rsvpUrlFor(r.key)],
+    ];
+
     document.getElementById('export-xlsx').addEventListener('click', () => {
       if (!allRows.length) return;
-      const headers = colDefs.map(c => c.headerName);
-      const fields  = colDefs.map(c => c.field);
-      const data    = [
-        headers,
-        ...allRows.map(row => fields.map(f => {
-          const v = row[f];
-          if (f === 'attending')    return v === true ? 'Yes' : v === false ? 'No' : '';
-          if (f === 'plus_one')     return v === true ? 'Yes' : 'No';
-          if (f === 'responded_at') return v ? new Date(v).toLocaleString() : '';
-          return v ?? '';
-        })),
+      const data = [
+        EXPORT_COLS.map(c => c[0]),
+        ...allRows.map(row => EXPORT_COLS.map(c => c[1](row))),
       ];
       const ws = XLSX.utils.aoa_to_sheet(data);
       const wb = XLSX.utils.book_new();
