@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — RSVP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #faf6ef;
+      --gold: #b8975a;
+      --gold-light: #d4b37a;
+      --dark: #2c2416;
+      --muted: #7a6e5f;
+    }
+
+    [hidden] { display: none !important; }
+
+    body {
+      background: var(--cream);
+      color: var(--dark);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100dvh;
+    }
+
+    /* ── Login screen ── */
+    .login-wrap {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .login-card {
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid var(--gold);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      position: relative;
+      background: var(--cream);
+    }
+    .login-card::before {
+      content: '';
+      position: absolute;
+      width: calc(100% - 16px);
+      height: calc(100% - 16px);
+      border: 1px solid var(--gold-light);
+      top: 7px; left: 7px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .login-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--dark);
+      margin-bottom: 1.8rem;
+    }
+
+    .login-input {
+      width: 100%;
+      border: 1px solid var(--gold-light);
+      background: var(--cream);
+      padding: 0.6rem 0.9rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1rem;
+      color: var(--dark);
+      text-align: center;
+      letter-spacing: 0.06em;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    .login-input:focus { border-color: var(--gold); }
+    .login-input::placeholder { color: var(--muted); font-style: italic; }
+
+    .login-error {
+      font-size: 0.82rem;
+      color: #a04040;
+      font-style: italic;
+      margin-top: 0.6rem;
+      min-height: 1.2em;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 0.6rem 1.4rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn:hover { background: var(--gold); color: var(--cream); }
+    .btn-primary { background: var(--gold); color: var(--cream); }
+    .btn-primary:hover { background: var(--gold-light); }
+
+    /* ── Dashboard ── */
+    .dashboard {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+    }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.4rem;
+      border-bottom: 1px solid var(--gold-light);
+      background: var(--cream);
+      flex-shrink: 0;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .dash-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dark);
+    }
+
+    .dash-subtitle {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    .export-btns { display: flex; gap: 0.6rem; }
+
+    .dash-stats {
+      display: flex;
+      gap: 1.5rem;
+      padding: 0.7rem 1.4rem;
+      border-bottom: 1px solid rgba(184,151,90,0.2);
+      background: var(--cream);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .stat span {
+      font-size: 1.1rem;
+      font-style: italic;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--dark);
+      margin-left: 0.4rem;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    #grid {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* AG Grid overrides to match site palette */
+    .ag-theme-quartz {
+      --ag-background-color: var(--cream);
+      --ag-header-background-color: #f3ede4;
+      --ag-odd-row-background-color: #f7f2ea;
+      --ag-border-color: #e2d5c0;
+      --ag-header-foreground-color: var(--muted);
+      --ag-foreground-color: var(--dark);
+      --ag-font-family: 'Cormorant Garamond', Georgia, serif;
+      --ag-font-size: 14px;
+      --ag-selected-row-background-color: rgba(184,151,90,0.12);
+      --ag-row-hover-color: rgba(184,151,90,0.07);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Login ── -->
+  <div class="login-wrap" id="login-wrap">
+    <div class="login-card">
+      <p class="login-eyebrow">Emma &amp; Theodor · 2027</p>
+      <p class="login-title">RSVP Admin</p>
+      <input id="admin-key" class="login-input" type="password" placeholder="Admin key" autocomplete="off" />
+      <button id="login-btn" class="btn btn-primary" style="width:100%">Access</button>
+      <p id="login-error" class="login-error"></p>
+    </div>
+  </div>
+
+  <!-- ── Dashboard ── -->
+  <div class="dashboard" id="dashboard" hidden>
+    <div class="dash-header">
+      <div>
+        <p class="dash-title">RSVP Responses</p>
+        <p class="dash-subtitle">Emma Chirlomez &amp; Theodor Moroianu · 7 August 2027</p>
+      </div>
+      <div class="export-btns">
+        <button id="export-csv"  class="btn">Export CSV</button>
+        <button id="export-xlsx" class="btn btn-primary">Export XLSX</button>
+      </div>
+    </div>
+
+    <div class="dash-stats" id="dash-stats"></div>
+
+    <div id="grid" class="ag-theme-quartz"></div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://api-rsvp.theodor-emma.fr';
+    let gridApi = null;
+    let allRows = [];
+
+    // ── Column definitions ──────────────────────────────────────────────────
+    const colDefs = [
+      { field: 'name',                headerName: 'Name',              flex: 2, minWidth: 140 },
+      { field: 'attending',           headerName: 'Attending',         width: 110,
+        valueFormatter: p => p.value === true ? '✓ Yes' : p.value === false ? '✗ No' : '—',
+        cellStyle: p => ({ color: p.value === true ? '#4a7c4e' : p.value === false ? '#8b3a3a' : '#888' }) },
+      { field: 'dietary_restrictions',headerName: 'Dietary',           flex: 2, minWidth: 120 },
+      { field: 'plus_one',            headerName: '+1',                 width: 80,
+        valueFormatter: p => p.value === true ? '✓' : '—' },
+      { field: 'plus_one_name',       headerName: '+1 Name',           flex: 1, minWidth: 100 },
+      { field: 'plus_one_dietary',    headerName: '+1 Dietary',        flex: 1, minWidth: 100 },
+      { field: 'notes',               headerName: 'Comments',          flex: 2, minWidth: 120 },
+      { field: 'responded_at',        headerName: 'Responded',         width: 160,
+        valueFormatter: p => p.value ? new Date(p.value).toLocaleString() : '—' },
+      { field: 'key',                 headerName: 'Key',               width: 110 },
+    ];
+
+    // ── AG Grid init ────────────────────────────────────────────────────────
+    function initGrid(rows) {
+      allRows = rows;
+      gridApi = agGrid.createGrid(document.getElementById('grid'), {
+        columnDefs: colDefs,
+        rowData: rows,
+        defaultColDef: { sortable: true, filter: true, resizable: true },
+        pagination: true,
+        paginationPageSize: 50,
+      });
+    }
+
+    // ── Stats bar ───────────────────────────────────────────────────────────
+    function renderStats(rows) {
+      const total     = rows.length;
+      const responded = rows.filter(r => r.attending !== null && r.attending !== undefined).length;
+      const attending = rows.filter(r => r.attending === true).length;
+      const declined  = rows.filter(r => r.attending === false).length;
+      const plusOnes  = rows.filter(r => r.plus_one === true).length;
+      const pending   = total - responded;
+
+      document.getElementById('dash-stats').innerHTML = [
+        stat('Total invited', total),
+        stat('Attending',     attending),
+        stat('Declined',      declined),
+        stat('Pending',       pending),
+        stat('+1s',           plusOnes),
+        stat('Total guests',  attending + plusOnes),
+      ].join('');
+    }
+
+    function stat(label, value) {
+      return `<div class="stat">${label}<span>${value}</span></div>`;
+    }
+
+    // ── Fetch ───────────────────────────────────────────────────────────────
+    async function loadData(key) {
+      const res = await fetch(API_BASE + '/admin/responses?admin_key=' + encodeURIComponent(key));
+      if (res.status === 403) throw new Error('forbidden');
+      if (!res.ok)            throw new Error('server');
+      return res.json();
+    }
+
+    // ── Login ───────────────────────────────────────────────────────────────
+    async function doLogin() {
+      const key = document.getElementById('admin-key').value.trim();
+      if (!key) return;
+      try {
+        const rows = await loadData(key);
+        document.getElementById('login-wrap').hidden  = true;
+        document.getElementById('dashboard').hidden   = false;
+        renderStats(rows);
+        initGrid(rows);
+      } catch (e) {
+        document.getElementById('login-error').textContent =
+          e.message === 'forbidden' ? 'Invalid admin key.' : 'Unable to connect.';
+      }
+    }
+
+    document.getElementById('login-btn').addEventListener('click', doLogin);
+    document.getElementById('admin-key').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+
+    // ── Export CSV ──────────────────────────────────────────────────────────
+    document.getElementById('export-csv').addEventListener('click', () => {
+      if (gridApi) gridApi.exportDataAsCsv({ fileName: 'rsvp-responses.csv' });
+    });
+
+    // ── Export XLSX ─────────────────────────────────────────────────────────
+    document.getElementById('export-xlsx').addEventListener('click', () => {
+      if (!allRows.length) return;
+      const headers = colDefs.map(c => c.headerName);
+      const fields  = colDefs.map(c => c.field);
+      const data    = [
+        headers,
+        ...allRows.map(row => fields.map(f => {
+          const v = row[f];
+          if (f === 'attending')    return v === true ? 'Yes' : v === false ? 'No' : '';
+          if (f === 'plus_one')     return v === true ? 'Yes' : 'No';
+          if (f === 'responded_at') return v ? new Date(v).toLocaleString() : '';
+          return v ?? '';
+        })),
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Responses');
+      XLSX.writeFile(wb, 'rsvp-responses.xlsx');
+    });
+  </script>
+</body>
+</html>

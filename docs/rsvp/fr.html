@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSVP — Emma &amp; Theodor</title>
+  <link rel="stylesheet" href="rsvp.css" />
+</head>
+<body>
+  <div class="card">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+
+    <a class="save-date-link" href="../fr.html">Faire-part</a>
+    <div class="lang-switcher">
+      <a href="index.html">English</a>
+      <a href="ro.html">Română</a>
+    </div>
+
+    <div class="rsvp-header">
+      <p class="rsvp-eyebrow">Confirmation de présence</p>
+      <p class="rsvp-names">Emma Chirlomez &amp; Theodor Moroianu</p>
+      <p class="rsvp-date">Le samedi 7 août 2027 · Château de Beauvoir</p>
+    </div>
+
+    <div class="divider"><span class="divider-symbol">✦</span></div>
+
+    <section id="screen-key" class="screen" hidden>
+      <p class="screen-title">Code d'invitation</p>
+      <p class="key-prompt">Veuillez entrer le code figurant sur votre invitation.</p>
+      <input id="key-input" class="key-input" type="text" placeholder="Votre code d'invitation" autocomplete="off" />
+      <p id="key-error" class="key-error"></p>
+      <button id="key-submit" class="btn btn-primary">Continuer</button>
+    </section>
+
+    <section id="screen-loading" class="screen" hidden>
+      <p class="loading-text">Chargement…</p>
+    </section>
+
+    <section id="screen-question" class="screen" hidden>
+      <p class="screen-title">Invitation</p>
+      <p class="screen-greeting"><span class="guest-name"></span>, serez-vous parmi nous ?</p>
+      <div class="btn-row">
+        <button id="btn-yes" class="btn btn-primary">Avec joie</button>
+        <button id="btn-no"  class="btn btn-ghost">Dans l'impossibilité</button>
+      </div>
+    </section>
+
+    <section id="screen-plus-one" class="screen" hidden>
+      <p class="screen-title">Accompagnant</p>
+      <p class="screen-greeting">Serez-vous accompagné(e) ?</p>
+      <input id="plus-one-name" class="key-input" type="text" placeholder="Nom de l'accompagnant (facultatif)" />
+      <div class="btn-row">
+        <button id="btn-plus-one-yes" class="btn btn-primary">Oui, +1</button>
+        <button id="btn-plus-one-no"  class="btn btn-ghost">Seul(e)</button>
+      </div>
+    </section>
+
+    <section id="screen-dietary" class="screen" hidden>
+      <p class="screen-title">Régimes alimentaires</p>
+      <p class="dietary-intro">Merci de nous indiquer vos éventuelles restrictions alimentaires afin que nous puissions vous accueillir dans les meilleures conditions.</p>
+      <div id="dietary-checks" class="check-grid dietary-check-group">
+        <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
+      </div>
+      <input id="dietary-other" class="dietary-other" type="text" placeholder="Autres allergies…" />
+
+      <div id="plus-one-dietary-section" hidden>
+        <p class="plus-one-dietary-label">Régime alimentaire de l'accompagnant</p>
+        <div id="dietary-checks-plus-one" class="check-grid dietary-check-group">
+          <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
+        </div>
+        <input id="dietary-other-plus-one" class="dietary-other" type="text" placeholder="Autres allergies…" />
+      </div>
+
+      <textarea id="dietary-comments" class="dietary-comments" placeholder="Commentaires ou remarques pour les organisateurs…"></textarea>
+      <div class="btn-row">
+        <button id="btn-dietary-submit" class="btn btn-primary">Confirmer ma présence</button>
+      </div>
+    </section>
+
+    <section id="screen-already" class="screen" hidden>
+      <p class="screen-title">Votre réponse</p>
+      <div class="summary">
+        <div class="summary-row">
+          <p class="summary-label">Présence</p>
+          <p class="summary-value" id="prev-attending"></p>
+        </div>
+        <div class="summary-row" id="prev-dietary-wrap" hidden>
+          <p class="summary-label">Régime alimentaire</p>
+          <p class="summary-value" id="prev-dietary"></p>
+        </div>
+        <div class="summary-row" id="prev-plus-one-wrap" hidden>
+          <p class="summary-label">Accompagnant</p>
+          <p class="summary-value" id="prev-plus-one"></p>
+        </div>
+        <div class="summary-row" id="prev-plus-one-dietary-wrap" hidden>
+          <p class="summary-label">Régime de l'accompagnant</p>
+          <p class="summary-value" id="prev-plus-one-dietary"></p>
+        </div>
+        <div class="summary-row" id="prev-comments-wrap" hidden>
+          <p class="summary-label">Commentaires</p>
+          <p class="summary-value" id="prev-comments"></p>
+        </div>
+      </div>
+      <button class="btn btn-update">Modifier ma réponse</button>
+    </section>
+
+    <section id="screen-error" class="screen" hidden>
+      <p class="result-icon">✦</p>
+      <p id="error-text" class="dietary-intro"></p>
+      <button id="btn-retry" class="btn">Réessayer</button>
+    </section>
+
+  </div>
+
+  <script>
+    window.RSVP_CONFIG = {
+      apiBase: window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://api-rsvp.theodor-emma.fr',
+      labels: {
+        invalidKey:   "Code d'invitation introuvable. Veuillez vérifier et réessayer.",
+        networkError: 'Impossible de se connecter. Veuillez réessayer plus tard.',
+        submitError:  "Échec de l'envoi. Veuillez réessayer.",
+        yes:          'Oui, présent(e)',
+        no:           'Absent(e)',
+        noDietary:    'Aucune restriction',
+        dietary: {
+          'vegetarian':  'Végétarien',
+          'vegan':       'Végétalien',
+          'gluten-free': 'Sans gluten',
+          'dairy-free':  'Sans lactose',
+          'nut-allergy': 'Allergie aux noix',
+          'halal':       'Halal',
+          'kosher':      'Casher',
+          'no-pork':     'Sans porc',
+        },
+      },
+    };
+  </script>
+  <script src="rsvp.js"></script>
+  <script src="../background-animation.js"></script>
+</body>
+</html>
