@@ -260,6 +260,8 @@
         columnDefs: colDefs,
         rowData: rows,
         defaultColDef: { sortable: true, filter: true, resizable: true },
+        enableCellTextSelection: true,
+        ensureDomOrder: true,
         pagination: true,
         paginationPageSize: 50,
       });
@@ -296,17 +298,25 @@
       return res.json();
     }
 
+    const LS_KEY = 'wedding_admin_key';
+
+    async function showDashboard(key) {
+      const rows = await loadData(key);
+      localStorage.setItem(LS_KEY, key);
+      document.getElementById('login-wrap').hidden = true;
+      document.getElementById('dashboard').hidden  = false;
+      renderStats(rows);
+      initGrid(rows);
+    }
+
     // ── Login ───────────────────────────────────────────────────────────────
     async function doLogin() {
       const key = document.getElementById('admin-key').value.trim();
       if (!key) return;
       try {
-        const rows = await loadData(key);
-        document.getElementById('login-wrap').hidden  = true;
-        document.getElementById('dashboard').hidden   = false;
-        renderStats(rows);
-        initGrid(rows);
+        await showDashboard(key);
       } catch (e) {
+        localStorage.removeItem(LS_KEY);
         document.getElementById('login-error').textContent =
           e.message === 'forbidden' ? 'Invalid admin key.' : 'Unable to connect.';
       }
@@ -316,6 +326,15 @@
     document.getElementById('admin-key').addEventListener('keydown', e => {
       if (e.key === 'Enter') doLogin();
     });
+
+    // ── Auto-login from localStorage ────────────────────────────────────────
+    const savedKey = localStorage.getItem(LS_KEY);
+    if (savedKey) {
+      showDashboard(savedKey).catch(() => {
+        localStorage.removeItem(LS_KEY);
+        // fall through to login screen
+      });
+    }
 
     // ── Export CSV ──────────────────────────────────────────────────────────
     document.getElementById('export-csv').addEventListener('click', () => {
