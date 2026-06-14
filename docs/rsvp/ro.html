@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSVP — Emma &amp; Theodor</title>
+  <link rel="stylesheet" href="rsvp.css" />
+</head>
+<body>
+  <div class="card">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+
+    <a class="save-date-link" href="../ro.html">Rețineți Data</a>
+    <div class="lang-switcher">
+      <a href="index.html">English</a>
+      <a href="fr.html">Français</a>
+    </div>
+
+    <div class="rsvp-header">
+      <p class="rsvp-eyebrow">Confirmare prezență</p>
+      <p class="rsvp-names">Emma Chirlomez &amp; Theodor Moroianu</p>
+      <p class="rsvp-date">Sâmbătă, 7 august 2027 · Château de Beauvoir</p>
+    </div>
+
+    <div class="divider"><span class="divider-symbol">✦</span></div>
+
+    <section id="screen-key" class="screen" hidden>
+      <p class="screen-title">Cod de invitație</p>
+      <p class="key-prompt">Vă rugăm să introduceți codul de pe invitația dumneavoastră.</p>
+      <input id="key-input" class="key-input" type="text" placeholder="Codul invitației" autocomplete="off" />
+      <p id="key-error" class="key-error"></p>
+      <button id="key-submit" class="btn btn-primary">Continuați</button>
+    </section>
+
+    <section id="screen-loading" class="screen" hidden>
+      <p class="loading-text">Se încarcă…</p>
+    </section>
+
+    <section id="screen-question" class="screen" hidden>
+      <p class="screen-title">Invitație</p>
+      <p class="screen-greeting"><span class="guest-name"></span>, veți putea fi alături de noi?</p>
+      <div class="btn-row">
+        <button id="btn-yes" class="btn btn-primary">Cu mare drag</button>
+        <button id="btn-no"  class="btn btn-ghost">Din păcate, nu pot</button>
+      </div>
+    </section>
+
+    <section id="screen-plus-one" class="screen" hidden>
+      <p class="screen-title">Însoțitor</p>
+      <p class="screen-greeting">Veți veni cu un însoțitor?</p>
+      <input id="plus-one-name" class="key-input" type="text" placeholder="Numele însoțitorului (opțional)" />
+      <div class="btn-row">
+        <button id="btn-plus-one-yes" class="btn btn-primary">Da, +1</button>
+        <button id="btn-plus-one-no"  class="btn btn-ghost">Singur(ă)</button>
+      </div>
+    </section>
+
+    <section id="screen-dietary" class="screen" hidden>
+      <p class="screen-title">Preferințe alimentare</p>
+      <p class="dietary-intro">Vă rugăm să ne informați despre orice restricție alimentară pentru a ne asigura că toți invitații se simt bine.</p>
+      <div id="dietary-checks" class="check-grid dietary-check-group">
+        <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
+        <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
+      </div>
+      <input id="dietary-other" class="dietary-other" type="text" placeholder="Alte alergii…" />
+
+      <div id="plus-one-dietary-section" hidden>
+        <p class="plus-one-dietary-label">Preferințe alimentare însoțitor</p>
+        <div id="dietary-checks-plus-one" class="check-grid dietary-check-group">
+          <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
+          <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
+        </div>
+        <input id="dietary-other-plus-one" class="dietary-other" type="text" placeholder="Alte alergii…" />
+      </div>
+
+      <textarea id="dietary-comments" class="dietary-comments" placeholder="Comentarii sau mențiuni pentru organizatori…"></textarea>
+      <div class="btn-row">
+        <button id="btn-dietary-submit" class="btn btn-primary">Confirmați prezența</button>
+      </div>
+    </section>
+
+    <section id="screen-already" class="screen" hidden>
+      <p class="screen-title">Răspunsul dvs.</p>
+      <div class="summary">
+        <div class="summary-row">
+          <p class="summary-label">Participare</p>
+          <p class="summary-value" id="prev-attending"></p>
+        </div>
+        <div class="summary-row" id="prev-dietary-wrap" hidden>
+          <p class="summary-label">Preferințe alimentare</p>
+          <p class="summary-value" id="prev-dietary"></p>
+        </div>
+        <div class="summary-row" id="prev-plus-one-wrap" hidden>
+          <p class="summary-label">Însoțitor</p>
+          <p class="summary-value" id="prev-plus-one"></p>
+        </div>
+        <div class="summary-row" id="prev-plus-one-dietary-wrap" hidden>
+          <p class="summary-label">Preferințe însoțitor</p>
+          <p class="summary-value" id="prev-plus-one-dietary"></p>
+        </div>
+        <div class="summary-row" id="prev-comments-wrap" hidden>
+          <p class="summary-label">Comentarii</p>
+          <p class="summary-value" id="prev-comments"></p>
+        </div>
+      </div>
+      <button class="btn btn-update">Modificați răspunsul</button>
+    </section>
+
+    <section id="screen-error" class="screen" hidden>
+      <p class="result-icon">✦</p>
+      <p id="error-text" class="dietary-intro"></p>
+      <button id="btn-retry" class="btn">Încercați din nou</button>
+    </section>
+
+  </div>
+
+  <script>
+    window.RSVP_CONFIG = {
+      apiBase: window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://api-rsvp.theodor-emma.fr',
+      labels: {
+        invalidKey:   'Cod de invitație negăsit. Vă rugăm verificați și încercați din nou.',
+        networkError: 'Nu se poate conecta. Vă rugăm încercați mai târziu.',
+        submitError:  'Trimiterea a eșuat. Vă rugăm încercați din nou.',
+        yes:          'Da, prezent(ă)',
+        no:           'Absent(ă)',
+        noDietary:    'Fără restricții',
+        dietary: {
+          'vegetarian':  'Vegetarian',
+          'vegan':       'Vegan',
+          'gluten-free': 'Fără gluten',
+          'dairy-free':  'Fără lactoză',
+          'nut-allergy': 'Alergie la nuci',
+          'halal':       'Halal',
+          'kosher':      'Kosher',
+          'no-pork':     'Fără porc',
+        },
+      },
+    };
+  </script>
+  <script src="rsvp.js"></script>
+  <script src="../background-animation.js"></script>
+</body>
+</html>

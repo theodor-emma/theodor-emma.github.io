@@ -1,0 +1,395 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Ensure the HTML `hidden` attribute always wins over any CSS display rule */
+[hidden] { display: none !important; }
+
+:root {
+  --cream: #faf6ef;
+  --gold: #b8975a;
+  --gold-light: #d4b37a;
+  --dark: #2c2416;
+  --muted: #7a6e5f;
+}
+
+html, body { height: 100%; }
+
+body {
+  background-color: var(--cream);
+  color: var(--dark);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+/* ── Card ── */
+.card {
+  max-width: 620px;
+  width: 100%;
+  border: 1px solid var(--gold);
+  padding: clamp(2rem, 5vh, 3.5rem) clamp(1.4rem, 4vw, 3rem);
+  position: relative;
+  text-align: center;
+  background: var(--cream);
+  z-index: 1;
+  margin: auto;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  border: 1px solid var(--gold-light);
+  top: 7px; left: 7px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.corner {
+  position: absolute;
+  width: 28px; height: 28px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+.corner.tl { top: -1px;    left: -1px;  border-width: 2px 0 0 2px; }
+.corner.tr { top: -1px;    right: -1px; border-width: 2px 2px 0 0; }
+.corner.bl { bottom: -1px; left: -1px;  border-width: 0 0 2px 2px; }
+.corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+/* ── Save the date link (top-left, mirrors lang switcher) ── */
+.save-date-link {
+  position: absolute;
+  top: 1rem; left: 1.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.save-date-link:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+
+/* ── Lang switcher ── */
+.lang-switcher {
+  position: absolute;
+  top: 1rem; right: 1.2rem;
+  display: flex;
+  gap: 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.lang-switcher a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.lang-switcher a:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+
+/* ── Header ── */
+.rsvp-header { margin-bottom: 2rem; }
+
+.rsvp-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.rsvp-names {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--dark);
+  line-height: 1.2;
+}
+
+.rsvp-date {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.4rem;
+}
+
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.4rem auto;
+  max-width: 260px;
+  width: 100%;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--gold-light);
+}
+.divider-symbol { color: var(--gold); font-size: 1rem; line-height: 1; }
+
+/* ── Screens ── */
+.screen { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Loading */
+.loading-text {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1rem;
+  padding: 2rem 0;
+}
+
+/* Question */
+.screen-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+
+.screen-greeting {
+  font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--dark);
+  margin-bottom: 2rem;
+  line-height: 1.35;
+}
+
+.btn-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 0.65rem 1.8rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--gold); color: var(--cream); }
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--cream);
+}
+.btn-primary:hover { background: var(--gold-light); }
+
+.btn-ghost {
+  border-color: var(--muted);
+  color: var(--muted);
+}
+.btn-ghost:hover { background: var(--muted); color: var(--cream); }
+
+/* ── Dietary form ── */
+.dietary-intro {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: 1.4rem;
+  line-height: 1.5;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1.5rem;
+  text-align: left;
+  max-width: 340px;
+  margin: 0 auto 1.4rem;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--dark);
+  cursor: pointer;
+}
+
+.check-item input[type="checkbox"] {
+  appearance: none;
+  width: 14px; height: 14px;
+  border: 1px solid var(--gold-light);
+  background: var(--cream);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.15s;
+}
+.check-item input[type="checkbox"]:checked {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.check-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 1px;
+  width: 5px; height: 8px;
+  border: 1.5px solid var(--cream);
+  border-left: none; border-top: none;
+  transform: rotate(40deg);
+}
+
+.dietary-other {
+  width: 100%;
+  max-width: 340px;
+  border: 1px solid var(--gold-light);
+  background: var(--cream);
+  padding: 0.55rem 0.8rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--dark);
+  outline: none;
+  margin-bottom: 1.6rem;
+  transition: border-color 0.2s;
+}
+.dietary-other::placeholder { color: var(--muted); font-style: italic; }
+.dietary-other:focus { border-color: var(--gold); }
+
+.dietary-comments {
+  width: 100%;
+  max-width: 340px;
+  border: 1px solid var(--gold-light);
+  background: var(--cream);
+  padding: 0.55rem 0.8rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--dark);
+  outline: none;
+  resize: vertical;
+  min-height: 70px;
+  margin-bottom: 1.6rem;
+  transition: border-color 0.2s;
+  line-height: 1.5;
+}
+.dietary-comments::placeholder { color: var(--muted); font-style: italic; }
+.dietary-comments:focus { border-color: var(--gold); }
+
+/* ── Result screens ── */
+.result-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.result-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+
+.result-message {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--dark);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.result-note {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+}
+
+/* ── Summary (already responded + result screens) ── */
+.summary {
+  margin: 1.2rem auto;
+  max-width: 340px;
+  width: 100%;
+}
+
+.summary-row { margin-bottom: 0.9rem; }
+
+.summary-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.summary-value {
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  font-style: italic;
+  color: var(--dark);
+}
+
+/* ── +1 dietary section ── */
+.plus-one-dietary-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 1.2rem 0 0.5rem;
+}
+
+/* ── Key screen (inline, no modal) ── */
+.key-prompt {
+  font-style: italic;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--dark);
+  margin-bottom: 1.4rem;
+  line-height: 1.5;
+}
+
+.key-input {
+  width: 100%;
+  max-width: 280px;
+  border: 1px solid var(--gold-light);
+  background: var(--cream);
+  padding: 0.6rem 0.9rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1rem;
+  color: var(--dark);
+  text-align: center;
+  letter-spacing: 0.08em;
+  outline: none;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.key-input:focus { border-color: var(--gold); }
+.key-input::placeholder { color: var(--muted); font-style: italic; }
+
+.key-error {
+  font-size: 0.82rem;
+  color: #a04040;
+  font-style: italic;
+  margin-bottom: 0.8rem;
+  min-height: 1.2em;
+}
