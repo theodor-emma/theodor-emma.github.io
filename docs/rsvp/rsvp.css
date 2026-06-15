@@ -112,7 +112,13 @@ body {
   font-weight: 300;
   font-style: italic;
   color: var(--dark);
-  line-height: 1.2;
+  line-height: 1.25;
+}
+.rsvp-names .ampersand {
+  display: block;
+  color: var(--gold);
+  font-size: 0.8em;
+  margin: 0.1em 0;
 }
 
 .rsvp-date {
@@ -174,6 +180,24 @@ body {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* Equal-width buttons sized to the widest, centered */
+.btn-row.equal {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.btn-row.equal .btn { width: 100%; }
+
+@media (max-width: 420px) {
+  .btn-row.equal {
+    grid-auto-flow: row;
+    width: 100%;
+  }
 }
 
 /* ── Buttons ── */
