@@ -151,7 +151,28 @@
       margin-top: 0.1rem;
     }
 
-    .export-btns { display: flex; gap: 0.6rem; }
+    .admin-key-line {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .admin-key-line code {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: none;
+      color: var(--dark);
+      background: rgba(184,151,90,0.12);
+      border: 1px solid var(--gold-light);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      user-select: all;
+      cursor: text;
+    }
+
+    .export-btns { display: flex; gap: 0.6rem; align-items: center; }
 
     .add-guest-form {
       display: flex;
@@ -265,6 +286,7 @@
         <p class="dash-subtitle">Emma Chirlomez &amp; Theodor Moroianu · 7 August 2027</p>
       </div>
       <div class="export-btns">
+        <p class="admin-key-line">Admin key: <code id="admin-key-display"></code></p>
         <button id="export-csv"  class="btn">Export CSV</button>
         <button id="export-xlsx" class="btn btn-primary">Export XLSX</button>
       </div>
@@ -330,8 +352,6 @@
         defaultColDef: { sortable: true, filter: true, resizable: true },
         enableCellTextSelection: true,
         ensureDomOrder: true,
-        pagination: true,
-        paginationPageSize: 50,
       });
     }
 
@@ -373,6 +393,7 @@
       localStorage.setItem(LS_KEY, key);
       document.getElementById('login-wrap').hidden = true;
       document.getElementById('dashboard').hidden  = false;
+      document.getElementById('admin-key-display').textContent = key;
       renderStats(rows);
       initGrid(rows);
     }
