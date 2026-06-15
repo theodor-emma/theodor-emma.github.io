@@ -9,13 +9,19 @@ from typing import Optional
 from dotenv import load_dotenv
 import os
 import secrets
-import string
 
 load_dotenv()
 
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
 if not ADMIN_SECRET:
     raise RuntimeError("ADMIN_SECRET must be defined and non-empty")
+
+# Unambiguous alphabet — excludes easily confused characters (I, L, O, 0, 1)
+KEY_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+
+
+def gen_key(n: int = 8) -> str:
+    return "".join(secrets.choice(KEY_ALPHABET) for _ in range(n))
 
 app = FastAPI(title="Wedding RSVP API")
 
@@ -120,7 +126,7 @@ def create_invite(body: NewInviteRequest, admin_key: str = ""):
     if not name:
         raise HTTPException(status_code=400, detail="Name is required")
 
-    key = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+    key = gen_key()
     invites.insert_one({
         "key":                  key,
         "name":                 name,
