@@ -281,8 +281,9 @@
     <div id="grid" class="ag-theme-quartz"></div>
   </div>
 
+  <script src="api-base.js"></script>
   <script>
-    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://api-rsvp.theodor-emma.fr';
+    const API_BASE = window.API_BASE;
     let gridApi = null;
     let allRows = [];
 
