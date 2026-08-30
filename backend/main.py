@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone
-from typing import Optional, List
+from typing import Annotated, Optional, List
 from dotenv import load_dotenv
 import os
 import secrets
@@ -15,6 +15,7 @@ from invite_model import (
     INVITE_TYPES,
     LANGUAGES,
     MAX_ALLERGIES_LEN,
+    MAX_EMAIL_LEN,
     MAX_GUESTS,
     MAX_LABEL_LEN,
     MAX_NAME_LEN,
@@ -23,6 +24,7 @@ from invite_model import (
     TYPE_GUEST_RANGE,
     admin_invite,
     clamp_extra,
+    clean_email,
     clean_key,
     new_guest,
     new_invite,
@@ -35,6 +37,9 @@ load_dotenv()
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
 if not ADMIN_SECRET:
     raise RuntimeError("ADMIN_SECRET must be defined and non-empty")
+
+# How many invitations one paste may create
+MAX_BULK = 200
 
 app = FastAPI(title="Wedding RSVP API")
 
@@ -64,22 +69,31 @@ def mongo_error_handler(request: Request, exc: PyMongoError):
 
 # ── Models ────────────────────────────────────────────────────────────────────
 
+GuestName = Annotated[str, Field(max_length=MAX_NAME_LEN)]
+
+
 class NewInviteRequest(BaseModel):
     invite_type:          str = "single"
-    guest_names:          List[str] = Field(default_factory=list, max_length=MAX_GUESTS)
+    guest_names:          List[GuestName] = Field(default_factory=list, max_length=MAX_GUESTS)
     label:                str = Field("", max_length=MAX_LABEL_LEN)
     language:             str = "en"
     extra_guests_allowed: Optional[int] = None
+    email:                str = Field("", max_length=MAX_EMAIL_LEN)
     # Accepted for convenience (single guest, legacy callers / quick add)
     name:                 Optional[str] = Field(None, max_length=MAX_NAME_LEN)
 
 
 class EditInviteRequest(BaseModel):
     invite_type:          Optional[str] = None
-    guest_names:          Optional[List[str]] = Field(None, max_length=MAX_GUESTS)
+    guest_names:          Optional[List[GuestName]] = Field(None, max_length=MAX_GUESTS)
     label:                Optional[str] = Field(None, max_length=MAX_LABEL_LEN)
     language:             Optional[str] = None
     extra_guests_allowed: Optional[int] = None
+    email:                Optional[str] = Field(None, max_length=MAX_EMAIL_LEN)
+
+
+class BulkInviteRequest(BaseModel):
+    invites: List[NewInviteRequest] = Field(default_factory=list, max_length=MAX_BULK)
 
 
 class GuestAnswer(BaseModel):
@@ -88,6 +102,7 @@ class GuestAnswer(BaseModel):
     attending: bool = False
     diet:      str  = "none"
     allergies: str  = Field("", max_length=MAX_ALLERGIES_LEN)
+    choir:     bool = False
 
 
 class RSVPRequest(BaseModel):
@@ -153,6 +168,7 @@ def apply_rsvp(invite: dict, body: RSVPRequest) -> dict:
             guest["attending"] = bool(ans.attending)
             guest["diet"] = diet
             guest["allergies"] = allergies
+            guest["choir"] = bool(ans.choir) and bool(ans.attending)
             answered[guest["id"]] = guest
         else:
             # Someone the guests added themselves; only keep those who are coming
@@ -162,6 +178,7 @@ def apply_rsvp(invite: dict, body: RSVPRequest) -> dict:
             guest["attending"] = True
             guest["diet"] = diet
             guest["allergies"] = allergies
+            guest["choir"] = bool(ans.choir)
             extras.append(guest)
 
     if len(extras) > invite["extra_guests_allowed"]:
@@ -176,7 +193,7 @@ def apply_rsvp(invite: dict, body: RSVPRequest) -> dict:
             guests.append(answered[host["id"]])
         else:
             # Not submitted → treat as not attending, keep their details
-            guests.append({**host, "attending": False})
+            guests.append({**host, "attending": False, "choir": False})
     guests.extend(extras)
 
     return {
@@ -208,10 +225,8 @@ def list_responses(admin_key: str = ""):
     return [admin_invite(normalize_invite(doc)) for doc in invites.find({}, {"_id": 0})]
 
 
-@app.post("/admin/invites")
-def create_invite(body: NewInviteRequest, admin_key: str = ""):
-    require_admin(admin_key)
-
+def build_invite(body: NewInviteRequest) -> dict:
+    """Validate one creation request and shape the document it describes."""
     names = [n.strip() for n in (body.guest_names or []) if (n or "").strip()]
     if not names and body.name and body.name.strip():
         names = [body.name.strip()]
@@ -220,15 +235,45 @@ def create_invite(body: NewInviteRequest, admin_key: str = ""):
     extra = clamp_extra(invite_type, body.extra_guests_allowed)
     validate_shape(invite_type, names, extra)
 
-    invite = new_invite(
+    return new_invite(
         invite_type=invite_type,
         guest_names=names,
         label=body.label,
         extra_guests_allowed=extra,
         language=body.language,
+        email=body.email,
     )
+
+
+@app.post("/admin/invites")
+def create_invite(body: NewInviteRequest, admin_key: str = ""):
+    require_admin(admin_key)
+
+    invite = build_invite(body)
     invites.insert_one(dict(invite))
     return admin_invite(invite)
+
+
+@app.post("/admin/invites/bulk")
+def create_invites(body: BulkInviteRequest, admin_key: str = ""):
+    """Create a whole pasted list at once — all of it, or none of it."""
+    require_admin(admin_key)
+
+    if not body.invites:
+        raise HTTPException(status_code=400, detail="No invitations to add")
+
+    built, problems = [], []
+    for i, entry in enumerate(body.invites):
+        try:
+            built.append(build_invite(entry))
+        except HTTPException as exc:
+            problems.append(f"line {i + 1}: {exc.detail}")
+
+    if problems:
+        raise HTTPException(status_code=400, detail="; ".join(problems[:10]))
+
+    invites.insert_many([dict(inv) for inv in built])
+    return {"created": [admin_invite(inv) for inv in built]}
 
 
 @app.patch("/admin/invites/{key}")
@@ -264,6 +309,7 @@ def edit_invite(key: str, body: EditInviteRequest, admin_key: str = ""):
         "extra_guests_allowed": extra,
         "label":                (body.label if body.label is not None else invite["label"])[:MAX_LABEL_LEN],
         "language":             body.language if body.language in LANGUAGES else invite["language"],
+        "email":                clean_email(body.email) if body.email is not None else invite["email"],
     }
     invites.update_one({"key": invite["key"]}, {"$set": update})
     return admin_invite({**invite, **update})

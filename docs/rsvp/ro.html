@@ -79,7 +79,21 @@
       <p class="screen-title">La masă</p>
       <p class="dietary-intro">Spuneți-ne ce mănâncă fiecare, ca să pregătim farfuriile potrivite.</p>
       <div id="guest-details"></div>
-      <textarea id="notes" class="dietary-comments" placeholder="Comentarii sau mențiuni pentru organizatori…"></textarea>
+      <div class="btn-row">
+        <button id="btn-details-next" class="btn btn-primary">Continuați</button>
+      </div>
+    </section>
+
+    <!-- The choir, and anything the guests want to tell us -->
+    <section id="screen-notes" class="screen" hidden>
+      <p class="screen-title">Încă un lucru</p>
+      <div id="choir-block" hidden>
+        <p class="field-heading">Corul de la biserică</p>
+        <p class="dietary-intro">Pregătim un mic cor care va cânta în timpul ceremoniei — toată lumea este binevenită, fără experiență.</p>
+        <div id="choir-list" class="choir-list"></div>
+      </div>
+      <p class="field-heading">Altceva?</p>
+      <textarea id="notes" class="dietary-comments" placeholder="Comentarii sau mențiuni pentru noi…"></textarea>
       <div class="btn-row">
         <button id="btn-submit" class="btn btn-primary">Confirmați prezența</button>
       </div>
@@ -120,6 +134,9 @@
         allergiesPlaceholder: 'Alergii (nuci, fructe de mare…)',
         attendanceLabel:      'Prezență',
         noneAttending:        'Absent(ă)',
+        choirLabel:           'Dorește să cânte în cor',
+        choirYes:             'Da, aș dori să cânt în cor',
+        choirSummary:         'Corul bisericii',
         notesLabel:           'Comentarii',
         diet: {
           'none':       'Fără restricții',
