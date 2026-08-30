@@ -172,6 +172,11 @@ body {
   color: var(--muted);
 }
 
+/* Venue names are long; let them break rather than overflow on small screens */
+@media (max-width: 460px) {
+  .venue-link { white-space: normal; }
+}
+
 /* ── Countdown ── */
 .countdown {
   display: flex;

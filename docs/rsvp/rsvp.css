@@ -130,6 +130,32 @@ body {
   margin-top: 0.4rem;
 }
 
+.rsvp-venue {
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 0.4rem;
+  line-height: 1.45;
+}
+
+.rsvp-venue-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-style: normal;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-right: 0.45rem;
+}
+
+.rsvp-venue-link {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-light);
+  transition: color 0.2s, border-color 0.2s;
+}
+.rsvp-venue-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
 /* ── Divider ── */
 .divider {
   display: flex;
