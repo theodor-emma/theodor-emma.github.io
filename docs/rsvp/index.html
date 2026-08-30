@@ -34,7 +34,7 @@
     <section id="screen-key" class="screen" hidden>
       <p class="screen-title">Invitation code</p>
       <p class="key-prompt">Please enter the invite code from your invitation.</p>
-      <input id="key-input" class="key-input" type="text" placeholder="Your invite code" autocomplete="off" />
+      <input id="key-input" class="key-input" type="text" placeholder="Your invite code" autocomplete="off" autocapitalize="characters" spellcheck="false" />
       <p id="key-error" class="key-error"></p>
       <button id="key-submit" class="btn btn-primary">Continue</button>
     </section>
@@ -43,6 +43,7 @@
       <p class="loading-text">Loading…</p>
     </section>
 
+    <!-- One invitee, nobody to add: the plain accept / decline question -->
     <section id="screen-question" class="screen" hidden>
       <p class="screen-title">Invitation</p>
       <p class="screen-greeting"><span class="guest-name"></span>, will you be joining us?</p>
@@ -52,76 +53,33 @@
       </div>
     </section>
 
-    <section id="screen-plus-one" class="screen" hidden>
-      <p class="screen-title">Plus one</p>
-      <p class="screen-greeting">Will you be bringing a guest?</p>
-      <input id="plus-one-name" class="key-input" type="text" placeholder="Guest's name (optional)" />
-      <div class="btn-row equal">
-        <button id="btn-plus-one-yes" class="btn btn-primary">Yes, +1</button>
-        <button id="btn-plus-one-no"  class="btn btn-ghost">Just me</button>
+    <!-- Two or more people on one invitation -->
+    <section id="screen-attendance" class="screen" hidden>
+      <p class="screen-title">Your invitation</p>
+      <p class="screen-greeting"><span class="invite-label"></span></p>
+      <p class="dietary-intro">Please let us know who will be able to join us.</p>
+      <div id="guest-attendance" class="guest-rows"></div>
+      <button id="btn-add-guest" class="btn-link" type="button" hidden>+ Add someone</button>
+      <p id="attendance-error" class="key-error"></p>
+      <div class="btn-row">
+        <button id="btn-attendance-next" class="btn btn-primary">Continue</button>
       </div>
     </section>
 
-    <section id="screen-dietary" class="screen" hidden>
-      <p class="screen-title">Dietary restrictions</p>
-      <p class="dietary-intro">Please let us know of any dietary needs so we can make sure everyone is taken care of.</p>
-      <div id="dietary-checks" class="check-grid dietary-check-group">
-        <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
-      </div>
-      <input id="dietary-other" class="dietary-other" type="text" placeholder="Other allergies…" />
-
-      <div id="plus-one-dietary-section" hidden>
-        <p class="plus-one-dietary-label">Guest's dietary restrictions</p>
-        <div id="dietary-checks-plus-one" class="check-grid dietary-check-group">
-          <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
-        </div>
-        <input id="dietary-other-plus-one" class="dietary-other" type="text" placeholder="Other allergies…" />
-      </div>
-
-      <textarea id="dietary-comments" class="dietary-comments" placeholder="Extra comments or notes for the organisers…"></textarea>
+    <!-- Meal preference and allergies, per person -->
+    <section id="screen-details" class="screen" hidden>
+      <p class="screen-title">At the table</p>
+      <p class="dietary-intro">Tell us what everyone eats so we can make sure each plate is right.</p>
+      <div id="guest-details"></div>
+      <textarea id="notes" class="dietary-comments" placeholder="Extra comments or notes for the organisers…"></textarea>
       <div class="btn-row">
-        <button id="btn-dietary-submit" class="btn btn-primary">Confirm attendance</button>
+        <button id="btn-submit" class="btn btn-primary">Confirm attendance</button>
       </div>
     </section>
 
     <section id="screen-already" class="screen" hidden>
       <p class="screen-title">Your response</p>
-      <div class="summary">
-        <div class="summary-row">
-          <p class="summary-label">Attending</p>
-          <p class="summary-value" id="prev-attending"></p>
-        </div>
-        <div class="summary-row" id="prev-dietary-wrap" hidden>
-          <p class="summary-label">Dietary restrictions</p>
-          <p class="summary-value" id="prev-dietary"></p>
-        </div>
-        <div class="summary-row" id="prev-plus-one-wrap" hidden>
-          <p class="summary-label">+1</p>
-          <p class="summary-value" id="prev-plus-one"></p>
-        </div>
-        <div class="summary-row" id="prev-plus-one-dietary-wrap" hidden>
-          <p class="summary-label">Guest's dietary restrictions</p>
-          <p class="summary-value" id="prev-plus-one-dietary"></p>
-        </div>
-        <div class="summary-row" id="prev-comments-wrap" hidden>
-          <p class="summary-label">Comments</p>
-          <p class="summary-value" id="prev-comments"></p>
-        </div>
-      </div>
+      <div class="summary" id="summary"></div>
       <button class="btn btn-update">Update my response</button>
     </section>
 
@@ -138,21 +96,27 @@
     window.RSVP_CONFIG = {
       apiBase: window.API_BASE,
       labels: {
-        invalidKey:   'Invite code not found. Please check and try again.',
-        networkError: 'Unable to connect. Please try again later.',
-        submitError:  'Failed to submit your response. Please try again.',
-        yes:          'Yes, attending',
-        no:           'Not attending',
-        noDietary:    'No restrictions',
-        dietary: {
-          'vegetarian':  'Vegetarian',
-          'vegan':       'Vegan',
-          'gluten-free': 'Gluten-free',
-          'dairy-free':  'Dairy-free',
-          'nut-allergy': 'Nut allergy',
-          'halal':       'Halal',
-          'kosher':      'Kosher',
-          'no-pork':     'No pork',
+        invalidKey:           'Invite code not found. Please check and try again.',
+        networkError:         'Unable to connect. Please try again later.',
+        submitError:          'Failed to submit your response. Please try again.',
+        coming:               'Coming',
+        notComing:            "Can't come",
+        continueLabel:        'Continue',
+        sendResponse:         'Send response',
+        addGuest:             '+ Add someone',
+        removeGuest:          'Remove',
+        guestNamePlaceholder: "Guest's name",
+        yourGuest:            'Your guest',
+        needGuestName:        'Please enter a name for each additional guest.',
+        allergiesLabel:       'Allergies',
+        allergiesPlaceholder: 'Allergies (nuts, shellfish…)',
+        attendanceLabel:      'Attendance',
+        noneAttending:        'Not attending',
+        notesLabel:           'Comments',
+        diet: {
+          'none':       'No restrictions',
+          'vegetarian': 'Vegetarian',
+          'vegan':      'Vegan',
         },
       },
     };

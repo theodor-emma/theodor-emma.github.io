@@ -34,7 +34,7 @@
     <section id="screen-key" class="screen" hidden>
       <p class="screen-title">Cod de invitație</p>
       <p class="key-prompt">Vă rugăm să introduceți codul de pe invitația dumneavoastră.</p>
-      <input id="key-input" class="key-input" type="text" placeholder="Codul invitației" autocomplete="off" />
+      <input id="key-input" class="key-input" type="text" placeholder="Codul invitației" autocomplete="off" autocapitalize="characters" spellcheck="false" />
       <p id="key-error" class="key-error"></p>
       <button id="key-submit" class="btn btn-primary">Continuați</button>
     </section>
@@ -43,6 +43,7 @@
       <p class="loading-text">Se încarcă…</p>
     </section>
 
+    <!-- O singură persoană invitată, fără însoțitor -->
     <section id="screen-question" class="screen" hidden>
       <p class="screen-title">Invitație</p>
       <p class="screen-greeting"><span class="guest-name"></span>, veți putea fi alături de noi?</p>
@@ -52,76 +53,33 @@
       </div>
     </section>
 
-    <section id="screen-plus-one" class="screen" hidden>
-      <p class="screen-title">Însoțitor</p>
-      <p class="screen-greeting">Veți veni cu un însoțitor?</p>
-      <input id="plus-one-name" class="key-input" type="text" placeholder="Numele însoțitorului (opțional)" />
-      <div class="btn-row equal">
-        <button id="btn-plus-one-yes" class="btn btn-primary">Da, +1</button>
-        <button id="btn-plus-one-no"  class="btn btn-ghost">Singur(ă)</button>
+    <!-- Mai multe persoane pe aceeași invitație -->
+    <section id="screen-attendance" class="screen" hidden>
+      <p class="screen-title">Invitația dumneavoastră</p>
+      <p class="screen-greeting"><span class="invite-label"></span></p>
+      <p class="dietary-intro">Vă rugăm să ne spuneți cine va putea fi alături de noi.</p>
+      <div id="guest-attendance" class="guest-rows"></div>
+      <button id="btn-add-guest" class="btn-link" type="button" hidden>+ Adăugați o persoană</button>
+      <p id="attendance-error" class="key-error"></p>
+      <div class="btn-row">
+        <button id="btn-attendance-next" class="btn btn-primary">Continuați</button>
       </div>
     </section>
 
-    <section id="screen-dietary" class="screen" hidden>
-      <p class="screen-title">Preferințe alimentare</p>
-      <p class="dietary-intro">Vă rugăm să ne informați despre orice restricție alimentară pentru a ne asigura că toți invitații se simt bine.</p>
-      <div id="dietary-checks" class="check-grid dietary-check-group">
-        <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
-        <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
-      </div>
-      <input id="dietary-other" class="dietary-other" type="text" placeholder="Alte alergii…" />
-
-      <div id="plus-one-dietary-section" hidden>
-        <p class="plus-one-dietary-label">Preferințe alimentare însoțitor</p>
-        <div id="dietary-checks-plus-one" class="check-grid dietary-check-group">
-          <label class="check-item" data-key="vegetarian"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="vegan"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="gluten-free"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="dairy-free"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="nut-allergy"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="halal"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="kosher"><input type="checkbox" /><span></span></label>
-          <label class="check-item" data-key="no-pork"><input type="checkbox" /><span></span></label>
-        </div>
-        <input id="dietary-other-plus-one" class="dietary-other" type="text" placeholder="Alte alergii…" />
-      </div>
-
-      <textarea id="dietary-comments" class="dietary-comments" placeholder="Comentarii sau mențiuni pentru organizatori…"></textarea>
+    <!-- Preferințe culinare și alergii, pentru fiecare persoană -->
+    <section id="screen-details" class="screen" hidden>
+      <p class="screen-title">La masă</p>
+      <p class="dietary-intro">Spuneți-ne ce mănâncă fiecare, ca să pregătim farfuriile potrivite.</p>
+      <div id="guest-details"></div>
+      <textarea id="notes" class="dietary-comments" placeholder="Comentarii sau mențiuni pentru organizatori…"></textarea>
       <div class="btn-row">
-        <button id="btn-dietary-submit" class="btn btn-primary">Confirmați prezența</button>
+        <button id="btn-submit" class="btn btn-primary">Confirmați prezența</button>
       </div>
     </section>
 
     <section id="screen-already" class="screen" hidden>
-      <p class="screen-title">Răspunsul dvs.</p>
-      <div class="summary">
-        <div class="summary-row">
-          <p class="summary-label">Participare</p>
-          <p class="summary-value" id="prev-attending"></p>
-        </div>
-        <div class="summary-row" id="prev-dietary-wrap" hidden>
-          <p class="summary-label">Preferințe alimentare</p>
-          <p class="summary-value" id="prev-dietary"></p>
-        </div>
-        <div class="summary-row" id="prev-plus-one-wrap" hidden>
-          <p class="summary-label">Însoțitor</p>
-          <p class="summary-value" id="prev-plus-one"></p>
-        </div>
-        <div class="summary-row" id="prev-plus-one-dietary-wrap" hidden>
-          <p class="summary-label">Preferințe însoțitor</p>
-          <p class="summary-value" id="prev-plus-one-dietary"></p>
-        </div>
-        <div class="summary-row" id="prev-comments-wrap" hidden>
-          <p class="summary-label">Comentarii</p>
-          <p class="summary-value" id="prev-comments"></p>
-        </div>
-      </div>
+      <p class="screen-title">Răspunsul dumneavoastră</p>
+      <div class="summary" id="summary"></div>
       <button class="btn btn-update">Modificați răspunsul</button>
     </section>
 
@@ -138,21 +96,27 @@
     window.RSVP_CONFIG = {
       apiBase: window.API_BASE,
       labels: {
-        invalidKey:   'Cod de invitație negăsit. Vă rugăm verificați și încercați din nou.',
-        networkError: 'Nu se poate conecta. Vă rugăm încercați mai târziu.',
-        submitError:  'Trimiterea a eșuat. Vă rugăm încercați din nou.',
-        yes:          'Da, prezent(ă)',
-        no:           'Absent(ă)',
-        noDietary:    'Fără restricții',
-        dietary: {
-          'vegetarian':  'Vegetarian',
-          'vegan':       'Vegan',
-          'gluten-free': 'Fără gluten',
-          'dairy-free':  'Fără lactoză',
-          'nut-allergy': 'Alergie la nuci',
-          'halal':       'Halal',
-          'kosher':      'Kosher',
-          'no-pork':     'Fără porc',
+        invalidKey:           'Cod de invitație negăsit. Vă rugăm verificați și încercați din nou.',
+        networkError:         'Nu se poate conecta. Vă rugăm încercați mai târziu.',
+        submitError:          'Trimiterea a eșuat. Vă rugăm încercați din nou.',
+        coming:               'Prezent(ă)',
+        notComing:            'Absent(ă)',
+        continueLabel:        'Continuați',
+        sendResponse:         'Trimiteți răspunsul',
+        addGuest:             '+ Adăugați o persoană',
+        removeGuest:          'Ștergeți',
+        guestNamePlaceholder: 'Numele persoanei',
+        yourGuest:            'Însoțitorul dumneavoastră',
+        needGuestName:        'Vă rugăm să completați numele fiecărei persoane adăugate.',
+        allergiesLabel:       'Alergii',
+        allergiesPlaceholder: 'Alergii (nuci, fructe de mare…)',
+        attendanceLabel:      'Prezență',
+        noneAttending:        'Absent(ă)',
+        notesLabel:           'Comentarii',
+        diet: {
+          'none':       'Fără restricții',
+          'vegetarian': 'Vegetarian',
+          'vegan':      'Vegan',
         },
       },
     };

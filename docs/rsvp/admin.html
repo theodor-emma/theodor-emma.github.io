@@ -7,8 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="invite-card.css" />
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,6 +22,8 @@
       --gold-light: #d4b37a;
       --dark: #2c2416;
       --muted: #7a6e5f;
+      --red: #8b3a3a;
+      --green: #4a7c4e;
     }
 
     [hidden] { display: none !important; }
@@ -112,10 +118,16 @@
       padding: 0.6rem 1.4rem;
       cursor: pointer;
       transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
     }
     .btn:hover { background: var(--gold); color: var(--cream); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn:disabled:hover { background: transparent; color: var(--gold); }
     .btn-primary { background: var(--gold); color: var(--cream); }
     .btn-primary:hover { background: var(--gold-light); }
+    .btn-small { padding: 0.4rem 0.8rem; font-size: 0.55rem; letter-spacing: 0.12em; }
+    .btn-quiet { border-color: var(--gold-light); color: var(--muted); }
+    .btn-quiet:hover { background: var(--muted); color: var(--cream); border-color: var(--muted); }
 
     /* ── Dashboard ── */
     .dashboard {
@@ -151,6 +163,14 @@
       margin-top: 0.1rem;
     }
 
+    .header-tools {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
     .admin-key-line {
       font-family: 'Cinzel', serif;
       font-size: 0.55rem;
@@ -172,9 +192,8 @@
       cursor: text;
     }
 
-    .export-btns { display: flex; gap: 0.6rem; align-items: center; }
-
-    .add-guest-form {
+    /* ── Toolbar ── */
+    .toolbar {
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -182,30 +201,45 @@
       border-bottom: 1px solid rgba(184,151,90,0.2);
       background: var(--cream);
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
-    .add-guest-form input {
+
+    .field-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input[type="text"], input[type="number"], select, textarea {
       border: 1px solid var(--gold-light);
       background: var(--cream);
-      padding: 0.45rem 0.75rem;
+      padding: 0.4rem 0.6rem;
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 0.95rem;
       color: var(--dark);
       outline: none;
-      width: 240px;
       transition: border-color 0.2s;
     }
-    .add-guest-form input:focus { border-color: var(--gold); }
-    .add-guest-form input::placeholder { color: var(--muted); font-style: italic; }
-    .add-guest-msg {
-      font-size: 0.82rem;
+    input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+    input::placeholder, textarea::placeholder { color: var(--muted); font-style: italic; }
+
+    .base-url-input { width: 260px; }
+
+    .toolbar-msg {
+      font-size: 0.85rem;
       font-style: italic;
       color: var(--muted);
+      margin-left: auto;
+      text-align: right;
     }
-    .add-guest-msg.error { color: #a04040; }
+    .toolbar-msg.error { color: #a04040; }
 
+    /* ── Stats ── */
     .dash-stats {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.4rem;
       padding: 0.7rem 1.4rem;
       border-bottom: 1px solid rgba(184,151,90,0.2);
       background: var(--cream);
@@ -215,8 +249,8 @@
 
     .stat {
       font-family: 'Cinzel', serif;
-      font-size: 0.58rem;
-      letter-spacing: 0.15em;
+      font-size: 0.56rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--muted);
     }
@@ -230,25 +264,122 @@
       text-transform: none;
     }
 
-    #grid {
-      flex: 1;
-      min-height: 0;
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 1.4rem;
+      padding: 0 1.4rem;
+      border-bottom: 1px solid rgba(184,151,90,0.2);
+      background: var(--cream);
+      flex-shrink: 0;
     }
-
-    .delete-cell { display: flex; align-items: center; }
-    .row-delete-btn {
+    .tab {
       font-family: 'Cinzel', serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.12em;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #8b3a3a;
       background: transparent;
-      border: 1px solid #c99;
-      padding: 0.25rem 0.7rem;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      padding: 0.7rem 0.2rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab:hover { color: var(--gold); }
+    .tab.is-active { color: var(--dark); border-bottom-color: var(--gold); }
+
+    #grid { flex: 1; min-height: 0; }
+
+    /* ── Row actions ── */
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      height: 100%;
+    }
+    .row-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: transparent;
+      border: 1px solid var(--gold-light);
+      padding: 0.22rem 0.5rem;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
-    .row-delete-btn:hover { background: #8b3a3a; color: var(--cream); border-color: #8b3a3a; }
+    .row-btn:hover { background: var(--gold); color: var(--cream); border-color: var(--gold); }
+    .row-btn.danger { color: var(--red); border-color: #c99; }
+    .row-btn.danger:hover { background: var(--red); color: var(--cream); border-color: var(--red); }
+
+    /* ── Modal ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(44,36,22,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 50;
+    }
+
+    .modal {
+      background: var(--cream);
+      border: 1px solid var(--gold);
+      padding: 1.8rem;
+      width: 100%;
+      max-width: 460px;
+      max-height: 90dvh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .field {
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .field > span {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .field input, .field select, .field textarea { width: 100%; }
+    .field textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+    .field-hint {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    .modal-msg {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #a04040;
+      min-height: 1.2em;
+      margin-bottom: 0.6rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+    }
 
     /* AG Grid overrides to match site palette */
     .ag-theme-quartz {
@@ -285,92 +416,304 @@
         <p class="dash-title">RSVP Responses</p>
         <p class="dash-subtitle">Emma Chirlomez &amp; Theodor Moroianu · 7 August 2027</p>
       </div>
-      <div class="export-btns">
+      <div class="header-tools">
         <p class="admin-key-line">Admin key: <code id="admin-key-display"></code></p>
-        <button id="export-csv"  class="btn">Export CSV</button>
-        <button id="export-xlsx" class="btn btn-primary">Export XLSX</button>
+        <button id="refresh-btn" class="btn btn-quiet">Refresh</button>
+        <button id="export-csv"  class="btn">CSV</button>
+        <button id="export-xlsx" class="btn">XLSX</button>
+        <select id="pdf-lang" title="Invitation language for the PDF">
+          <option value="">PDF: guest's language</option>
+          <option value="en">PDF: English</option>
+          <option value="fr">PDF: Français</option>
+          <option value="ro">PDF: Română</option>
+        </select>
+        <button id="export-pdf" class="btn btn-primary">Invitation PDFs</button>
+        <button id="logout-btn" class="btn btn-quiet">Sign out</button>
       </div>
     </div>
 
-    <div class="add-guest-form">
-      <input id="new-guest-name" type="text" placeholder="Guest name…" />
-      <button id="add-guest-btn" class="btn btn-primary">Add Guest</button>
-      <span id="add-guest-msg" class="add-guest-msg"></span>
+    <div class="toolbar">
+      <button id="new-invite-btn" class="btn btn-primary">+ New invitation</button>
+      <span class="field-label">Public RSVP address</span>
+      <input id="base-url" class="base-url-input" type="text" placeholder="https://theodor-emma.fr/rsvp/" />
+      <span id="toolbar-msg" class="toolbar-msg"></span>
     </div>
 
     <div class="dash-stats" id="dash-stats"></div>
 
+    <div class="tabs">
+      <button class="tab is-active" data-tab="invites">Invitations</button>
+      <button class="tab" data-tab="guests">Guests</button>
+    </div>
+
     <div id="grid" class="ag-theme-quartz"></div>
   </div>
 
+  <!-- ── Create / edit invitation ── -->
+  <div class="modal-backdrop" id="invite-modal" hidden>
+    <div class="modal">
+      <p class="modal-title" id="modal-title">New invitation</p>
+
+      <label class="field">
+        <span>Invitation for</span>
+        <select id="f-type">
+          <option value="single">One person</option>
+          <option value="couple">A couple</option>
+          <option value="plus_one">One person + a guest of their choice</option>
+          <option value="family">A family / household</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Names — one per line</span>
+        <textarea id="f-names" placeholder="Marie Pichard" spellcheck="false"></textarea>
+        <span class="field-hint" id="f-names-hint"></span>
+      </label>
+
+      <label class="field">
+        <span>Addressed to (optional)</span>
+        <input id="f-label" type="text" placeholder="e.g. Famille Duval" />
+        <span class="field-hint">Shown on the invitation instead of the list of names.</span>
+      </label>
+
+      <label class="field" id="f-extra-field">
+        <span>People they may add themselves</span>
+        <input id="f-extra" type="number" min="0" max="8" step="1" value="0" />
+      </label>
+
+      <label class="field">
+        <span>Language</span>
+        <select id="f-language">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="ro">Română</option>
+        </select>
+      </label>
+
+      <p class="modal-msg" id="modal-msg"></p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn btn-quiet">Cancel</button>
+        <button id="modal-save" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script src="api-base.js"></script>
+  <script src="invite-pdf.js"></script>
   <script>
     const API_BASE = window.API_BASE;
-    let gridApi = null;
-    let allRows = [];
+    const LS_KEY   = 'wedding_admin_key';
+    const LS_BASE  = 'wedding_public_base';
 
-    // ── Column definitions ──────────────────────────────────────────────────
-    const colDefs = [
-      { field: 'name',                headerName: 'Name',              flex: 2, minWidth: 140 },
-      { field: 'attending',           headerName: 'Attending',         width: 110,
-        valueFormatter: p => p.value === true ? '✓ Yes' : p.value === false ? '✗ No' : '—',
-        cellStyle: p => ({ color: p.value === true ? '#4a7c4e' : p.value === false ? '#8b3a3a' : '#888' }) },
-      { field: 'dietary_restrictions',headerName: 'Dietary',           flex: 2, minWidth: 120 },
-      { field: 'plus_one',            headerName: '+1',                 width: 80,
-        valueFormatter: p => p.value === true ? '✓' : '—' },
-      { field: 'plus_one_name',       headerName: '+1 Name',           flex: 1, minWidth: 100 },
-      { field: 'plus_one_dietary',    headerName: '+1 Dietary',        flex: 1, minWidth: 100 },
-      { field: 'notes',               headerName: 'Comments',          flex: 2, minWidth: 120 },
-      { field: 'responded_at',        headerName: 'Responded',         width: 160,
-        valueFormatter: p => p.value ? new Date(p.value).toLocaleString() : '—' },
-      { field: 'key',                 headerName: 'Key',               width: 110 },
-      { headerName: 'Invite link',    flex: 3, minWidth: 220,
-        valueGetter: p => p.data ? rsvpUrlFor(p.data.key) : '' },
-      { headerName: '', width: 100, pinned: 'right', sortable: false, filter: false,
-        resizable: false, cellClass: 'delete-cell',
-        cellRenderer: p => {
-          const btn = document.createElement('button');
-          btn.className = 'row-delete-btn';
-          btn.textContent = 'Delete';
-          btn.addEventListener('click', () => deleteGuest(p.data));
-          return btn;
-        } },
-    ];
+    const TYPE_LABELS = {
+      single:   'One person',
+      couple:   'Couple',
+      plus_one: 'Person + 1',
+      family:   'Family',
+    };
+    const DIET_LABELS = { none: 'No restrictions', vegetarian: 'Vegetarian', vegan: 'Vegan' };
+    const LANG_LABELS = { en: 'English', fr: 'Français', ro: 'Română' };
+    // Names the host provides, and extra people the invitees may add
+    const TYPE_NAMES  = { single: [1, 1], couple: [2, 2], plus_one: [1, 1], family: [1, 12] };
+    const TYPE_EXTRA  = { single: [0, 0], couple: [0, 0], plus_one: [1, 1], family: [0, 8] };
 
-    // ── Invite link helper ──────────────────────────────────────────────────
-    function rsvpUrlFor(key) {
-      // admin is at /rsvp/admin.html → /rsvp/?invite=KEY
-      return new URL('./?invite=' + encodeURIComponent(key), window.location.href).toString();
+    let adminKey = '';
+    let allRows  = [];
+    let gridApi  = null;
+    let tab      = 'invites';
+    let modalMode = 'create';   // 'create' | 'edit'
+    let modalKey  = null;
+
+    // ── Small helpers ────────────────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+
+    function msg(text, isError) {
+      const el = $('toolbar-msg');
+      el.className = 'toolbar-msg' + (isError ? ' error' : '');
+      el.textContent = text || '';
     }
 
-    // ── AG Grid init ────────────────────────────────────────────────────────
-    function initGrid(rows) {
-      allRows = rows;
-      gridApi = agGrid.createGrid(document.getElementById('grid'), {
-        columnDefs: colDefs,
-        rowData: rows,
+    function defaultPublicBase() {
+      const h = window.location.hostname;
+      const isLocal = h === 'localhost' || h === '127.0.0.1' || !h
+        || /^10\./.test(h) || /^192\.168\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h);
+      // Printed invitations must point at the real site, never at a dev host
+      return isLocal ? 'https://theodor-emma.fr/rsvp/' : new URL('./', window.location.href).toString();
+    }
+
+    function publicBase() {
+      return localStorage.getItem(LS_BASE) || defaultPublicBase();
+    }
+
+    function inviteLink(row) {
+      return row ? window.InvitePDF.rsvpUrl(row.key, row.language, publicBase()) : '';
+    }
+
+    function hostGuests(row)  { return (row.guests || []).filter(g => g.source !== 'guest'); }
+    function addedGuests(row) { return (row.guests || []).filter(g => g.source === 'guest'); }
+
+    function statusOf(row) {
+      if (!row.responded)                return 'Awaiting';
+      if (row.attending_count > 0)       return 'Coming (' + row.attending_count + ')';
+      return 'Declined';
+    }
+
+    function guestSummary(row) {
+      return (row.guests || [])
+        .map(g => (g.name || '(unnamed)') + (g.source === 'guest' ? ' (+)' : ''))
+        .join(', ');
+    }
+
+    function mealSummary(row) {
+      const counts = {};
+      (row.guests || []).filter(g => g.attending && g.diet && g.diet !== 'none')
+        .forEach(g => { counts[g.diet] = (counts[g.diet] || 0) + 1; });
+      return Object.keys(counts).map(d => `${DIET_LABELS[d] || d} × ${counts[d]}`).join(', ');
+    }
+
+    function allergySummary(row) {
+      return (row.guests || [])
+        .filter(g => g.attending && g.allergies)
+        .map(g => `${g.name || '?'}: ${g.allergies}`)
+        .join(' · ');
+    }
+
+    function fmtDate(value) {
+      return value ? new Date(value).toLocaleString() : '—';
+    }
+
+    // ── Column definitions ───────────────────────────────────────────────────
+    const inviteCols = [
+      { colId: 'label',   headerName: 'Addressed to', field: 'display_label', flex: 2, minWidth: 170 },
+      { colId: 'type',    headerName: 'Type',    field: 'invite_type', width: 130,
+        valueFormatter: p => TYPE_LABELS[p.value] || p.value },
+      { colId: 'people',  headerName: 'People',  field: 'guests', flex: 2, minWidth: 180,
+        valueGetter: p => p.data ? guestSummary(p.data) : '' },
+      { colId: 'invited', headerName: 'Invited', field: 'invited_count', width: 100 },
+      { colId: 'mayadd',  headerName: 'May add', field: 'extra_guests_allowed', width: 100 },
+      { colId: 'status',  headerName: 'Status',  width: 130,
+        valueGetter: p => p.data ? statusOf(p.data) : '',
+        cellStyle: p => ({
+          color: !p.data ? null
+            : !p.data.responded ? '#888'
+            : p.data.attending_count > 0 ? 'var(--green)' : 'var(--red)',
+        }) },
+      { colId: 'coming',    headerName: 'Coming',    field: 'attending_count', width: 100 },
+      { colId: 'meals',     headerName: 'Meals',     width: 170, valueGetter: p => p.data ? mealSummary(p.data) : '' },
+      { colId: 'allergies', headerName: 'Allergies', width: 190, valueGetter: p => p.data ? allergySummary(p.data) : '' },
+      { colId: 'notes',     headerName: 'Comments',  field: 'notes', flex: 2, minWidth: 140 },
+      { colId: 'language',  headerName: 'Lang',      field: 'language', width: 100,
+        valueFormatter: p => LANG_LABELS[p.value] || p.value },
+      { colId: 'responded', headerName: 'Responded', field: 'responded_at', width: 160, valueFormatter: p => fmtDate(p.value) },
+      { colId: 'key',       headerName: 'Code',      field: 'key', width: 110 },
+      { colId: 'link',      headerName: 'Invite link', flex: 3, minWidth: 220, valueGetter: p => inviteLink(p.data) },
+      { colId: 'actions',   headerName: '', width: 240, pinned: 'right', sortable: false, filter: false,
+        resizable: false, cellRenderer: actionsRenderer },
+    ];
+
+    const guestCols = [
+      { colId: 'name',       headerName: 'Guest',      field: 'name', flex: 2, minWidth: 160 },
+      { colId: 'invitation', headerName: 'Invitation', field: 'invitation', flex: 2, minWidth: 160 },
+      { colId: 'type',       headerName: 'Type',       field: 'invite_type', width: 130,
+        valueFormatter: p => TYPE_LABELS[p.value] || p.value },
+      { colId: 'attending',  headerName: 'Attending',  field: 'attending', width: 120,
+        valueFormatter: p => p.value === true ? '✓ Yes' : p.value === false ? '✗ No' : '—',
+        cellStyle: p => ({ color: p.value === true ? 'var(--green)' : p.value === false ? 'var(--red)' : '#888' }) },
+      { colId: 'diet',       headerName: 'Meal',       field: 'diet', width: 150,
+        valueFormatter: p => DIET_LABELS[p.value] || p.value },
+      { colId: 'allergies',  headerName: 'Allergies',  field: 'allergies', flex: 2, minWidth: 150 },
+      { colId: 'source',     headerName: 'Added by',   field: 'source', width: 120,
+        valueFormatter: p => p.value === 'guest' ? 'The guests' : 'Us' },
+      { colId: 'notes',      headerName: 'Comments',   field: 'notes', flex: 2, minWidth: 140 },
+      { colId: 'responded',  headerName: 'Responded',  field: 'responded_at', width: 160, valueFormatter: p => fmtDate(p.value) },
+      { colId: 'key',        headerName: 'Code',       field: 'key', width: 110 },
+    ];
+
+    function actionsRenderer(p) {
+      const wrap = document.createElement('div');
+      wrap.className = 'row-actions';
+      if (!p.data) return wrap;
+
+      [
+        ['PDF',    'row-btn',        () => exportPdf([p.data])],
+        ['Link',   'row-btn',        () => copyLink(p.data)],
+        ['Edit',   'row-btn',        () => openModal('edit', p.data)],
+        ['Delete', 'row-btn danger', () => deleteInvite(p.data)],
+      ].forEach(([text, cls, onClick]) => {
+        const btn = document.createElement('button');
+        btn.className = cls;
+        btn.textContent = text;
+        btn.addEventListener('click', onClick);
+        wrap.appendChild(btn);
+      });
+      return wrap;
+    }
+
+    // ── Grid ─────────────────────────────────────────────────────────────────
+    function guestRowsFrom(rows) {
+      const out = [];
+      rows.forEach(row => (row.guests || []).forEach(g => out.push({
+        name:         g.name,
+        invitation:   row.display_label,
+        invite_type:  row.invite_type,
+        attending:    g.attending,
+        diet:         g.diet,
+        allergies:    g.allergies,
+        source:       g.source,
+        notes:        row.notes,
+        responded_at: row.responded_at,
+        key:          row.key,
+      })));
+      return out;
+    }
+
+    function currentRows() {
+      return tab === 'invites' ? allRows : guestRowsFrom(allRows);
+    }
+
+    function renderGrid() {
+      const options = {
+        columnDefs: tab === 'invites' ? inviteCols : guestCols,
+        rowData:    currentRows(),
         defaultColDef: { sortable: true, filter: true, resizable: true },
         enableCellTextSelection: true,
         ensureDomOrder: true,
-      });
+      };
+
+      if (gridApi) {
+        // Reuse the grid — creating a second one on the same element duplicates it
+        gridApi.setGridOption('columnDefs', options.columnDefs);
+        gridApi.setGridOption('rowData',    options.rowData);
+      } else {
+        gridApi = agGrid.createGrid($('grid'), options);
+      }
     }
 
-    // ── Stats bar ───────────────────────────────────────────────────────────
-    function renderStats(rows) {
-      const total     = rows.length;
-      const responded = rows.filter(r => r.attending !== null && r.attending !== undefined).length;
-      const attending = rows.filter(r => r.attending === true).length;
-      const declined  = rows.filter(r => r.attending === false).length;
-      const plusOnes  = rows.filter(r => r.plus_one === true).length;
-      const pending   = total - responded;
+    /** Invitations currently visible in the grid (respects filters and sort). */
+    function visibleInvitations() {
+      if (tab !== 'invites' || !gridApi) return allRows;
+      const out = [];
+      gridApi.forEachNodeAfterFilterAndSort(node => { if (node.data) out.push(node.data); });
+      return out;
+    }
 
-      document.getElementById('dash-stats').innerHTML = [
-        stat('Total invited', total),
-        stat('Attending',     attending),
-        stat('Declined',      declined),
-        stat('Pending',       pending),
-        stat('+1s',           plusOnes),
-        stat('Total guests',  attending + plusOnes),
+    // ── Stats ────────────────────────────────────────────────────────────────
+    function renderStats(rows) {
+      const guests    = rows.flatMap(r => r.guests || []);
+      const attending = guests.filter(g => g.attending === true);
+      const invited   = rows.reduce((n, r) => n + r.invited_count, 0);
+      const responded = rows.filter(r => r.responded).length;
+
+      $('dash-stats').innerHTML = [
+        stat('Invitations',  rows.length),
+        stat('People invited', invited),
+        stat('Responded',    responded),
+        stat('Awaiting',     rows.length - responded),
+        stat('Coming',       attending.length),
+        stat('Declined',     guests.filter(g => g.attending === false).length),
+        stat('Vegetarian',   attending.filter(g => g.diet === 'vegetarian').length),
+        stat('Vegan',        attending.filter(g => g.diet === 'vegan').length),
+        stat('Allergies',    attending.filter(g => g.allergies).length),
       ].join('');
     }
 
@@ -378,37 +721,46 @@
       return `<div class="stat">${label}<span>${value}</span></div>`;
     }
 
-    // ── Fetch ───────────────────────────────────────────────────────────────
-    async function loadData(key) {
-      const res = await fetch(API_BASE + '/admin/responses?admin_key=' + encodeURIComponent(key));
+    // ── Fetch ────────────────────────────────────────────────────────────────
+    async function api(path, options) {
+      const glue = path.includes('?') ? '&' : '?';
+      const res  = await fetch(API_BASE + path + glue + 'admin_key=' + encodeURIComponent(adminKey), options);
       if (res.status === 403) throw new Error('forbidden');
-      if (!res.ok)            throw new Error('server');
-      return res.json();
+      if (!res.ok) {
+        let detail = '';
+        try { detail = (await res.json()).detail || ''; } catch (_) {}
+        throw new Error(detail || 'server');
+      }
+      return res.status === 204 ? null : res.json();
     }
 
-    const LS_KEY = 'wedding_admin_key';
-
-    async function showDashboard(key) {
-      const rows = await loadData(key);
-      localStorage.setItem(LS_KEY, key);
-      document.getElementById('login-wrap').hidden = true;
-      document.getElementById('dashboard').hidden  = false;
-      document.getElementById('admin-key-display').textContent = key;
-      renderStats(rows);
-      initGrid(rows);
+    async function refresh() {
+      allRows = await api('/admin/responses');
+      renderStats(allRows);
+      renderGrid();
     }
 
     function errorMessage(e) {
       if (e.message === 'forbidden') return 'Invalid admin key.';
       if (e.message === 'server')    return 'Server error — is the backend (and MongoDB) running?';
-      return 'Unable to reach the server. Please check your connection.';
+      return e.message || 'Unable to reach the server. Please check your connection.';
     }
 
-    // ── Login ───────────────────────────────────────────────────────────────
+    // ── Login ────────────────────────────────────────────────────────────────
+    async function showDashboard(key) {
+      adminKey = key;
+      await refresh();
+      localStorage.setItem(LS_KEY, key);
+      $('login-wrap').hidden = true;
+      $('dashboard').hidden  = false;
+      $('admin-key-display').textContent = key;
+      $('base-url').value = publicBase();
+    }
+
     async function doLogin() {
-      const key    = document.getElementById('admin-key').value.trim();
-      const btn    = document.getElementById('login-btn');
-      const errEl  = document.getElementById('login-error');
+      const key   = $('admin-key').value.trim();
+      const btn   = $('login-btn');
+      const errEl = $('login-error');
       if (!key) return;
 
       errEl.textContent = '';
@@ -425,124 +777,260 @@
       }
     }
 
-    document.getElementById('login-btn').addEventListener('click', doLogin);
-    document.getElementById('admin-key').addEventListener('keydown', e => {
-      if (e.key === 'Enter') doLogin();
+    $('login-btn').addEventListener('click', doLogin);
+    $('admin-key').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+    $('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem(LS_KEY);
+      window.location.reload();
     });
 
-    // ── Auto-login from localStorage ────────────────────────────────────────
+    // ── Auto-login from localStorage ─────────────────────────────────────────
     const savedKey = localStorage.getItem(LS_KEY);
     if (savedKey) {
-      document.getElementById('admin-key').value = savedKey;
+      $('admin-key').value = savedKey;
       showDashboard(savedKey).catch(e => {
         if (e.message === 'forbidden') localStorage.removeItem(LS_KEY);
-        document.getElementById('login-error').textContent = errorMessage(e);
+        $('login-error').textContent = errorMessage(e);
       });
     }
 
-    // ── Add guest ───────────────────────────────────────────────────────────
-    async function doAddGuest() {
-      const nameInput = document.getElementById('new-guest-name');
-      const msgEl     = document.getElementById('add-guest-msg');
-      const name      = nameInput.value.trim();
-      if (!name) return;
+    // ── Public address setting ───────────────────────────────────────────────
+    $('base-url').addEventListener('change', () => {
+      const value = $('base-url').value.trim();
+      if (value) localStorage.setItem(LS_BASE, value);
+      else       localStorage.removeItem(LS_BASE);
+      $('base-url').value = publicBase();
+      renderGrid();
+      if (gridApi) gridApi.refreshCells({ force: true });
+      msg('Invitation links now point at ' + publicBase());
+    });
 
-      msgEl.className = 'add-guest-msg';
-      msgEl.textContent = 'Adding…';
+    // ── Tabs ─────────────────────────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tab = btn.dataset.tab;
+        document.querySelectorAll('.tab').forEach(b => b.classList.toggle('is-active', b === btn));
+        renderGrid();
+      });
+    });
 
+    $('refresh-btn').addEventListener('click', () => {
+      msg('Refreshing…');
+      refresh().then(() => msg('')).catch(e => msg(errorMessage(e), true));
+    });
+
+    // ── Create / edit invitation ─────────────────────────────────────────────
+    function namesHint(type) {
+      const [lo, hi] = TYPE_NAMES[type];
+      if (lo === hi) return lo === 1 ? 'One name.' : `${lo} names, one per line.`;
+      return `Between ${lo} and ${hi} names, one per line.`;
+    }
+
+    function syncModalType() {
+      const type = $('f-type').value;
+      const [elo, ehi] = TYPE_EXTRA[type];
+      $('f-names-hint').textContent = namesHint(type);
+      $('f-extra-field').hidden = elo === ehi;      // fixed by the type → nothing to choose
+      const extra = $('f-extra');
+      extra.min = elo;
+      extra.max = ehi;
+      if (elo === ehi) extra.value = elo;
+      else extra.value = Math.max(elo, Math.min(ehi, Number(extra.value) || 0));
+    }
+
+    function openModal(mode, row) {
+      modalMode = mode;
+      modalKey  = row ? row.key : null;
+
+      $('modal-title').textContent = mode === 'edit' ? 'Edit invitation' : 'New invitation';
+      $('modal-msg').textContent   = '';
+      $('f-type').value     = row ? row.invite_type : 'single';
+      $('f-names').value    = row ? hostGuests(row).map(g => g.name).join('\n') : '';
+      $('f-label').value    = row ? (row.label || '') : '';
+      $('f-language').value = row ? row.language : 'en';
+      $('f-extra').value    = row ? row.extra_guests_allowed : 0;
+      syncModalType();
+
+      $('invite-modal').hidden = false;
+      $('f-names').focus();
+    }
+
+    function closeModal() { $('invite-modal').hidden = true; }
+
+    $('new-invite-btn').addEventListener('click', () => openModal('create'));
+    $('modal-cancel').addEventListener('click', closeModal);
+    $('f-type').addEventListener('change', syncModalType);
+    $('invite-modal').addEventListener('click', e => {
+      if (e.target === $('invite-modal')) closeModal();
+    });
+    document.addEventListener('keydown', e => {
+      if ($('invite-modal').hidden) return;
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) saveModal();
+    });
+
+    async function saveModal() {
+      const type  = $('f-type').value;
+      const names = $('f-names').value.split('\n').map(n => n.trim()).filter(Boolean);
+      const [lo, hi] = TYPE_NAMES[type];
+      const errEl = $('modal-msg');
+
+      if (names.length < lo || names.length > hi) {
+        errEl.textContent = 'This kind of invitation needs ' + namesHint(type).toLowerCase();
+        return;
+      }
+
+      const body = {
+        invite_type:          type,
+        guest_names:          names,
+        label:                $('f-label').value.trim(),
+        language:             $('f-language').value,
+        extra_guests_allowed: Number($('f-extra').value) || 0,
+      };
+
+      const btn = $('modal-save');
+      btn.disabled = true;
       try {
-        const key = localStorage.getItem(LS_KEY) || '';
-        const res = await fetch(
-          API_BASE + '/admin/invites?admin_key=' + encodeURIComponent(key),
+        const saved = await api(
+          modalMode === 'edit' ? '/admin/invites/' + encodeURIComponent(modalKey) : '/admin/invites',
           {
-            method: 'POST',
+            method: modalMode === 'edit' ? 'PATCH' : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name }),
+            body: JSON.stringify(body),
           }
         );
-        if (!res.ok) throw new Error(res.status === 403 ? 'forbidden' : 'server');
-        const invite = await res.json();
-
-        // Fill defaults so the new row matches the shape of DB-loaded rows
-        const row = {
-          attending: null, dietary_restrictions: '', notes: '',
-          plus_one: false, plus_one_name: '', plus_one_dietary: '',
-          responded_at: null, ...invite,
-        };
-
-        // Add row to grid and raw data
-        allRows.push(row);
-        gridApi.applyTransaction({ add: [row] });
-        renderStats(allRows);
-
-        nameInput.value   = '';
-        msgEl.textContent = `Added — ${rsvpUrlFor(invite.key)}`;
+        closeModal();
+        await refresh();
+        msg(modalMode === 'edit'
+          ? `Updated ${saved.display_label}.`
+          : `Added ${saved.display_label} — ${inviteLink(saved)}`);
       } catch (e) {
-        msgEl.className   = 'add-guest-msg error';
-        msgEl.textContent = e.message === 'forbidden' ? 'Forbidden.' : 'Error adding guest.';
+        errEl.textContent = errorMessage(e);
+      } finally {
+        btn.disabled = false;
       }
     }
 
-    document.getElementById('add-guest-btn').addEventListener('click', doAddGuest);
-    document.getElementById('new-guest-name').addEventListener('keydown', e => {
-      if (e.key === 'Enter') doAddGuest();
-    });
+    $('modal-save').addEventListener('click', saveModal);
 
-    // ── Delete guest ────────────────────────────────────────────────────────
-    async function deleteGuest(row) {
+    // ── Delete ───────────────────────────────────────────────────────────────
+    async function deleteInvite(row) {
       if (!row) return;
-      if (!confirm(`Delete the invitation for "${row.name}"? This cannot be undone.`)) return;
+      if (!confirm(`Delete the invitation for "${row.display_label}"? This cannot be undone.`)) return;
 
-      const msgEl = document.getElementById('add-guest-msg');
       try {
-        const key = localStorage.getItem(LS_KEY) || '';
-        const res = await fetch(
-          API_BASE + '/admin/invites/' + encodeURIComponent(row.key) + '?admin_key=' + encodeURIComponent(key),
-          { method: 'DELETE' }
-        );
-        if (!res.ok) throw new Error(res.status === 403 ? 'forbidden' : 'server');
-
-        allRows = allRows.filter(r => r.key !== row.key);
-        gridApi.applyTransaction({ remove: [row] });
-        renderStats(allRows);
-
-        msgEl.className   = 'add-guest-msg';
-        msgEl.textContent = `Deleted ${row.name}.`;
+        await api('/admin/invites/' + encodeURIComponent(row.key), { method: 'DELETE' });
+        await refresh();
+        msg(`Deleted ${row.display_label}.`);
       } catch (e) {
-        msgEl.className   = 'add-guest-msg error';
-        msgEl.textContent = e.message === 'forbidden' ? 'Forbidden.' : 'Error deleting guest.';
+        msg(errorMessage(e), true);
       }
     }
 
-    // ── Export CSV ──────────────────────────────────────────────────────────
-    document.getElementById('export-csv').addEventListener('click', () => {
-      if (gridApi) gridApi.exportDataAsCsv({ fileName: 'rsvp-responses.csv' });
+    // ── Copy invite link ─────────────────────────────────────────────────────
+    async function copyLink(row) {
+      const link = inviteLink(row);
+      try {
+        await navigator.clipboard.writeText(link);
+        msg(`Copied ${link}`);
+      } catch (e) {
+        msg(link);
+      }
+    }
+
+    // ── Exports ──────────────────────────────────────────────────────────────
+    $('export-csv').addEventListener('click', () => {
+      if (gridApi) {
+        gridApi.exportDataAsCsv({
+          fileName: tab === 'invites' ? 'invitations.csv' : 'guests.csv',
+          columnKeys: (tab === 'invites' ? inviteCols : guestCols)
+            .map(c => c.colId)
+            .filter(id => id !== 'actions'),
+        });
+      }
     });
 
-    // ── Export XLSX ─────────────────────────────────────────────────────────
-    const EXPORT_COLS = [
-      ['Name',        r => r.name],
-      ['Attending',   r => r.attending === true ? 'Yes' : r.attending === false ? 'No' : ''],
-      ['Dietary',     r => r.dietary_restrictions || ''],
-      ['+1',          r => r.plus_one === true ? 'Yes' : 'No'],
-      ['+1 Name',     r => r.plus_one_name || ''],
-      ['+1 Dietary',  r => r.plus_one_dietary || ''],
-      ['Comments',    r => r.notes || ''],
-      ['Responded',   r => r.responded_at ? new Date(r.responded_at).toLocaleString() : ''],
-      ['Key',         r => r.key],
-      ['Invite link', r => rsvpUrlFor(r.key)],
+    const INVITE_EXPORT_COLS = [
+      ['Addressed to', r => r.display_label],
+      ['Type',         r => TYPE_LABELS[r.invite_type] || r.invite_type],
+      ['People',       r => guestSummary(r)],
+      ['Invited',      r => r.invited_count],
+      ['May add',      r => r.extra_guests_allowed],
+      ['Status',       r => statusOf(r)],
+      ['Coming',       r => r.attending_count],
+      ['Meals',        r => mealSummary(r)],
+      ['Allergies',    r => allergySummary(r)],
+      ['Comments',     r => r.notes || ''],
+      ['Language',     r => LANG_LABELS[r.language] || r.language],
+      ['Responded',    r => r.responded_at ? new Date(r.responded_at).toLocaleString() : ''],
+      ['Code',         r => r.key],
+      ['Invite link',  r => inviteLink(r)],
     ];
 
-    document.getElementById('export-xlsx').addEventListener('click', () => {
+    const GUEST_EXPORT_COLS = [
+      ['Guest',      g => g.name],
+      ['Invitation', g => g.invitation],
+      ['Type',       g => TYPE_LABELS[g.invite_type] || g.invite_type],
+      ['Attending',  g => g.attending === true ? 'Yes' : g.attending === false ? 'No' : ''],
+      ['Meal',       g => DIET_LABELS[g.diet] || g.diet],
+      ['Allergies',  g => g.allergies || ''],
+      ['Added by',   g => g.source === 'guest' ? 'The guests' : 'Us'],
+      ['Comments',   g => g.notes || ''],
+      ['Responded',  g => g.responded_at ? new Date(g.responded_at).toLocaleString() : ''],
+      ['Code',       g => g.key],
+    ];
+
+    function sheetFrom(cols, rows) {
+      return XLSX.utils.aoa_to_sheet([
+        cols.map(c => c[0]),
+        ...rows.map(row => cols.map(c => c[1](row))),
+      ]);
+    }
+
+    $('export-xlsx').addEventListener('click', () => {
       if (!allRows.length) return;
-      const data = [
-        EXPORT_COLS.map(c => c[0]),
-        ...allRows.map(row => EXPORT_COLS.map(c => c[1](row))),
-      ];
-      const ws = XLSX.utils.aoa_to_sheet(data);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Responses');
+      XLSX.utils.book_append_sheet(wb, sheetFrom(INVITE_EXPORT_COLS, allRows), 'Invitations');
+      XLSX.utils.book_append_sheet(wb, sheetFrom(GUEST_EXPORT_COLS, guestRowsFrom(allRows)), 'Guests');
       XLSX.writeFile(wb, 'rsvp-responses.xlsx');
+    });
+
+    // ── Invitation PDFs ──────────────────────────────────────────────────────
+    let pdfBusy = false;
+
+    async function exportPdf(invites) {
+      if (pdfBusy) return;               // one render at a time — they share a staging area
+      pdfBusy = true;
+      const btn = $('export-pdf');
+      btn.disabled = true;
+      try {
+        msg(invites.length === 1 ? 'Rendering invitation…' : `Rendering 0/${invites.length} invitations…`);
+        await window.InvitePDF.download(invites, {
+          lang:    $('pdf-lang').value || null,
+          baseUrl: publicBase(),
+          onProgress: (done, total) => {
+            if (total > 1) msg(`Rendering ${done}/${total} invitations…`);
+          },
+        });
+        msg(invites.length === 1
+          ? `Saved the invitation for ${invites[0].display_label}.`
+          : `Saved ${invites.length} invitations to one PDF.`);
+      } catch (e) {
+        msg('Could not build the PDF: ' + (e.message || e), true);
+      } finally {
+        pdfBusy = false;
+        btn.disabled = false;
+      }
+    }
+
+    $('export-pdf').addEventListener('click', () => {
+      const invites = visibleInvitations();
+      if (!invites.length) { msg('Nothing to export.', true); return; }
+      if (invites.length > 1 && !confirm(
+        `Build one PDF with ${invites.length} invitations (one per page)?\nThis can take a minute.`
+      )) return;
+      exportPdf(invites);
     });
   </script>
 </body>

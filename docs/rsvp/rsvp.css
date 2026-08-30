@@ -237,51 +237,171 @@ body {
   line-height: 1.5;
 }
 
-.check-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem 1.5rem;
+/* ── Attendance rows (one line per person on the invitation) ── */
+.guest-rows {
+  max-width: 400px;
+  margin: 0 auto 1rem;
   text-align: left;
-  max-width: 340px;
-  margin: 0 auto 1.4rem;
 }
 
-.check-item {
+.guest-row {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
+  gap: 0.7rem;
+  /* Gutter reserved for the remove button so every toggle lines up */
+  padding: 0.55rem 1.6rem 0.55rem 0;
+  border-bottom: 1px solid rgba(184, 151, 90, 0.25);
+}
+.guest-row:last-child { border-bottom: none; }
+
+.guest-row-name {
+  flex: 1;
+  font-size: 1.02rem;
+  font-style: italic;
+  color: var(--dark);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.guest-row-input {
+  flex: 1 1 150px;
+  min-width: 0;
+  border: 1px solid var(--gold-light);
+  background: var(--cream);
+  padding: 0.35rem 0.6rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.guest-row-input:focus { border-color: var(--gold); }
+.guest-row-input::placeholder { color: var(--muted); font-style: italic; }
+
+.guest-row-remove {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.guest-row-remove:hover { color: #a04040; }
+
+/* Segmented coming / not coming control */
+.toggle {
+  display: flex;
+  flex-shrink: 0;
+  border: 1px solid var(--gold-light);
+}
+
+.toggle-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.toggle-btn + .toggle-btn { border-left: 1px solid var(--gold-light); }
+.toggle-btn:hover { color: var(--gold); }
+.toggle-btn.is-on {
+  background: var(--gold);
+  color: var(--cream);
+}
+
+@media (max-width: 420px) {
+  .guest-row { flex-wrap: wrap; }
+  .toggle { margin-left: auto; }
+}
+
+/* Text-only button ("+ add someone") */
+.btn-link {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--gold);
+  cursor: pointer;
+  padding: 0.2rem 0;
+  margin-bottom: 1.2rem;
+  transition: border-color 0.2s;
+}
+.btn-link:hover { border-bottom-color: var(--gold-light); }
+
+/* ── Per-person meal block ── */
+.guest-detail {
+  max-width: 400px;
+  margin: 0 auto 1.6rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(184, 151, 90, 0.25);
+}
+.guest-detail:last-child { border-bottom: none; padding-bottom: 0; }
+
+.guest-detail-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.7rem;
+}
+
+.radio-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.92rem;
   color: var(--dark);
   cursor: pointer;
 }
 
-.check-item input[type="checkbox"] {
+.radio-item input[type="radio"] {
   appearance: none;
-  width: 14px; height: 14px;
+  width: 13px; height: 13px;
   border: 1px solid var(--gold-light);
+  border-radius: 50%;
   background: var(--cream);
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
-  transition: background 0.15s;
+  transition: border-color 0.15s;
 }
-.check-item input[type="checkbox"]:checked {
-  background: var(--gold);
-  border-color: var(--gold);
-}
-.check-item input[type="checkbox"]:checked::after {
+.radio-item input[type="radio"]:checked { border-color: var(--gold); }
+.radio-item input[type="radio"]:checked::after {
   content: '';
   position: absolute;
-  left: 3px; top: 1px;
-  width: 5px; height: 8px;
-  border: 1.5px solid var(--cream);
-  border-left: none; border-top: none;
-  transform: rotate(40deg);
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--gold);
 }
 
 .dietary-other {
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
   border: 1px solid var(--gold-light);
   background: var(--cream);
   padding: 0.55rem 0.8rem;
@@ -294,10 +414,11 @@ body {
 }
 .dietary-other::placeholder { color: var(--muted); font-style: italic; }
 .dietary-other:focus { border-color: var(--gold); }
+.guest-detail .dietary-other { margin-bottom: 0; }
 
 .dietary-comments {
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
   border: 1px solid var(--gold-light);
   background: var(--cream);
   padding: 0.55rem 0.8rem;
@@ -349,8 +470,9 @@ body {
 /* ── Summary (already responded + result screens) ── */
 .summary {
   margin: 1.2rem auto;
-  max-width: 340px;
+  max-width: 400px;
   width: 100%;
+  text-align: left;
 }
 
 .summary-row { margin-bottom: 0.9rem; }
@@ -368,16 +490,6 @@ body {
   font-size: clamp(0.95rem, 2.5vw, 1.15rem);
   font-style: italic;
   color: var(--dark);
-}
-
-/* ── +1 dietary section ── */
-.plus-one-dietary-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: 1.2rem 0 0.5rem;
 }
 
 /* ── Key screen (inline, no modal) ── */

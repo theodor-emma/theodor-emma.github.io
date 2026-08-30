@@ -3,10 +3,12 @@ Run once to insert example invite documents into MongoDB.
 Usage:  uv run seed_example.py
 """
 
-from pymongo import MongoClient
-from dotenv import load_dotenv
 import os
-import secrets
+
+from dotenv import load_dotenv
+from pymongo import MongoClient
+
+from invite_model import display_label, new_invite
 
 load_dotenv()
 
@@ -14,40 +16,32 @@ client = MongoClient(os.getenv("MONGODB_URI", "mongodb://localhost:27017"))
 invites = client[os.getenv("MONGODB_DB", "wedding")]["invites"]
 
 
-# Unambiguous alphabet — excludes easily confused characters (I, L, O, 0, 1)
-KEY_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
-
-
-def gen_key(n=8):
-    return "".join(secrets.choice(KEY_ALPHABET) for _ in range(n))
-
-
+# (invite_type, guest names, label, extra guests the invitees may add, language)
 examples = [
-    {"name": "Marie Pichard"},
-    {"name": "Jean & Claire Martin"},
-    {"name": "Alexandru Ionescu"},
+    ("single",   ["Marie Pichard"],                                   "",                 0, "fr"),
+    ("plus_one", ["Alexandru Ionescu"],                               "",                 1, "ro"),
+    ("couple",   ["Jean Martin", "Claire Martin"],                    "",                 0, "fr"),
+    ("family",   ["Paul Duval", "Sophie Duval", "Léa Duval"],         "Famille Duval",    2, "fr"),
+    ("family",   ["Andrei Popescu", "Ioana Popescu"],                 "Familia Popescu",  3, "ro"),
+    ("single",   ["Sarah Whitfield"],                                 "",                 0, "en"),
 ]
 
-for i in range(100):
-    examples.append({"name": f"Sample #{i}"})
+for i in range(20):
+    examples.append(("single", [f"Sample #{i}"], "", 0, "en"))
 
-for guest in examples:
-    key = gen_key()
-    invites.update_one(
-        {"name": guest["name"]},
-        {
-            "$setOnInsert": {
-                "key": key,
-                "name": guest["name"],
-                "attending": None,
-                "dietary_restrictions": "",
-                "notes": "",
-                "plus_one": False,
-                "plus_one_name": "",
-                "plus_one_dietary": "",
-                "responded_at": None,
-            }
-        },
-        upsert=True,
+for invite_type, names, label, extra, language in examples:
+    invite = new_invite(
+        invite_type=invite_type,
+        guest_names=names,
+        label=label,
+        extra_guests_allowed=extra,
+        language=language,
     )
-    print(f"{guest['name']:30s}  key: {key}")
+    # Idempotent on the first guest's name so re-running does not duplicate people
+    existing = invites.find_one({"guests.0.name": names[0]}) or invites.find_one({"name": names[0]})
+    if existing:
+        print(f"{display_label(invite):34s}  exists, skipped")
+        continue
+
+    invites.insert_one(dict(invite))
+    print(f"{display_label(invite):34s}  {invite_type:9s}  key: {invite['key']}")
