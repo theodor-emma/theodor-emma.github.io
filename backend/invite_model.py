@@ -8,7 +8,8 @@ One invitation (one code) covers one or more people:
   family    a household of named people, optionally allowed to add a few more
             (children, partners) themselves
 
-Every person carries their own answer: attending, diet and allergies.
+Every person carries their own answer: attending, diet, allergies and whether
+they would like to sing in the church choir.
 """
 
 from datetime import datetime, timezone
@@ -38,6 +39,7 @@ TYPE_EXTRA_RANGE = {
 }
 
 MAX_NAME_LEN = 80
+MAX_EMAIL_LEN = 160
 MAX_LABEL_LEN = 120
 MAX_ALLERGIES_LEN = 200
 MAX_NOTES_LEN = 1000
@@ -50,6 +52,17 @@ def gen_key(n: int = 8) -> str:
 
 def gen_guest_id() -> str:
     return "g" + secrets.token_hex(4)
+
+
+def clean_email(email: str) -> str:
+    """Trim an address; empty when it could not plausibly be one."""
+    value = (email or "").strip()
+    if not value:
+        return ""
+    local, _, domain = value.partition("@")
+    if not local or not domain or "." not in domain or any(c.isspace() for c in value):
+        return ""
+    return value[:MAX_EMAIL_LEN]
 
 
 def clean_key(key: str) -> str:
@@ -72,6 +85,7 @@ def new_guest(name: str, source: str = "host") -> dict:
         "attending": None,
         "diet":      "none",
         "allergies": "",
+        "choir":     False,
     }
 
 
@@ -92,6 +106,7 @@ def new_invite(
     extra_guests_allowed=None,
     language: str = "en",
     key: str = "",
+    email: str = "",
 ) -> dict:
     invite_type = invite_type if invite_type in INVITE_TYPES else "single"
     names = [n.strip() for n in guest_names if (n or "").strip()]
@@ -100,6 +115,7 @@ def new_invite(
         "invite_type":          invite_type,
         "label":                (label or "").strip()[:MAX_LABEL_LEN],
         "language":             language if language in LANGUAGES else "en",
+        "email":                clean_email(email),
         "guests":               [new_guest(n) for n in names],
         "extra_guests_allowed": clamp_extra(invite_type, extra_guests_allowed),
         "notes":                "",
@@ -144,6 +160,7 @@ def _normalize_guest(raw: dict, index: int) -> dict:
     diet = raw.get("diet")
     guest["diet"] = diet if diet in DIETS else "none"
     guest["allergies"] = str(raw.get("allergies") or "")[:MAX_ALLERGIES_LEN]
+    guest["choir"] = raw.get("choir") is True
     return guest
 
 
@@ -160,6 +177,7 @@ def normalize_invite(doc: dict) -> dict:
             "invite_type":          invite_type,
             "label":                str(doc.get("label") or "")[:MAX_LABEL_LEN],
             "language":             doc["language"] if doc.get("language") in LANGUAGES else "en",
+            "email":                clean_email(doc.get("email", "")),
             "guests":               [_normalize_guest(g, i) for i, g in enumerate(doc["guests"])],
             "extra_guests_allowed": clamp_extra(invite_type, doc.get("extra_guests_allowed")),
             "notes":                str(doc.get("notes") or "")[:MAX_NOTES_LEN],
@@ -192,6 +210,7 @@ def normalize_invite(doc: dict) -> dict:
         "invite_type":          "plus_one" if had_plus_one else "single",
         "label":                "",
         "language":             "en",
+        "email":                clean_email(doc.get("email", "")),
         "guests":               guests,
         "extra_guests_allowed": 1 if had_plus_one else 0,
         "notes":                str(doc.get("notes") or "")[:MAX_NOTES_LEN],
@@ -257,6 +276,7 @@ def public_invite(invite: dict) -> dict:
                 "attending": g["attending"],
                 "diet":      g["diet"],
                 "allergies": g["allergies"],
+                "choir":     g["choir"],
             }
             for g in invite["guests"]
         ],
@@ -273,6 +293,7 @@ def admin_invite(invite: dict) -> dict:
         "label":                invite["label"],
         "display_label":        display_label(invite),
         "language":             invite["language"],
+        "email":                invite["email"],
         "guests":               guests,
         "extra_guests_allowed": invite["extra_guests_allowed"],
         "notes":                invite["notes"],
@@ -280,6 +301,7 @@ def admin_invite(invite: dict) -> dict:
         "attending":            invite_attending(invite),
         "invited_count":        len([g for g in guests if g["source"] == "host"]),
         "attending_count":      len(attending),
+        "choir_count":          len([g for g in attending if g.get("choir")]),
         "responded_at":         _iso(invite.get("responded_at")),
         "created_at":           _iso(invite.get("created_at")),
     }

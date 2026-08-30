@@ -26,7 +26,7 @@ for arg in "$@"; do
 done
 
 echo "Syncing dependencies…"
-uv sync
+uv sync --no-dev
 
 echo "Starting uvicorn on ${HOST}:8000…"
 exec uv run uvicorn main:app \

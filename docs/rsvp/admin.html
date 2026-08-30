@@ -212,7 +212,9 @@
       color: var(--muted);
     }
 
-    input[type="text"], input[type="number"], select, textarea {
+    /* Every text-like input, so a new field type is never left unstyled.
+       :where() keeps this at element specificity, so .login-input still wins. */
+    input:where(:not([type="checkbox"], [type="radio"], [type="range"])), select, textarea {
       border: 1px solid var(--gold-light);
       background: var(--cream);
       padding: 0.4rem 0.6rem;
@@ -381,6 +383,73 @@
       gap: 0.6rem;
     }
 
+    .modal-wide { max-width: 720px; }
+
+    .bulk-text {
+      width: 100%;
+      min-height: 170px;
+      resize: vertical;
+      line-height: 1.5;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 0.82rem;
+    }
+
+    .bulk-legend {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: -0.4rem 0 1rem;
+    }
+    .bulk-legend code {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 0.78rem;
+      font-style: normal;
+      background: rgba(184,151,90,0.12);
+      padding: 0.05rem 0.3rem;
+      border-radius: 3px;
+    }
+
+    .bulk-preview {
+      max-height: 260px;
+      overflow-y: auto;
+      border: 1px solid var(--gold-light);
+      margin-bottom: 1rem;
+    }
+    .bulk-preview:empty { display: none; }
+
+    .bulk-row {
+      display: flex;
+      gap: 0.8rem;
+      align-items: baseline;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(184,151,90,0.18);
+    }
+    .bulk-row:last-child { border-bottom: none; }
+    .bulk-row.is-bad { color: var(--red); background: rgba(139,58,58,0.06); }
+
+    .bulk-row-type {
+      font-family: 'Cinzel', serif;
+      font-size: 0.52rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex: 0 0 90px;
+    }
+    .bulk-row-names { flex: 1; font-style: italic; }
+    .bulk-row-meta { color: var(--muted); font-size: 0.82rem; }
+
+    .bulk-summary {
+      font-family: 'Cinzel', serif;
+      font-size: 0.56rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.5rem 0.7rem;
+      background: rgba(184,151,90,0.08);
+    }
+
     /* AG Grid overrides to match site palette */
     .ag-theme-quartz {
       --ag-background-color: var(--cream);
@@ -434,6 +503,7 @@
 
     <div class="toolbar">
       <button id="new-invite-btn" class="btn btn-primary">+ New invitation</button>
+      <button id="bulk-btn" class="btn">+ Add a list</button>
       <span class="field-label">Public RSVP address</span>
       <input id="base-url" class="base-url-input" type="text" placeholder="https://theodor-emma.fr/rsvp/" />
       <span id="toolbar-msg" class="toolbar-msg"></span>
@@ -482,6 +552,12 @@
       </label>
 
       <label class="field">
+        <span>Email (optional)</span>
+        <input id="f-email" type="email" placeholder="marie@example.com" autocomplete="off" spellcheck="false" />
+        <span class="field-hint">Used by the Email button to open a pre-written message.</span>
+      </label>
+
+      <label class="field">
         <span>Language</span>
         <select id="f-language">
           <option value="en">English</option>
@@ -494,6 +570,37 @@
       <div class="modal-actions">
         <button id="modal-cancel" class="btn btn-quiet">Cancel</button>
         <button id="modal-save" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paste a guest list -->
+  <div class="modal-backdrop" id="bulk-modal" hidden>
+    <div class="modal modal-wide">
+      <p class="modal-title">Add a list of invitations</p>
+
+      <label class="field">
+        <span>One invitation per line</span>
+        <textarea id="bulk-text" class="bulk-text" spellcheck="false"
+          placeholder="Marie Pichard &lt;marie@example.com&gt;
+Jean Martin, Claire Martin [fr]
+Famille Duval: Paul Duval, Sophie Duval, Léa Duval +2 [fr]
+Alexandru Ionescu +1 [ro]"></textarea>
+      </label>
+
+      <p class="bulk-legend">
+        Names separated by commas · <code>Label:</code> in front to address the invitation ·
+        <code>+2</code> for guests they may add themselves · <code>[fr]</code> language ·
+        <code>&lt;name@host&gt;</code> email. One name is a single invitation, two a couple,
+        one name with <code>+1</code> a plus-one, anything else a family.
+      </p>
+
+      <div id="bulk-preview" class="bulk-preview"></div>
+
+      <p class="modal-msg" id="bulk-msg"></p>
+      <div class="modal-actions">
+        <button id="bulk-cancel" class="btn btn-quiet">Cancel</button>
+        <button id="bulk-save" class="btn btn-primary">Add them</button>
       </div>
     </div>
   </div>
@@ -516,6 +623,8 @@
     // Names the host provides, and extra people the invitees may add
     const TYPE_NAMES  = { single: [1, 1], couple: [2, 2], plus_one: [1, 1], family: [1, 12] };
     const TYPE_EXTRA  = { single: [0, 0], couple: [0, 0], plus_one: [1, 1], family: [0, 8] };
+
+    const STALE_API = 'The API looks like an older version of the backend — redeploy it (backend/refresh_backend.sh).';
 
     let adminKey = '';
     let allRows  = [];
@@ -571,6 +680,13 @@
       return Object.keys(counts).map(d => `${DIET_LABELS[d] || d} × ${counts[d]}`).join(', ');
     }
 
+    function choirSummary(row) {
+      return (row.guests || [])
+        .filter(g => g.attending && g.choir)
+        .map(g => g.name || '?')
+        .join(', ');
+    }
+
     function allergySummary(row) {
       return (row.guests || [])
         .filter(g => g.attending && g.allergies)
@@ -601,13 +717,15 @@
       { colId: 'coming',    headerName: 'Coming',    field: 'attending_count', width: 100 },
       { colId: 'meals',     headerName: 'Meals',     width: 170, valueGetter: p => p.data ? mealSummary(p.data) : '' },
       { colId: 'allergies', headerName: 'Allergies', width: 190, valueGetter: p => p.data ? allergySummary(p.data) : '' },
+      { colId: 'choir',     headerName: 'Choir',     width: 170, valueGetter: p => p.data ? choirSummary(p.data) : '' },
       { colId: 'notes',     headerName: 'Comments',  field: 'notes', flex: 2, minWidth: 140 },
+      { colId: 'email',     headerName: 'Email',     field: 'email', flex: 2, minWidth: 170 },
       { colId: 'language',  headerName: 'Lang',      field: 'language', width: 100,
         valueFormatter: p => LANG_LABELS[p.value] || p.value },
       { colId: 'responded', headerName: 'Responded', field: 'responded_at', width: 160, valueFormatter: p => fmtDate(p.value) },
       { colId: 'key',       headerName: 'Code',      field: 'key', width: 110 },
       { colId: 'link',      headerName: 'Invite link', flex: 3, minWidth: 220, valueGetter: p => inviteLink(p.data) },
-      { colId: 'actions',   headerName: '', width: 240, pinned: 'right', sortable: false, filter: false,
+      { colId: 'actions',   headerName: '', width: 300, pinned: 'right', sortable: false, filter: false,
         resizable: false, cellRenderer: actionsRenderer },
     ];
 
@@ -622,6 +740,8 @@
       { colId: 'diet',       headerName: 'Meal',       field: 'diet', width: 150,
         valueFormatter: p => DIET_LABELS[p.value] || p.value },
       { colId: 'allergies',  headerName: 'Allergies',  field: 'allergies', flex: 2, minWidth: 150 },
+      { colId: 'choir',      headerName: 'Choir',      field: 'choir', width: 100,
+        valueFormatter: p => p.value === true ? '♪ Yes' : '—' },
       { colId: 'source',     headerName: 'Added by',   field: 'source', width: 120,
         valueFormatter: p => p.value === 'guest' ? 'The guests' : 'Us' },
       { colId: 'notes',      headerName: 'Comments',   field: 'notes', flex: 2, minWidth: 140 },
@@ -635,14 +755,17 @@
       if (!p.data) return wrap;
 
       [
-        ['PDF',    'row-btn',        () => exportPdf([p.data])],
-        ['Link',   'row-btn',        () => copyLink(p.data)],
-        ['Edit',   'row-btn',        () => openModal('edit', p.data)],
-        ['Delete', 'row-btn danger', () => deleteInvite(p.data)],
-      ].forEach(([text, cls, onClick]) => {
+        ['PDF',    'row-btn',        () => exportPdf([p.data]),      false],
+        ['Email',  'row-btn',        () => emailInvite(p.data),      !p.data.email],
+        ['Link',   'row-btn',        () => copyLink(p.data),         false],
+        ['Edit',   'row-btn',        () => openModal('edit', p.data), false],
+        ['Delete', 'row-btn danger', () => deleteInvite(p.data),     false],
+      ].forEach(([text, cls, onClick, disabled]) => {
         const btn = document.createElement('button');
         btn.className = cls;
         btn.textContent = text;
+        btn.disabled = disabled;
+        if (disabled) btn.title = 'No email address on this invitation';
         btn.addEventListener('click', onClick);
         wrap.appendChild(btn);
       });
@@ -659,6 +782,7 @@
         attending:    g.attending,
         diet:         g.diet,
         allergies:    g.allergies,
+        choir:        g.choir === true,
         source:       g.source,
         notes:        row.notes,
         responded_at: row.responded_at,
@@ -701,7 +825,7 @@
     function renderStats(rows) {
       const guests    = rows.flatMap(r => r.guests || []);
       const attending = guests.filter(g => g.attending === true);
-      const invited   = rows.reduce((n, r) => n + r.invited_count, 0);
+      const invited   = rows.reduce((n, r) => n + (r.invited_count || 0), 0);
       const responded = rows.filter(r => r.responded).length;
 
       $('dash-stats').innerHTML = [
@@ -714,6 +838,7 @@
         stat('Vegetarian',   attending.filter(g => g.diet === 'vegetarian').length),
         stat('Vegan',        attending.filter(g => g.diet === 'vegan').length),
         stat('Allergies',    attending.filter(g => g.allergies).length),
+        stat('Choir',        attending.filter(g => g.choir).length),
       ].join('');
     }
 
@@ -722,28 +847,72 @@
     }
 
     // ── Fetch ────────────────────────────────────────────────────────────────
+
+    /**
+     * FastAPI reports errors as {detail: "…"}, but validation failures as
+     * {detail: [{loc, msg}, …]} — an array, which stringifies to
+     * "[object Object]" if handed straight to Error(). Flatten both.
+     */
+    function describeError(status, body) {
+      const detail = body && body.detail;
+      if (typeof detail === 'string' && detail.trim()) return detail.trim();
+      if (Array.isArray(detail) && detail.length) {
+        return detail.map(d => {
+          const field = Array.isArray(d.loc) ? d.loc.filter(p => p !== 'body').join('.') : '';
+          const msg   = d.msg || 'invalid value';
+          return field ? field + ': ' + msg : msg;
+        }).join('; ');
+      }
+      if (detail) {
+        try { return JSON.stringify(detail); } catch (_) { /* fall through */ }
+      }
+      return 'HTTP ' + status;
+    }
+
+    function apiError(message, status) {
+      return Object.assign(new Error(message), { status: status });
+    }
+
     async function api(path, options) {
       const glue = path.includes('?') ? '&' : '?';
-      const res  = await fetch(API_BASE + path + glue + 'admin_key=' + encodeURIComponent(adminKey), options);
-      if (res.status === 403) throw new Error('forbidden');
+      const url  = API_BASE + path + glue + 'admin_key=' + encodeURIComponent(adminKey);
+
+      let res;
+      try {
+        res = await fetch(url, options);
+      } catch (e) {
+        throw apiError('unreachable', 0);          // DNS, connection refused, CORS…
+      }
+
+      if (res.status === 403) throw apiError('forbidden', 403);
       if (!res.ok) {
-        let detail = '';
-        try { detail = (await res.json()).detail || ''; } catch (_) {}
-        throw new Error(detail || 'server');
+        let body = null;
+        try { body = await res.json(); } catch (_) { /* empty or non-JSON body */ }
+        throw apiError(describeError(res.status, body), res.status);
       }
       return res.status === 204 ? null : res.json();
+    }
+
+    /** Invitations from an older API have no guest list — the dashboard needs one. */
+    function looksOutdated(rows) {
+      return rows.some(r => !Array.isArray(r.guests) || !r.invite_type);
     }
 
     async function refresh() {
       allRows = await api('/admin/responses');
       renderStats(allRows);
       renderGrid();
+      if (looksOutdated(allRows)) msg(STALE_API, true);
     }
 
     function errorMessage(e) {
       if (e.message === 'forbidden') return 'Invalid admin key.';
-      if (e.message === 'server')    return 'Server error — is the backend (and MongoDB) running?';
-      return e.message || 'Unable to reach the server. Please check your connection.';
+      if (e.status === 0)   return 'Cannot reach the API at ' + API_BASE + ' — is the backend running?';
+      if (e.status === 405) return 'This backend has no such endpoint (HTTP 405). ' + STALE_API;
+      if (e.status === 422) return 'The backend rejected the request — ' + e.message + '. ' + STALE_API;
+      if (e.status === 503) return e.message + ' — is MongoDB running?';
+      if (e.status >= 500)  return 'Server error (' + e.message + ') — check the backend logs.';
+      return e.message || 'Something went wrong.';
     }
 
     // ── Login ────────────────────────────────────────────────────────────────
@@ -821,14 +990,19 @@
     });
 
     // ── Create / edit invitation ─────────────────────────────────────────────
+    /** Guards against a row whose type this page does not know (e.g. from an older API). */
+    function safeType(value) {
+      return TYPE_NAMES[value] ? value : 'single';
+    }
+
     function namesHint(type) {
-      const [lo, hi] = TYPE_NAMES[type];
+      const [lo, hi] = TYPE_NAMES[safeType(type)];
       if (lo === hi) return lo === 1 ? 'One name.' : `${lo} names, one per line.`;
       return `Between ${lo} and ${hi} names, one per line.`;
     }
 
     function syncModalType() {
-      const type = $('f-type').value;
+      const type = safeType($('f-type').value);
       const [elo, ehi] = TYPE_EXTRA[type];
       $('f-names-hint').textContent = namesHint(type);
       $('f-extra-field').hidden = elo === ehi;      // fixed by the type → nothing to choose
@@ -845,11 +1019,12 @@
 
       $('modal-title').textContent = mode === 'edit' ? 'Edit invitation' : 'New invitation';
       $('modal-msg').textContent   = '';
-      $('f-type').value     = row ? row.invite_type : 'single';
+      $('f-type').value     = safeType(row && row.invite_type);
       $('f-names').value    = row ? hostGuests(row).map(g => g.name).join('\n') : '';
       $('f-label').value    = row ? (row.label || '') : '';
-      $('f-language').value = row ? row.language : 'en';
-      $('f-extra').value    = row ? row.extra_guests_allowed : 0;
+      $('f-email').value    = row ? (row.email || '') : '';
+      $('f-language').value = (row && LANG_LABELS[row.language]) ? row.language : 'en';
+      $('f-extra').value    = (row && row.extra_guests_allowed) || 0;
       syncModalType();
 
       $('invite-modal').hidden = false;
@@ -871,7 +1046,7 @@
     });
 
     async function saveModal() {
-      const type  = $('f-type').value;
+      const type  = safeType($('f-type').value);
       const names = $('f-names').value.split('\n').map(n => n.trim()).filter(Boolean);
       const [lo, hi] = TYPE_NAMES[type];
       const errEl = $('modal-msg');
@@ -885,6 +1060,7 @@
         invite_type:          type,
         guest_names:          names,
         label:                $('f-label').value.trim(),
+        email:                $('f-email').value.trim(),
         language:             $('f-language').value,
         extra_guests_allowed: Number($('f-extra').value) || 0,
       };
@@ -939,6 +1115,192 @@
       }
     }
 
+    // ── Email ────────────────────────────────────────────────────────────────
+    /** Hands the draft to the mail client. Its own function so tests can watch it. */
+    function openMailto(url) { window.location.href = url; }
+
+    /**
+     * mailto: cannot carry an attachment — no mail client accepts one from a
+     * link. So we save the PDF and open a message that stands on its own.
+     */
+    async function emailInvite(row) {
+      if (!row || !row.email) {
+        msg('This invitation has no email address — add one with Edit.', true);
+        return;
+      }
+
+      await exportPdf([row]);
+
+      const draft = window.InvitePDF.emailDraft(row, {
+        lang:    $('pdf-lang').value || null,
+        baseUrl: publicBase(),
+      });
+      openMailto(draft.mailto);
+      msg(`Draft to ${row.email} opened — attach the PDF that was just saved.`);
+    }
+
+    // ── Adding a pasted list ─────────────────────────────────────────────────
+    /**
+     * One line per invitation:
+     *   Famille Duval: Paul Duval, Sophie Duval +2 [fr] <duval@example.com>
+     * Everything but the names is optional.
+     */
+    function parseBulkLine(line) {
+      let rest = line.trim();
+      const entry = { label: '', names: [], extra: 0, language: 'en', email: '', error: '' };
+      if (!rest || rest.startsWith('#')) return null;          // blank or a comment
+
+      const email = rest.match(/<([^>]*)>/);
+      if (email) {
+        entry.email = email[1].trim();
+        rest = rest.replace(email[0], ' ');
+      }
+
+      const lang = rest.match(/\[([a-zA-Z]{2})\]/);
+      if (lang) {
+        entry.language = lang[1].toLowerCase();
+        rest = rest.replace(lang[0], ' ');
+        if (!LANG_LABELS[entry.language]) entry.error = `unknown language "${lang[1]}"`;
+      }
+
+      const extra = rest.match(/\+\s*(\d+)/);
+      if (extra) {
+        entry.extra = Number(extra[1]);
+        rest = rest.replace(extra[0], ' ');
+      }
+
+      const colon = rest.indexOf(':');
+      if (colon > -1) {
+        entry.label = rest.slice(0, colon).trim();
+        rest = rest.slice(colon + 1);
+      }
+
+      entry.names = rest.split(',').map(n => n.trim().replace(/\s+/g, ' ')).filter(Boolean);
+
+      if (!entry.names.length) entry.error = entry.error || 'no name';
+      if (entry.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(entry.email)) {
+        entry.error = entry.error || `"${entry.email}" is not an email address`;
+      }
+
+      // Shape follows the head count, the way the invitation types are defined
+      if (entry.names.length === 1 && entry.extra === 1)      entry.invite_type = 'plus_one';
+      else if (entry.names.length === 1 && entry.extra === 0) entry.invite_type = 'single';
+      else if (entry.names.length === 2 && entry.extra === 0) entry.invite_type = 'couple';
+      else                                                    entry.invite_type = 'family';
+
+      const [lo, hi] = TYPE_NAMES[entry.invite_type];
+      if (entry.names.length > hi) entry.error = entry.error || `too many names (max ${hi})`;
+      const [, ehi] = TYPE_EXTRA[entry.invite_type];
+      if (entry.extra > ehi) entry.error = entry.error || `at most +${ehi} extra guests`;
+
+      return entry;
+    }
+
+    function parseBulk(text) {
+      return text.split('\n').map(parseBulkLine).filter(Boolean);
+    }
+
+    function renderBulkPreview() {
+      const entries = parseBulk($('bulk-text').value);
+      const host = $('bulk-preview');
+      host.innerHTML = '';
+
+      const bad = entries.filter(e => e.error).length;
+      const people = entries.reduce((n, e) => n + e.names.length, 0);
+
+      if (entries.length) {
+        const summary = document.createElement('p');
+        summary.className = 'bulk-summary';
+        summary.textContent = bad
+          ? `${entries.length} lines · ${bad} to fix`
+          : `${entries.length} invitations · ${people} people named`;
+        host.appendChild(summary);
+      }
+
+      entries.forEach(entry => {
+        const row = document.createElement('div');
+        row.className = 'bulk-row' + (entry.error ? ' is-bad' : '');
+
+        const type = document.createElement('span');
+        type.className = 'bulk-row-type';
+        type.textContent = entry.error ? '—' : TYPE_LABELS[entry.invite_type];
+
+        const names = document.createElement('span');
+        names.className = 'bulk-row-names';
+        names.textContent = entry.error
+          ? entry.error
+          : (entry.label ? entry.label + ' — ' : '') + entry.names.join(', ');
+
+        const meta = document.createElement('span');
+        meta.className = 'bulk-row-meta';
+        meta.textContent = [
+          entry.extra ? '+' + entry.extra : '',
+          LANG_LABELS[entry.language] || entry.language,
+          entry.email,
+        ].filter(Boolean).join(' · ');
+
+        row.append(type, names, meta);
+        host.appendChild(row);
+      });
+
+      $('bulk-save').disabled = !entries.length || bad > 0;
+      return entries;
+    }
+
+    function openBulk() {
+      $('bulk-msg').textContent = '';
+      $('bulk-modal').hidden = false;
+      renderBulkPreview();
+      $('bulk-text').focus();
+    }
+
+    function closeBulk() { $('bulk-modal').hidden = true; }
+
+    async function saveBulk() {
+      const entries = renderBulkPreview();
+      if (!entries.length || entries.some(e => e.error)) return;
+
+      const btn = $('bulk-save');
+      btn.disabled = true;
+      try {
+        const res = await api('/admin/invites/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            invites: entries.map(e => ({
+              invite_type:          e.invite_type,
+              guest_names:          e.names,
+              label:                e.label,
+              language:             e.language,
+              email:                e.email,
+              extra_guests_allowed: e.extra,
+            })),
+          }),
+        });
+        closeBulk();
+        $('bulk-text').value = '';
+        await refresh();
+        msg(`Added ${res.created.length} invitations.`);
+      } catch (e) {
+        $('bulk-msg').textContent = errorMessage(e);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    $('bulk-btn').addEventListener('click', openBulk);
+    $('bulk-cancel').addEventListener('click', closeBulk);
+    $('bulk-save').addEventListener('click', saveBulk);
+    $('bulk-text').addEventListener('input', renderBulkPreview);
+    $('bulk-modal').addEventListener('click', e => {
+      if (e.target === $('bulk-modal')) closeBulk();
+    });
+    document.addEventListener('keydown', e => {
+      if ($('bulk-modal').hidden) return;
+      if (e.key === 'Escape') closeBulk();
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) saveBulk();
+    });
+
     // ── Exports ──────────────────────────────────────────────────────────────
     $('export-csv').addEventListener('click', () => {
       if (gridApi) {
@@ -961,7 +1323,9 @@
       ['Coming',       r => r.attending_count],
       ['Meals',        r => mealSummary(r)],
       ['Allergies',    r => allergySummary(r)],
+      ['Choir',        r => choirSummary(r)],
       ['Comments',     r => r.notes || ''],
+      ['Email',        r => r.email || ''],
       ['Language',     r => LANG_LABELS[r.language] || r.language],
       ['Responded',    r => r.responded_at ? new Date(r.responded_at).toLocaleString() : ''],
       ['Code',         r => r.key],
@@ -975,6 +1339,7 @@
       ['Attending',  g => g.attending === true ? 'Yes' : g.attending === false ? 'No' : ''],
       ['Meal',       g => DIET_LABELS[g.diet] || g.diet],
       ['Allergies',  g => g.allergies || ''],
+      ['Choir',      g => g.choir ? 'Yes' : ''],
       ['Added by',   g => g.source === 'guest' ? 'The guests' : 'Us'],
       ['Comments',   g => g.notes || ''],
       ['Responded',  g => g.responded_at ? new Date(g.responded_at).toLocaleString() : ''],

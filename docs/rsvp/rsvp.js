@@ -80,6 +80,7 @@ async function submitRSVP() {
               attending: !!a.attending,
               diet:      a.attending ? a.diet : 'none',
               allergies: a.attending ? a.allergies.trim() : '',
+              choir:     a.attending ? !!a.choir : false,
             })),
         }),
       }
@@ -107,6 +108,7 @@ function adoptInvite(data) {
     attending: g.attending === null ? (g.source === 'host' && fresh) : !!g.attending,
     diet:      DIETS.includes(g.diet) ? g.diet : 'none',
     allergies: g.allergies || '',
+    choir:     g.choir === true,
   }));
 
   // A plus-one invitation always offers its companion row up front
@@ -124,7 +126,7 @@ function adoptInvite(data) {
 }
 
 function blankExtra() {
-  return { id: null, name: '', isExtra: true, attending: false, diet: 'none', allergies: '' };
+  return { id: null, name: '', isExtra: true, attending: false, diet: 'none', allergies: '', choir: false };
 }
 
 function extraCount() {
@@ -234,10 +236,7 @@ function attendingAnswers() {
 
 function updateNextLabel() {
   const btn = document.getElementById('btn-attendance-next');
-  if (!btn) return;
-  btn.textContent = attendingAnswers().length
-    ? t('continueLabel', 'Continue')
-    : t('sendResponse', 'Send response');
+  if (btn) btn.textContent = t('continueLabel', 'Continue');
 }
 
 // ── Details (diet + allergies) screen ─────────────────────────────────────────
@@ -313,6 +312,7 @@ function renderSummary() {
       if (g.attending) {
         if (g.diet && g.diet !== 'none') bits.push(t('diet.' + g.diet, g.diet));
         if (g.allergies) bits.push(t('allergiesLabel', 'Allergies') + ': ' + g.allergies);
+        if (g.choir) bits.push(t('choirLabel', 'Would like to sing in the choir'));
       }
       host.appendChild(summaryRow(g.name || t('yourGuest', 'Your guest'), bits.join(' · ')));
     });
@@ -354,6 +354,45 @@ function goToDetails() {
   showScreen('screen-details');
 }
 
+/** Last step: the choir sign-up (when anyone is coming) and a free-text note. */
+const CONFIRM_LABEL = (document.getElementById('btn-submit') || {}).textContent || '';
+
+function goToNotes() {
+  const attendees = attendingAnswers();
+  const block = document.getElementById('choir-block');
+  const list  = document.getElementById('choir-list');
+
+  if (block && list) {
+    block.hidden = attendees.length === 0;
+    list.innerHTML = '';
+    attendees.forEach(answer => {
+      const label = document.createElement('label');
+      label.className = 'choir-item';
+
+      const box = document.createElement('input');
+      box.type    = 'checkbox';
+      box.checked = !!answer.choir;
+      box.addEventListener('change', () => { answer.choir = box.checked; });
+
+      const text = document.createElement('span');
+      // One invitee needs no name — just the question
+      text.textContent = attendees.length === 1
+        ? t('choirYes', 'Yes, I would like to sing in the choir')
+        : (answer.name.trim() || t('yourGuest', 'Your guest'));
+
+      label.append(box, text);
+      list.appendChild(label);
+    });
+  }
+
+  const submit = document.getElementById('btn-submit');
+  if (submit) {
+    submit.textContent = attendees.length ? CONFIRM_LABEL : t('sendResponse', 'Send response');
+  }
+
+  showScreen('screen-notes');
+}
+
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -390,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btn-no').addEventListener('click', () => {
     state.answers[0].attending = false;
-    submitRSVP();
+    goToNotes();
   });
 
   // ── Group invitation: who is coming ──
@@ -410,10 +449,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (err) err.textContent = '';
 
     if (attendingAnswers().length) goToDetails();
-    else                           submitRSVP();
+    else                           goToNotes();
   });
 
-  // ── Details: submit ──
+  // ── Meals → choir and comments ──
+  document.getElementById('btn-details-next').addEventListener('click', goToNotes);
+
+  // ── Last screen: submit ──
   document.getElementById('btn-submit').addEventListener('click', submitRSVP);
 
   // ── Update an existing response ──

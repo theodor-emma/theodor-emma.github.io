@@ -13,8 +13,8 @@
   --muted: #7a6e5f;
 }
 
-html, body { height: 100%; }
-
+/* No fixed height: the body must grow with the form, or its bottom padding
+   stays pinned to the viewport and tall screens end flush against the edge. */
 body {
   background-color: var(--cream);
   color: var(--dark);
@@ -460,6 +460,57 @@ body {
 }
 .dietary-comments::placeholder { color: var(--muted); font-style: italic; }
 .dietary-comments:focus { border-color: var(--gold); }
+
+/* ── Choir sign-up (one line per person, or a single line when alone) ── */
+.choir-list {
+  max-width: 400px;
+  margin: 0 auto 1.6rem;
+  text-align: left;
+}
+
+.choir-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  font-size: 1rem;
+  color: var(--dark);
+  cursor: pointer;
+}
+.choir-item + .choir-item { border-top: 1px solid rgba(184, 151, 90, 0.25); }
+
+.choir-item input[type="checkbox"] {
+  appearance: none;
+  width: 15px; height: 15px;
+  border: 1px solid var(--gold-light);
+  background: var(--cream);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+.choir-item input[type="checkbox"]:checked {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.choir-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 1px;
+  width: 5px; height: 9px;
+  border: 1.5px solid var(--cream);
+  border-left: none; border-top: none;
+  transform: rotate(40deg);
+}
+
+.field-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
 
 /* ── Result screens ── */
 .result-icon {

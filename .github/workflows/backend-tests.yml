@@ -1,0 +1,39 @@
+name: Backend tests
+
+# The site in docs/ is served straight from the branch and has no build step,
+# so only the backend needs checking before backend/refresh_backend.sh deploys it.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-tests.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # setup-uv publishes no floating tag past v7, so pin the release itself
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      # --locked fails if uv.lock does not match pyproject.toml, so a forgotten
+      # `uv lock` is caught here rather than on the server.
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run the tests
+        run: uv run pytest -q

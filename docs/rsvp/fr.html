@@ -79,7 +79,21 @@
       <p class="screen-title">À table</p>
       <p class="dietary-intro">Dites-nous ce que chacun mange afin que nous puissions préparer les bonnes assiettes.</p>
       <div id="guest-details"></div>
-      <textarea id="notes" class="dietary-comments" placeholder="Commentaires ou remarques pour les organisateurs…"></textarea>
+      <div class="btn-row">
+        <button id="btn-details-next" class="btn btn-primary">Continuer</button>
+      </div>
+    </section>
+
+    <!-- The choir, and anything the guests want to tell us -->
+    <section id="screen-notes" class="screen" hidden>
+      <p class="screen-title">Encore une chose</p>
+      <div id="choir-block" hidden>
+        <p class="field-heading">La chorale de l’église</p>
+        <p class="dietary-intro">Nous formons une petite chorale pour chanter pendant la cérémonie — tout le monde est le bienvenu, aucune expérience requise.</p>
+        <div id="choir-list" class="choir-list"></div>
+      </div>
+      <p class="field-heading">Autre chose ?</p>
+      <textarea id="notes" class="dietary-comments" placeholder="Commentaires ou remarques pour nous…"></textarea>
       <div class="btn-row">
         <button id="btn-submit" class="btn btn-primary">Confirmer ma présence</button>
       </div>
@@ -120,6 +134,9 @@
         allergiesPlaceholder: 'Allergies (fruits à coque, fruits de mer…)',
         attendanceLabel:      'Présence',
         noneAttending:        'Absent(e)',
+        choirLabel:           'Souhaite chanter dans la chorale',
+        choirYes:             'Oui, je souhaite chanter dans la chorale',
+        choirSummary:         'Chorale de l’église',
         notesLabel:           'Commentaires',
         diet: {
           'none':       'Aucune restriction',

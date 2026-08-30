@@ -100,18 +100,28 @@
   color: #2c2416;
 }
 
+/* One name per line — a run-on row of names reads like a list, not an invitation.
+   The size lives on the list so a long household can be scaled down to fit. */
 .ic-guest-list {
-  font-size: 15px;
-  color: #7a6e5f;
-  margin-top: 8px;
-  line-height: 1.5;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 17px;
+}
+
+.ic-guest-name {
+  font-size: inherit;
+  font-style: italic;
+  color: #2c2416;
+  line-height: 1.35;
 }
 
 .ic-extra-note {
-  font-size: 15px;
+  font-size: 16px;
   font-style: italic;
   color: #b8975a;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .ic-details {

@@ -8,45 +8,114 @@
 window.InvitePDF = (function () {
   const LANGUAGES = ['en', 'fr', 'ro'];
 
+  const CHURCH_URL  = 'https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050';
+  const CHATEAU_URL = 'https://www.beauvoir-bourbonnais.fr/accs';
+
   const STRINGS = {
     en: {
       eyebrow:      'Wedding Invitation',
       addressed:    'We joyfully invite',
       date:         'Saturday, 7 August 2027',
       dateLabel:    'The wedding of',
-      ceremony:     'Ceremony · Église Saint-Joseph, Dompierre-sur-Besbre, France',
-      reception:    'Reception · Château de Beauvoir, Bourbonnais, France',
+      ceremony:     { text: 'Ceremony · Église Saint-Joseph, Dompierre-sur-Besbre, France', url: CHURCH_URL },
+      reception:    { text: 'Reception · Château de Beauvoir, Bourbonnais, France', url: CHATEAU_URL },
       rsvpTitle:    'Please reply',
       rsvpHint:     'Scan the code, or visit',
       codeLabel:    'Invitation code',
-      plusOne:      'You are welcome to bring a guest',
-      extras:       n => `You may bring up to ${n} more ${n === 1 ? 'person' : 'people'}`,
+      plusOne:      'and the guest of your choice',
+      extras:       n => 'and up to ' + NUMBERS.en[n] + ' ' + (n === 1 ? 'guest' : 'guests') + ' of your choice',
     },
     fr: {
       eyebrow:      'Faire-part de Mariage',
       addressed:    'Nous avons la joie d’inviter',
       date:         'Le samedi 7 août 2027',
       dateLabel:    'Mariage de',
-      ceremony:     'Cérémonie · Église Saint-Joseph, Dompierre-sur-Besbre, France',
-      reception:    'Réception · Château de Beauvoir, Bourbonnais, France',
+      ceremony:     { text: 'Cérémonie · Église Saint-Joseph, Dompierre-sur-Besbre, France', url: CHURCH_URL },
+      reception:    { text: 'Réception · Château de Beauvoir, Bourbonnais, France', url: CHATEAU_URL },
       rsvpTitle:    'Réponse souhaitée',
       rsvpHint:     'Scannez le code, ou rendez-vous sur',
       codeLabel:    'Code d’invitation',
-      plusOne:      'Vous pouvez venir accompagné(e)',
-      extras:       n => `Vous pouvez venir avec ${n} personne${n === 1 ? '' : 's'} de plus`,
+      plusOne:      'et la personne de votre choix',
+      extras:       n => 'et jusqu’à ' + NUMBERS.fr[n] + ' personne' + (n === 1 ? '' : 's') + ' de votre choix',
     },
     ro: {
       eyebrow:      'Invitație de Nuntă',
       addressed:    'Avem bucuria de a invita',
       date:         'Sâmbătă, 7 august 2027',
       dateLabel:    'Nunta lui',
-      ceremony:     'Ceremonia · Église Saint-Joseph, Dompierre-sur-Besbre, France',
-      reception:    'Recepția · Château de Beauvoir, Bourbonnais, Franța',
+      ceremony:     { text: 'Ceremonia · Église Saint-Joseph, Dompierre-sur-Besbre, France', url: CHURCH_URL },
+      reception:    { text: 'Recepția · Château de Beauvoir, Bourbonnais, Franța', url: CHATEAU_URL },
       rsvpTitle:    'Vă rugăm să confirmați',
       rsvpHint:     'Scanați codul sau accesați',
       codeLabel:    'Codul invitației',
-      plusOne:      'Puteți veni însoțit(ă)',
-      extras:       n => `Puteți veni cu ${n} ${n === 1 ? 'persoană' : 'persoane'} în plus`,
+      plusOne:      'și persoana pe care o doriți',
+      extras:       n => 'și încă ' + NUMBERS.ro[n] + ' ' + (n === 1 ? 'persoană' : 'persoane') + ' la alegerea dumneavoastră',
+    },
+  };
+
+  // Spelled out — "and up to 3 guests" reads like a quota on an invitation
+  const NUMBERS = {
+    en: [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' ],
+    fr: [ '', 'une', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit' ],
+    ro: [ '', 'o', 'două', 'trei', 'patru', 'cinci', 'șase', 'șapte', 'opt' ],
+  };
+
+  // What the Email button pre-writes. mailto: cannot carry an attachment, so the
+  // message stands on its own: the personal link and code are in the body.
+  const EMAIL = {
+    en: {
+      subject: 'Emma & Theodor — our wedding on 7 August 2027',
+      body: (to, url, key) => [
+        `Dear ${to},`,
+        '',
+        'We would be delighted to have you with us on Saturday 7 August 2027,',
+        'at the Église Saint-Joseph in Dompierre-sur-Besbre and then at the',
+        'Château de Beauvoir. Our invitation is attached.',
+        '',
+        'Please let us know whether you can join us:',
+        url,
+        '',
+        `Your invitation code is ${key}.`,
+        '',
+        'With love,',
+        'Emma & Theodor',
+      ].join('\r\n'),
+    },
+    fr: {
+      subject: 'Emma & Theodor — notre mariage le 7 août 2027',
+      body: (to, url, key) => [
+        `Cher/Chère ${to},`,
+        '',
+        'Nous serions très heureux de vous compter parmi nous le samedi 7 août 2027,',
+        'à l’Église Saint-Joseph de Dompierre-sur-Besbre puis au Château de Beauvoir.',
+        'Vous trouverez notre faire-part en pièce jointe.',
+        '',
+        'Merci de nous indiquer si vous pourrez être des nôtres :',
+        url,
+        '',
+        `Votre code d’invitation est ${key}.`,
+        '',
+        'Avec toute notre affection,',
+        'Emma & Theodor',
+      ].join('\r\n'),
+    },
+    ro: {
+      subject: 'Emma & Theodor — nunta noastră, 7 august 2027',
+      body: (to, url, key) => [
+        `Dragă ${to},`,
+        '',
+        'Ne-ar face mare bucurie să fiți alături de noi sâmbătă, 7 august 2027,',
+        'la Église Saint-Joseph din Dompierre-sur-Besbre și apoi la Château de Beauvoir.',
+        'Invitația noastră este atașată.',
+        '',
+        'Vă rugăm să ne spuneți dacă puteți veni:',
+        url,
+        '',
+        `Codul invitației dumneavoastră este ${key}.`,
+        '',
+        'Cu drag,',
+        'Emma & Theodor',
+      ].join('\r\n'),
     },
   };
 
@@ -136,21 +205,28 @@ window.InvitePDF = (function () {
 
     const listed = hostGuestNames(invite);
     if (invite.label && listed.length) {
-      card.appendChild(el('p', 'ic-guest-list', listed.join(' · ')));
+      const list = el('div', 'ic-guest-list');
+      listed.forEach(name => list.appendChild(el('p', 'ic-guest-name', name)));
+      card.appendChild(list);
     }
     const note = extraNote(invite, s);
     if (note) card.appendChild(el('p', 'ic-extra-note', note));
 
     const details = el('div', 'ic-details');
     details.appendChild(el('p', 'ic-detail-value', s.date));
-    details.appendChild(el('p', 'ic-detail-value', s.ceremony));
-    details.appendChild(el('p', 'ic-detail-value', s.reception));
+    [s.ceremony, s.reception].forEach(venue => {
+      const line = el('p', 'ic-detail-value', venue.text);
+      // Picked up after rasterising and turned into a PDF link annotation
+      line.dataset.pdfLink = venue.url;
+      details.appendChild(line);
+    });
     card.appendChild(details);
 
     card.appendChild(el('div', 'ic-spacer'));
     card.appendChild(el('div', 'ic-divider', '✦'));
 
     const rsvp = el('div', 'ic-rsvp');
+    rsvp.dataset.pdfLink = rsvpUrl(invite.key, lang, o.baseUrl);
     if (o.qrDataUrl) {
       const img = document.createElement('img');
       img.className = 'ic-qr';
@@ -168,6 +244,30 @@ window.InvitePDF = (function () {
     card.appendChild(rsvp);
 
     return card;
+  }
+
+  /**
+   * A ready-to-send message for one invitation.
+   * Returns { subject, body, mailto } — no attachment: mailto: has no way to
+   * carry one, so the caller saves the PDF for the sender to attach.
+   */
+  function emailDraft(invite, opts) {
+    const o    = opts || {};
+    const lang = langOf(invite, o.lang);
+    const text = EMAIL[lang];
+    const url  = rsvpUrl(invite.key, lang, o.baseUrl);
+
+    const subject = text.subject;
+    const body    = text.body(addressee(invite), url, invite.key);
+    const to      = (invite.email || '').trim();
+
+    return {
+      subject,
+      body,
+      mailto: 'mailto:' + encodeURIComponent(to)
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body),
+    };
   }
 
   // ── Rendering ──────────────────────────────────────────────────────────────
@@ -216,6 +316,49 @@ window.InvitePDF = (function () {
     return `invitation-${slug(addressee(invite))}-${invite.key}.pdf`;
   }
 
+  /** Room left between the last block and the card's bottom padding, in px. */
+  function contentSlack(card) {
+    const box  = card.getBoundingClientRect();
+    const last = card.querySelector('.ic-rsvp').getBoundingClientRect();
+    return box.bottom - parseFloat(getComputedStyle(card).paddingBottom) - last.bottom;
+  }
+
+  /** A household of ten would run off the page — tighten it up until it fits. */
+  function fitCard(card) {
+    const list = card.querySelector('.ic-guest-list');
+    if (list) {
+      for (let size = 16; size >= 10 && contentSlack(card) < 0; size--) {
+        list.style.fontSize = size + 'px';
+        if (size <= 14) list.style.gap = '1px';
+      }
+    }
+    const details = card.querySelector('.ic-details');
+    if (details) {
+      for (let gap = 14; gap >= 6 && contentSlack(card) < 0; gap -= 2) {
+        details.style.gap = gap + 'px';
+        details.style.marginTop = (gap + 6) + 'px';
+      }
+    }
+  }
+
+  /** Turn every [data-pdf-link] element into a clickable area on the current page. */
+  function addLinks(doc, card, pageW, pageH) {
+    const box = card.getBoundingClientRect();
+    const toMmX = px => (px / box.width) * pageW;
+    const toMmY = px => (px / box.height) * pageH;
+
+    card.querySelectorAll('[data-pdf-link]').forEach(node => {
+      const r = node.getBoundingClientRect();
+      doc.link(
+        toMmX(r.left - box.left),
+        toMmY(r.top - box.top),
+        toMmX(r.width),
+        toMmY(r.height),
+        { url: node.dataset.pdfLink }
+      );
+    });
+  }
+
   /**
    * Render invitations into a single PDF (one A5 page each).
    * opts: { lang, baseUrl, scale, onProgress(done, total) }
@@ -244,6 +387,7 @@ window.InvitePDF = (function () {
         const card = buildCard(invite, { lang, baseUrl: o.baseUrl, qrDataUrl: qr });
         host.innerHTML = '';
         host.appendChild(card);
+        fitCard(card);              // needs layout, so only once it is on the page
 
         const canvas = await window.html2canvas(card, {
           scale: scale,
@@ -255,8 +399,7 @@ window.InvitePDF = (function () {
 
         if (i > 0) doc.addPage();
         doc.addImage(canvas.toDataURL('image/jpeg', 0.94), 'JPEG', 0, 0, pageW, pageH);
-        // Keep the RSVP address clickable in the digital copy
-        doc.link(0, pageH - 42, pageW, 42, { url: url });
+        addLinks(doc, card, pageW, pageH);
 
         if (o.onProgress) o.onProgress(i + 1, invites.length);
       }
@@ -276,7 +419,7 @@ window.InvitePDF = (function () {
   }
 
   return {
-    LANGUAGES, STRINGS, buildCard, renderPdf, download, fileNameFor,
+    LANGUAGES, STRINGS, EMAIL, buildCard, fitCard, renderPdf, download, fileNameFor, emailDraft,
     rsvpUrl, prettyUrl, prettyBase, addressee,
   };
 })();

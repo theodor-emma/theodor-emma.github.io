@@ -79,7 +79,21 @@
       <p class="screen-title">At the table</p>
       <p class="dietary-intro">Tell us what everyone eats so we can make sure each plate is right.</p>
       <div id="guest-details"></div>
-      <textarea id="notes" class="dietary-comments" placeholder="Extra comments or notes for the organisers…"></textarea>
+      <div class="btn-row">
+        <button id="btn-details-next" class="btn btn-primary">Continue</button>
+      </div>
+    </section>
+
+    <!-- The choir, and anything the guests want to tell us -->
+    <section id="screen-notes" class="screen" hidden>
+      <p class="screen-title">One last thing</p>
+      <div id="choir-block" hidden>
+        <p class="field-heading">The church choir</p>
+        <p class="dietary-intro">We are putting together a small choir to sing at the ceremony — everyone is welcome, no experience needed.</p>
+        <div id="choir-list" class="choir-list"></div>
+      </div>
+      <p class="field-heading">Anything else?</p>
+      <textarea id="notes" class="dietary-comments" placeholder="Comments or notes for us…"></textarea>
       <div class="btn-row">
         <button id="btn-submit" class="btn btn-primary">Confirm attendance</button>
       </div>
@@ -120,6 +134,9 @@
         allergiesPlaceholder: 'Allergies (nuts, shellfish…)',
         attendanceLabel:      'Attendance',
         noneAttending:        'Not attending',
+        choirLabel:           'Would like to sing in the choir',
+        choirYes:             'Yes, I would like to sing in the choir',
+        choirSummary:         'Church choir',
         notesLabel:           'Comments',
         diet: {
           'none':       'No restrictions',
