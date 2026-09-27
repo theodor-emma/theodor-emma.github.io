@@ -35,15 +35,50 @@ function initCountdown() {
 
 // ── Add to Calendar ───────────────────────────────────────────────────────────
 
+/** Escape a text value for an .ics file (RFC 5545). */
+function icsText(value) {
+  return String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r?\n/g, '\\n');
+}
+
+function icsStamp(date) {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+}
+
+/**
+ * Fold a line to 75 octets, as the spec asks. Accented characters take two
+ * octets, and a cut must never fall between a backslash and what it escapes.
+ */
+function icsFold(line) {
+  const bytes = text => new TextEncoder().encode(text).length;
+  const parts = [];
+  let rest = line;
+
+  while (bytes(rest) > 75) {
+    let cut = 75;
+    while (cut > 1 && (bytes(rest.slice(0, cut)) > 75 || rest[cut - 1] === '\\')) cut--;
+    parts.push(rest.slice(0, cut));
+    rest = ' ' + rest.slice(cut);   // continuation lines begin with a space
+  }
+  parts.push(rest);
+  return parts.join('\r\n');
+}
+
+
 function initCalendar() {
   const container = document.getElementById('calendar-container');
   if (!container) return;
 
   const labels = window.WEDDING_CONFIG?.labels || {};
 
-  const eventTitle    = 'Mariage — Theodor Moroianu & Emma Chirlomez';
-  const eventDetails  = labels.calendarDetails || 'Wedding of Theodor Moroianu & Emma Chirlomez';
+  // Everything the guest will read comes from the page's own labels
+  const eventTitle    = labels.calendarTitle   || 'Wedding of Emma Chirlomez & Theodor Moroianu';
+  const eventDetails  = labels.calendarDetails || eventTitle;
   const eventLocation = 'Château de Beauvoir, Bourbonnais, France';
+  const eventUrl      = 'https://www.beauvoir-bourbonnais.fr/';
 
   const googleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
     + '&text='     + encodeURIComponent(eventTitle)
@@ -56,15 +91,19 @@ function initCalendar() {
     'VERSION:2.0',
     'PRODID:-//Theodor & Emma//Wedding//EN',
     'BEGIN:VEVENT',
+    // A stable id, so re-importing updates the event instead of duplicating it
+    'UID:emma-theodor-wedding-20270807@theodor-emma.fr',
+    'DTSTAMP:' + icsStamp(new Date()),
     'DTSTART;VALUE=DATE:20270807',
     'DTEND;VALUE=DATE:20270809',
-    'SUMMARY:Mariage — Theodor Moroianu & Emma Chirlomez',
-    'LOCATION:Château de Beauvoir\\, Bourbonnais\\, France',
-    'URL:https://www.beauvoir-bourbonnais.fr/accs',
+    'SUMMARY:' + icsText(eventTitle),
+    'DESCRIPTION:' + icsText(eventDetails),
+    'LOCATION:' + icsText(eventLocation),
+    'URL:' + eventUrl,
     'END:VEVENT',
     'END:VCALENDAR',
   ];
-  const icsBlob = new Blob([icsLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+  const icsBlob = new Blob([icsLines.map(icsFold).join('\r\n')], { type: 'text/calendar;charset=utf-8' });
   const icsUrl  = URL.createObjectURL(icsBlob);
 
   container.innerHTML = `
