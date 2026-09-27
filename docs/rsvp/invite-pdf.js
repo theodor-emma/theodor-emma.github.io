@@ -9,7 +9,7 @@ window.InvitePDF = (function () {
   const LANGUAGES = ['en', 'fr', 'ro'];
 
   const CHURCH_URL  = 'https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050';
-  const CHATEAU_URL = 'https://www.beauvoir-bourbonnais.fr/accs';
+  const CHATEAU_URL = 'https://www.beauvoir-bourbonnais.fr/';
 
   const STRINGS = {
     en: {
