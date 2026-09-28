@@ -26,6 +26,20 @@ body {
   padding: 2rem 1rem;
 }
 
+/* ── Photo backdrop (pages that carry class="photo") ── */
+body.photo::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('../chateau.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.32;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ── Card ── */
 .card {
   max-width: 620px;
@@ -168,7 +182,17 @@ body {
 .divider::before, .divider::after {
   content: ''; flex: 1; height: 1px; background: var(--gold-light);
 }
-.divider-symbol { color: var(--gold); font-size: 1rem; line-height: 1; }
+/* Drawn, not typed: ✦ comes from whatever fallback font happens to carry
+   U+2726, and the glyph sits at a different height in each one, so it never
+   quite lines up with the rules. This shape is centred on its own box. */
+.divider-symbol {
+  display: block;
+  width: 16px;            /* the glyph's old footprint, so spacing is unchanged */
+  height: 16px;
+  font-size: 0;
+  line-height: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0Q13.8 10.2 24 12Q13.8 13.8 12 24Q10.2 13.8 0 12Q10.2 10.2 12 0Z' fill='%23b8975a'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
+}
 
 /* ── Screens ── */
 .screen { animation: fadeIn 0.3s ease; }
