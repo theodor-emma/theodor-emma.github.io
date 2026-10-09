@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--
+  Print source for pdf/save-the-date-ro.pdf — A5, the same card as the website.
+  To regenerate: open in a browser and print to PDF at A5 with background
+  graphics enabled, or run the headless renderer described in pdf/README.md.
+-->
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rețineți Data — Emma &amp; Theodor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    @page { size: 148mm 210mm; margin: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 148mm;
+      height: 210mm;
+      position: relative;
+      overflow: hidden;
+      background-color: #faf6ef;
+      color: #2c2416;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      /* keep the photo and the gold when printing */
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .backdrop {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('chateau-print.jpg') center / cover no-repeat;
+      opacity: 0.32;
+    }
+
+    .card {
+      position: absolute;
+      top: 9mm; left: 9mm; right: 9mm; bottom: 9mm;
+      border: 1px solid #b8975a;
+      background-color: #faf6ef;
+      padding: 12mm 10mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
+      text-align: center;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 2mm; left: 2mm; right: 2mm; bottom: 2mm;
+      border: 1px solid #d4b37a;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .corner {
+      position: absolute;
+      width: 7mm; height: 7mm;
+      border-color: #b8975a;
+      border-style: solid;
+      border-width: 0;
+    }
+    .corner.tl { top: 0; left: 0;  border-top-width: 2px; border-left-width: 2px; }
+    .corner.tr { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+    .corner.bl { bottom: 0; left: 0;  border-bottom-width: 2px; border-left-width: 2px; }
+    .corner.br { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+
+    .eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 9pt;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #b8975a;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 4mm;
+      width: 62mm;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #d4b37a;
+    }
+    /* drawn, so it never depends on a font carrying U+2726 */
+    .divider-symbol {
+      display: block;
+      width: 12px; height: 12px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0Q13.8 10.2 24 12Q13.8 13.8 12 24Q10.2 13.8 0 12Q10.2 10.2 12 0Z' fill='%23b8975a'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    .names {
+      font-size: 27pt;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.25;
+    }
+    .names .amp { display: block; color: #b8975a; font-size: 0.62em; margin: 1mm 0; }
+
+    .label {
+      font-family: 'Cinzel', serif;
+      font-size: 7.5pt;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #7a6e5f;
+      margin-bottom: 1.5mm;
+    }
+
+    .date { font-size: 15pt; font-weight: 300; letter-spacing: 0.04em; }
+
+    .venue a {
+      font-size: 12pt;
+      font-style: italic;
+      color: #2c2416;
+      text-decoration: none;
+      border-bottom: 1px solid #d4b37a;
+      padding-bottom: 1px;
+    }
+
+    .rsvp-line { font-size: 11pt; font-style: italic; color: #7a6e5f; line-height: 1.5; }
+    .rsvp-line a {
+      display: inline-block;
+      margin-top: 2mm;
+      font-size: 13pt;
+      font-style: normal;
+      color: #2c2416;
+      text-decoration: none;
+      border-bottom: 1px solid #d4b37a;
+      padding-bottom: 1px;
+    }
+
+    .footnote { font-size: 10pt; font-style: italic; color: #7a6e5f; }
+  </style>
+</head>
+<body>
+  <div class="backdrop"></div>
+
+  <div class="card">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+
+    <p class="eyebrow">Rețineți Data</p>
+
+    <div class="divider"><span class="divider-symbol"></span></div>
+
+    <p class="names">
+      Emma Chirlomez
+      <span class="amp">&amp;</span>
+      Theodor Moroianu
+    </p>
+
+    <div class="divider"><span class="divider-symbol"></span></div>
+
+    <div>
+      <p class="label">Se căsătoresc</p>
+      <p class="date">Sâmbătă, 7 august 2027</p>
+    </div>
+
+    <div class="venue">
+      <p class="label">Ceremonie</p>
+      <a href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050">Église Saint-Joseph, Dompierre-sur-Besbre, France</a>
+    </div>
+
+    <div class="venue">
+      <p class="label">Recepție</p>
+      <a href="https://www.beauvoir-bourbonnais.fr/">Château de Beauvoir, Bourbonnais, France</a>
+    </div>
+
+    <div class="divider"><span class="divider-symbol"></span></div>
+
+    <p class="rsvp-line">
+      Totul despre marea zi pe<br />
+      <a href="https://theodor-emma.fr/ro.html">theodor-emma.fr</a>
+    </p>
+
+    <p class="footnote">Invitația oficială urmează.</p>
+  </div>
+</body>
+</html>
