@@ -250,6 +250,10 @@ body.photo::before {
   }
 }
 
+/* Quiet "← Back" under the accept / decline pair */
+.back-row { margin-top: 1.2rem; }
+.back-row .btn-link { margin-bottom: 0; }
+
 /* ── Buttons ── */
 .btn {
   font-family: 'Cinzel', serif;
@@ -592,6 +596,35 @@ body.photo::before {
   font-style: italic;
   color: var(--dark);
 }
+
+/* ── After the response: where to stay + gift note ── */
+.after-block {
+  max-width: 400px;
+  margin: 1.4rem auto 0;
+}
+
+.after-block .btn-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* Deliberately quiet: small, muted, no button */
+.gift-note {
+  max-width: 360px;
+  margin: 2.2rem auto 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.gift-note a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-light);
+}
+
+.gift-note a:hover { color: var(--gold); }
 
 /* ── Key screen (inline, no modal) ── */
 .key-prompt {

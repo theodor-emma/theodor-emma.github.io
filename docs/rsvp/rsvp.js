@@ -21,11 +21,46 @@ function cleanKey(raw) {
 function showScreen(id, errorMsg) {
   document.querySelectorAll('.screen').forEach(s => { s.hidden = true; });
   const el = document.getElementById(id);
-  if (el) el.hidden = false;
+  if (el) {
+    el.hidden = false;
+    const canGoBack = !!previousScreen(id);
+    el.querySelectorAll('.btn-back').forEach(b => { b.hidden = !canGoBack; });
+  }
   if (id === 'screen-key') {
     const errEl = document.getElementById('key-error');
     if (errEl) errEl.textContent = errorMsg || '';
   }
+}
+
+/**
+ * The step before `id` in the form, worked out from the current answers
+ * rather than a history stack, so it always matches the path forward.
+ * The first step leads back to the stored response when updating one.
+ */
+function previousScreen(id) {
+  if (!state.invite) return null;
+  const first = isSimpleInvite() ? 'screen-question' : 'screen-attendance';
+  switch (id) {
+    case 'screen-question':
+    case 'screen-attendance':
+      return state.invite.responded ? 'screen-already' : null;
+    case 'screen-details':
+      return first;
+    case 'screen-notes':
+      return attendingAnswers().length ? 'screen-details' : first;
+    default:
+      return null;
+  }
+}
+
+function goBack() {
+  const current = document.querySelector('.screen:not([hidden])');
+  const prev = current && previousScreen(current.id);
+  if (!prev) return;
+  // Answers live in `state`, so re-rendering keeps what was typed
+  if (prev === 'screen-attendance') renderAttendance();
+  if (prev === 'screen-details')    renderDetails();
+  showScreen(prev);
 }
 
 function showError(msg) {
@@ -301,6 +336,10 @@ function renderSummary() {
   const guests = state.invite.guests;
   const anyAttending = guests.some(g => g.attending);
 
+  // Accommodation only matters to guests who are coming
+  const stay = document.getElementById('stay-block');
+  if (stay) stay.hidden = !anyAttending;
+
   if (!anyAttending) {
     host.appendChild(summaryRow(
       t('attendanceLabel', 'Attendance'),
@@ -454,6 +493,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Meals → choir and comments ──
   document.getElementById('btn-details-next').addEventListener('click', goToNotes);
+
+  // ── Back, on every form step ──
+  document.querySelectorAll('.btn-back').forEach(el => el.addEventListener('click', goBack));
 
   // ── Last screen: submit ──
   document.getElementById('btn-submit').addEventListener('click', submitRSVP);

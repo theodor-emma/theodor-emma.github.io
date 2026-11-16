@@ -16,7 +16,7 @@ Tabelul are patru file:
 |---|---|
 | **Read me** | O versiune scurtă a acestui ghid. |
 | **Accommodation** | Cazările din jurul castelului și al bisericii, de la cea mai apropiată la cea mai îndepărtată. |
-| **Beauvoir gîtes (shared)** | Cele două case mari de pe domeniul castelului, pe care vrem să le umplem împreună. Vezi secțiunea 4. |
+| **Beauvoir gîtes (shared)** | Gîte du Moulin, o casă mare de pe domeniul castelului, pe care vrem s-o umplem împreună. Vezi secțiunea 4. |
 | **Not listed (for reference)** | Locurile scoase din listă: deja ocupate pe 7 august, închise sau negăsite online. |
 
 Pentru fiecare cazare din fila **Accommodation** găsiți:
@@ -36,7 +36,7 @@ Ce înseamnă coloana de disponibilitate:
 | **Check the link or ask the owner** | Există un calendar online, dar nu l-am putut citi (Airbnb, Booking, unele pagini Gîtes de France). Verificați singuri prin link. |
 | **Ask the owner** | Nu există calendar online. Sunați sau scrieți-i proprietarului. |
 
-Am scos din listă locurile deja ocupate pe 7 august, cele care nu mai există sau care nu au putut fi găsite online. Le găsiți în ultima filă, **Not listed (for reference)**, dacă vreți totuși să încercați.
+Am scos din listă locurile deja ocupate pe 7 august, cele care nu mai există sau care nu au putut fi găsite online.
 
 ## 2. Ce puteți modifica: „Status” și „Taken by”
 
@@ -66,23 +66,22 @@ Lenjeria și prosoapele sunt incluse, iar paturile sunt făcute la sosire. Exist
 
 **Aceste camere nu se rezervă online și nu se marchează în tabel.** Ca să rezervați una, **contactați-o pe Emma: emma.chirlomez@gmail.com · +40 720 410 905**. Confirmăm rezervarea, apoi castelul vă trimite un link de plată.
 
-## 4. Cele două gîte-uri de la Beauvoir: să le umplem împreună
+## 4. Gîte du Moulin: să-l umplem împreună
 
-Două case mari de pe domeniu se închiriază **doar întregi, pentru minimum 2 nopți**:
+**Gîte du Moulin** este o casă mare de pe domeniul castelului, cu o grădină pe malul râului și vedere spre castel. Se închiriază **doar întreagă, pentru minimum 2 nopți**:
 
-| Gîte | Persoane | Dormitoare | Băi | Prețul casei |
-|---|---|---|---|---|
-| **Gîte Cottage des Jargeots** | 10 | 4 | 2 + 2 toalete separate | 1 200 € pentru 2 nopți |
-| **Gîte du Moulin** | 14 | 6 | 3 + 3 toalete separate | 1 600 € pentru 2 nopți |
+| Persoane | Dormitoare | Băi | Prețul casei |
+|---|---|---|---|
+| 14 | 6 | 3 + 3 toalete separate | 1 600 € pentru 2 nopți |
 
-Sunt o variantă minunată de a dormi chiar la castel, dar numai dacă suntem destui ca să le împărțim. Cu casa plină, costul este de aproximativ **115–120 € de persoană pentru 2 nopți**. De aceea au o filă separată.
+Este o variantă minunată de a dormi chiar la castel, dar numai dacă suntem destui ca s-o împărțim. Cu casa plină, costul este de aproximativ **115 € de persoană pentru 2 nopți**. De aceea are o filă separată.
 
 **Cum funcționează**
 
-1. În fila **Beauvoir gîtes (shared)**, fiecare casă este listată **cameră cu cameră**, cu paturile ei.
+1. În fila **Beauvoir gîtes (shared)**, casa este listată **cameră cu cameră**, cu paturile ei.
 2. Dacă vă interesează, scrieți-vă numele în **Guest names** lângă camera dorită și numărul de persoane în **People**.
 3. Tabelul calculează câte persoane s-au înscris, câte locuri mai sunt și **costul estimat de persoană** pentru numărul actual de înscriși.
-4. Când o casă are destui oameni, **Emma o rezervă și împarte costul**. Până atunci, înscrierea este doar un semn de interes, nu o rezervare. Vă rugăm să nu rezervați voi aceste case.
+4. Când casa are destui oameni, **Emma o rezervă și împarte costul**. Până atunci, înscrierea este doar un semn de interes, nu o rezervare. Vă rugăm să nu rezervați voi casa.
 
 Întrebări? **Contactați-o pe Emma: emma.chirlomez@gmail.com · +40 720 410 905**.
 

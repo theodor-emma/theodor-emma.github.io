@@ -16,7 +16,7 @@ Le tableau contient quatre onglets :
 |---|---|
 | **Read me** | Une version courte de ce guide. |
 | **Accommodation** | Les hébergements autour du château et de l'église, du plus proche au plus éloigné. |
-| **Beauvoir gîtes (shared)** | Les deux grands gîtes du domaine, à remplir ensemble. Voir la partie 4. |
+| **Beauvoir gîtes (shared)** | Le Gîte du Moulin, une grande maison du domaine à remplir ensemble. Voir la partie 4. |
 | **Not listed (for reference)** | Les hébergements retirés : déjà réservés le 7 août, fermés ou introuvables en ligne. |
 
 Pour chaque hébergement de l'onglet **Accommodation** :
@@ -36,7 +36,7 @@ Ce que veut dire la colonne de disponibilité :
 | **Check the link or ask the owner** | Il y a un calendrier en ligne, mais nous n'avons pas pu le lire (Airbnb, Booking, certaines pages Gîtes de France). Vérifiez vous-même via le lien. |
 | **Ask the owner** | Pas de calendrier en ligne. Appelez ou écrivez au propriétaire. |
 
-Nous avons retiré les hébergements déjà réservés le 7 août, qui n'existent plus ou introuvables en ligne. Ils figurent dans le dernier onglet, **Not listed (for reference)**, si vous voulez tout de même tenter votre chance.
+Nous avons retiré les hébergements déjà réservés le 7 août, qui n'existent plus ou introuvables en ligne.
 
 ## 2. Ce que vous pouvez modifier : « Status » et « Taken by »
 
@@ -66,23 +66,22 @@ Draps et serviettes fournis, lits faits à l'arrivée. Il y a une cuisine d'appo
 
 **Ces chambres ne se réservent pas en ligne et ne se marquent pas dans le tableau.** Pour en réserver une, **contactez Emma : emma.chirlomez@gmail.com · +40 720 410 905**. Nous confirmons la réservation, puis le château vous envoie un lien de paiement.
 
-## 4. Les deux gîtes de Beauvoir : remplissons-les ensemble
+## 4. Le Gîte du Moulin : remplissons-le ensemble
 
-Deux grandes maisons du domaine se louent **uniquement en entier, pour 2 nuits minimum** :
+Le **Gîte du Moulin** est une grande maison du domaine, avec un jardin au bord de la rivière et vue sur le château. Il se loue **uniquement en entier, pour 2 nuits minimum** :
 
-| Gîte | Couchages | Chambres | Salles de bain | Prix de la maison |
-|---|---|---|---|---|
-| **Gîte Cottage des Jargeots** | 10 | 4 | 2 + 2 WC séparés | 1 200 € les 2 nuits |
-| **Gîte du Moulin** | 14 | 6 | 3 + 3 WC séparés | 1 600 € les 2 nuits |
+| Couchages | Chambres | Salles de bain | Prix de la maison |
+|---|---|---|---|
+| 14 | 6 | 3 + 3 WC séparés | 1 600 € les 2 nuits |
 
-C'est une très belle façon de dormir sur place, mais seulement si nous sommes assez nombreux à les partager. Maison pleine, cela revient à environ **115–120 € par personne pour 2 nuits**. C'est pourquoi ces deux gîtes ont leur propre onglet.
+C'est une très belle façon de dormir sur place, mais seulement si nous sommes assez nombreux à le partager. Maison pleine, cela revient à environ **115 € par personne pour 2 nuits**. C'est pourquoi il a son propre onglet.
 
 **Comment ça marche**
 
-1. Dans l'onglet **Beauvoir gîtes (shared)**, chaque maison est détaillée **chambre par chambre**, avec ses lits.
+1. Dans l'onglet **Beauvoir gîtes (shared)**, la maison est détaillée **chambre par chambre**, avec ses lits.
 2. Si vous êtes intéressés, écrivez votre/vos nom(s) dans **Guest names** à côté de la chambre souhaitée, et le nombre de personnes dans **People**.
 3. Le tableau calcule le nombre d'inscrits, les places restantes et le **coût estimé par personne** selon le nombre d'inscrits actuel.
-4. Quand une maison a assez de monde, **Emma la réserve et répartit le coût**. D'ici là, votre inscription est une simple marque d'intérêt, pas une réservation. Merci de ne pas réserver ces maisons vous-mêmes.
+4. Quand la maison a assez de monde, **Emma la réserve et répartit le coût**. D'ici là, votre inscription est une simple marque d'intérêt, pas une réservation. Merci de ne pas réserver la maison vous-mêmes.
 
 Des questions ? **Contactez Emma : emma.chirlomez@gmail.com · +40 720 410 905**.
 

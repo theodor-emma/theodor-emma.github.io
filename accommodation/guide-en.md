@@ -14,7 +14,7 @@ The sheet has four tabs:
 |---|---|
 | **Read me** | A short version of this guide. |
 | **Accommodation** | Places near the château and the church, nearest first. |
-| **Beauvoir gîtes (shared)** | The two big houses on the château grounds, which we want to fill together. See section 4. |
+| **Beauvoir gîtes (shared)** | The Gîte du Moulin, a big house on the château grounds that we want to fill together. See section 4. |
 | **Not listed (for reference)** | Places we left out: already booked on 7 August, closed, or not found online. |
 
 Each place in **Accommodation** shows:
@@ -34,7 +34,7 @@ What the availability column means:
 | **Check the link or ask the owner** | There is an online calendar, but we couldn't read it (Airbnb, Booking, some Gîtes de France pages). Check the link yourself. |
 | **Ask the owner** | No online calendar. Call or email them. |
 
-We left out places that were already booked on 7 August, no longer exist, or couldn't be found online. They're in the last tab, **Not listed (for reference)**, in case you want to try them anyway.
+We left out places that were already booked on 7 August, no longer exist, or couldn't be found online.
 
 ## 2. The only thing you can change: "Status" and "Taken by"
 
@@ -64,23 +64,22 @@ Sheets and towels are provided and beds are made when you arrive. There's a smal
 
 **You can't book these rooms online, and you can't mark them in the sheet.** To reserve one, **contact Emma: emma.chirlomez@gmail.com · +40 720 410 905**. We'll confirm, and the château will send you a payment link.
 
-## 4. The two Beauvoir gîtes: let's fill them together
+## 4. The Gîte du Moulin: let's fill it together
 
-Two large houses on the château grounds can only be rented **as a whole house, for at least 2 nights**:
+The **Gîte du Moulin** is a large house on the château grounds, with a riverside garden looking onto the château. It can only be rented **as a whole house, for at least 2 nights**:
 
-| Gîte | Sleeps | Bedrooms | Bathrooms | Price for the house |
-|---|---|---|---|---|
-| **Gîte Cottage des Jargeots** | 10 | 4 | 2 + 2 separate WCs | 1 200 € for 2 nights |
-| **Gîte du Moulin** | 14 | 6 | 3 + 3 separate WCs | 1 600 € for 2 nights |
+| Sleeps | Bedrooms | Bathrooms | Price for the house |
+|---|---|---|---|
+| 14 | 6 | 3 + 3 separate WCs | 1 600 € for 2 nights |
 
-They're a great way to stay on site, but only if enough of us share them. Shared by a full house, each one costs about **115–120 € per person for 2 nights**. That's why they have their own tab.
+It's a great way to stay on site, but only if enough of us share it. With the house full, it costs about **115 € per person for 2 nights**. That's why it has its own tab.
 
 **How it works**
 
-1. In the **Beauvoir gîtes (shared)** tab, each house is listed **room by room**, with its beds.
+1. In the **Beauvoir gîtes (shared)** tab, the house is listed **room by room**, with its beds.
 2. If you're interested, write your name(s) in **Guest names** next to the room you'd like, and enter how many of you there are in **People**.
 3. The sheet adds up how many people have signed up, how many places are left, and the **estimated cost per person** at the current number of people.
-4. Once a house has enough people, **Emma books it and splits the cost**. Until then, putting your name down is only a sign of interest, not a booking. Please don't book these houses yourself.
+4. Once the house has enough people, **Emma books it and splits the cost**. Until then, putting your name down is only a sign of interest, not a booking. Please don't book the house yourself.
 
 Questions? **Contact Emma: emma.chirlomez@gmail.com · +40 720 410 905**.
 
