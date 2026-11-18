@@ -105,6 +105,35 @@ body.photo::before {
   border-bottom-color: var(--gold-light);
 }
 
+/* ── Links to the other pages, top left (the language switcher is top right) ── */
+.top-nav {
+  position: absolute;
+  top: 1rem; left: 1.2rem;
+  display: flex;
+  gap: 0.9rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 2;
+}
+.top-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.top-nav a:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+
+/* Hidden for now, along with the top links. When they come back, both corners
+   share one line on phones, so they need to be smaller:
+@media (max-width: 480px) {
+  .top-nav, .lang-switcher { top: 0.85rem; font-size: 0.55rem; letter-spacing: 0.06em; gap: 0.6rem; }
+  .top-nav { left: 0.95rem; }
+  .lang-switcher { right: 0.95rem; }
+}
+*/
+
 /* ── Header ── */
 .save-the-date {
   font-family: 'Cinzel', serif;
@@ -298,3 +327,27 @@ body.photo::before {
   color: var(--muted);
   line-height: 1.5;
 }
+
+/* ── "Add to calendar" and "Information", side by side ── */
+/* Two equal columns, as wide as the wider button */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  width: fit-content;
+  margin: 0 auto;
+}
+/* Same height too, with the text centred when one label wraps on a phone.
+   Each level stretches to the row's height (grid → flex → flex), so no
+   percentage heights, which some browsers don't resolve here. */
+.actions #calendar-container,
+.actions .calendar-wrap { display: flex; }
+.actions .calendar-wrap { flex: 1; }
+.actions .calendar-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+a.calendar-btn { text-decoration: none; transition: background 0.2s, color 0.2s; }

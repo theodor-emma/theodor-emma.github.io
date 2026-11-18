@@ -687,6 +687,13 @@ Alexandru Ionescu +1 [ro]"></textarea>
         .join(', ');
     }
 
+    function brunchSummary(row) {
+      return (row.guests || [])
+        .filter(g => g.attending && g.brunch)
+        .map(g => g.name || '?')
+        .join(', ');
+    }
+
     function allergySummary(row) {
       return (row.guests || [])
         .filter(g => g.attending && g.allergies)
@@ -718,6 +725,7 @@ Alexandru Ionescu +1 [ro]"></textarea>
       { colId: 'meals',     headerName: 'Meals',     width: 170, valueGetter: p => p.data ? mealSummary(p.data) : '' },
       { colId: 'allergies', headerName: 'Allergies', width: 190, valueGetter: p => p.data ? allergySummary(p.data) : '' },
       { colId: 'choir',     headerName: 'Choir',     width: 170, valueGetter: p => p.data ? choirSummary(p.data) : '' },
+      { colId: 'brunch',    headerName: 'Brunch',    width: 170, valueGetter: p => p.data ? brunchSummary(p.data) : '' },
       { colId: 'notes',     headerName: 'Comments',  field: 'notes', flex: 2, minWidth: 140 },
       { colId: 'email',     headerName: 'Email',     field: 'email', flex: 2, minWidth: 170 },
       { colId: 'language',  headerName: 'Lang',      field: 'language', width: 100,
@@ -742,6 +750,8 @@ Alexandru Ionescu +1 [ro]"></textarea>
       { colId: 'allergies',  headerName: 'Allergies',  field: 'allergies', flex: 2, minWidth: 150 },
       { colId: 'choir',      headerName: 'Choir',      field: 'choir', width: 100,
         valueFormatter: p => p.value === true ? '♪ Yes' : '—' },
+      { colId: 'brunch',     headerName: 'Brunch',     field: 'brunch', width: 100,
+        valueFormatter: p => p.value === true ? 'Yes' : '—' },
       { colId: 'source',     headerName: 'Added by',   field: 'source', width: 120,
         valueFormatter: p => p.value === 'guest' ? 'The guests' : 'Us' },
       { colId: 'notes',      headerName: 'Comments',   field: 'notes', flex: 2, minWidth: 140 },
@@ -783,6 +793,7 @@ Alexandru Ionescu +1 [ro]"></textarea>
         diet:         g.diet,
         allergies:    g.allergies,
         choir:        g.choir === true,
+        brunch:       g.brunch === true,
         source:       g.source,
         notes:        row.notes,
         responded_at: row.responded_at,
@@ -839,6 +850,7 @@ Alexandru Ionescu +1 [ro]"></textarea>
         stat('Vegan',        attending.filter(g => g.diet === 'vegan').length),
         stat('Allergies',    attending.filter(g => g.allergies).length),
         stat('Choir',        attending.filter(g => g.choir).length),
+        stat('Brunch',       attending.filter(g => g.brunch).length),
       ].join('');
     }
 
@@ -1324,6 +1336,7 @@ Alexandru Ionescu +1 [ro]"></textarea>
       ['Meals',        r => mealSummary(r)],
       ['Allergies',    r => allergySummary(r)],
       ['Choir',        r => choirSummary(r)],
+      ['Brunch',       r => brunchSummary(r)],
       ['Comments',     r => r.notes || ''],
       ['Email',        r => r.email || ''],
       ['Language',     r => LANG_LABELS[r.language] || r.language],
@@ -1340,6 +1353,7 @@ Alexandru Ionescu +1 [ro]"></textarea>
       ['Meal',       g => DIET_LABELS[g.diet] || g.diet],
       ['Allergies',  g => g.allergies || ''],
       ['Choir',      g => g.choir ? 'Yes' : ''],
+      ['Brunch',     g => g.brunch ? 'Yes' : ''],
       ['Added by',   g => g.source === 'guest' ? 'The guests' : 'Us'],
       ['Comments',   g => g.notes || ''],
       ['Responded',  g => g.responded_at ? new Date(g.responded_at).toLocaleString() : ''],

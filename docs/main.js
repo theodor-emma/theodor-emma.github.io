@@ -1,5 +1,15 @@
 const WEDDING_DATE = new Date('2027-08-07T14:00:00');
 
+// The page's language: index.html is English; fr.html and ro.html load it
+// with <html lang="fr"> / "ro". Text written in index.html is switched by
+// lang.css; text this script writes picks its language with tr().
+const LANG = document.documentElement.lang;
+
+/** The text in the page's language. */
+function tr(en, fr, ro) {
+  return { en, fr, ro }[LANG] ?? en;
+}
+
 function pad(n) { return String(n).padStart(2, '0'); }
 
 // ── Countdown ────────────────────────────────────────────────────────────────
@@ -8,7 +18,7 @@ function initCountdown() {
   const el = document.getElementById('countdown');
   if (!el) return;
 
-  const today = window.WEDDING_CONFIG?.labels?.today || 'Today is the day! ✦';
+  const today = tr('Today is the day! ✦', "C'est aujourd'hui ! ✦", 'Astăzi e ziua ! ✦');
 
   function tick() {
     const now  = new Date();
@@ -72,11 +82,13 @@ function initCalendar() {
   const container = document.getElementById('calendar-container');
   if (!container) return;
 
-  const labels = window.WEDDING_CONFIG?.labels || {};
-
-  // Everything the guest will read comes from the page's own labels
-  const eventTitle    = labels.calendarTitle   || 'Wedding of Emma Chirlomez & Theodor Moroianu';
-  const eventDetails  = labels.calendarDetails || eventTitle;
+  // What the guest will read in their calendar, in the page's language
+  const eventTitle   = tr('Wedding of Emma Chirlomez & Theodor Moroianu',
+                          'Mariage d’Emma Chirlomez & Theodor Moroianu',
+                          'Nunta lui Emma Chirlomez & Theodor Moroianu');
+  const eventDetails = tr('Wedding of Emma Chirlomez & Theodor Moroianu at Château de Beauvoir, Bourbonnais',
+                          'Mariage d’Emma Chirlomez & Theodor Moroianu au Château de Beauvoir, Bourbonnais',
+                          'Nunta lui Emma Chirlomez & Theodor Moroianu la Château de Beauvoir, Bourbonnais');
   const eventLocation = 'Château de Beauvoir, Bourbonnais, France';
   const eventUrl      = 'https://www.beauvoir-bourbonnais.fr/';
 
@@ -108,10 +120,10 @@ function initCalendar() {
 
   container.innerHTML = `
     <div class="calendar-wrap">
-      <button class="calendar-btn" id="cal-btn">${labels.addToCalendar || 'Add to Calendar'}</button>
+      <button class="calendar-btn" id="cal-btn">${tr('Add to Calendar', 'Ajouter au calendrier', 'Adăugați în calendar')}</button>
       <div class="calendar-dropdown" id="cal-dropdown">
-        <a href="${googleUrl}" target="_blank" rel="noopener">${labels.googleCalendar || 'Google Calendar'}</a>
-        <a href="${icsUrl}" download="theodor-emma-wedding.ics">${labels.appleOutlook || 'Apple / Outlook (.ics)'}</a>
+        <a href="${googleUrl}" target="_blank" rel="noopener">${tr('Google Calendar', 'Google Agenda', 'Google Calendar')}</a>
+        <a href="${icsUrl}" download="theodor-emma-wedding.ics">Apple / Outlook (.ics)</a>
       </div>
     </div>
   `;

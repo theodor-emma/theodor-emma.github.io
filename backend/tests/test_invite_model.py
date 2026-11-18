@@ -87,7 +87,7 @@ def test_public_invite_hides_bookkeeping():
     assert set(public) == {"key", "invite_type", "label", "language", "responded",
                            "notes", "extra_guests_allowed", "guests"}
     assert set(public["guests"][0]) == {"id", "name", "source", "attending",
-                                        "diet", "allergies", "choir"}
+                                        "diet", "allergies", "choir", "brunch"}
 
 
 # ── Old documents ─────────────────────────────────────────────────────────────

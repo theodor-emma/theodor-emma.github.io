@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+  French version of index.html in this folder: it loads that page with
+  <html lang="fr">, which shows the French texts (see ../lang.css), and keeps
+  this address and this title. Edit index.html, never this file.
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Informations — Theodor &amp; Emma</title>
+  <style>html, body { margin: 0; background: #faf6ef; }</style>
+  <script>
+    { // a block, so nothing here lingers in the page it loads
+    const title = document.title;
+    fetch('index.html')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(page => {
+        document.open();
+        document.write(page
+          .replace('<html lang="en">', '<html lang="fr">')
+          .replace(/<title>[^<]*<\/title>/, '<title>' + title + '</title>'));
+        document.close();
+      })
+      .catch(() => location.replace('index.html' + location.search + location.hash));
+    }
+  </script>
+</head>
+<body></body>
+</html>

@@ -88,6 +88,19 @@ def test_an_answer_can_be_changed_later(api, family):
     assert invite["guests"][0]["choir"] is False
 
 
+def test_brunch_answer_is_stored_and_counted(api, family):
+    invite = api.answer(family["key"], [answer_for(family, 0, brunch=True),
+                                        answer_for(family, 1, brunch=False)])
+    assert [g["brunch"] for g in invite["guests"][:2]] == [True, False]
+    assert api.responses().json()[0]["brunch_count"] == 1
+
+
+def test_someone_who_cannot_come_is_not_at_the_brunch(api, family):
+    invite = api.answer(family["key"], [answer_for(family, 0, attending=False, brunch=True)])
+    assert invite["guests"][0]["brunch"] is False
+    assert api.responses().json()[0]["brunch_count"] == 0
+
+
 def test_someone_who_cannot_come_is_not_in_the_choir(api, family):
     invite = api.answer(family["key"], [answer_for(family, 0, attending=False, choir=True)])
     assert invite["guests"][0]["choir"] is False

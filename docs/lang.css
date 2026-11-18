@@ -1,0 +1,13 @@
+/* ── One page, three languages ──────────────────────────────────────────────
+   Every text is written three times, side by side, marked with lang="en",
+   lang="fr" or lang="ro". The page's own <html lang> decides which one shows:
+   index.html is English, and fr.html / ro.html load it with lang="fr" / "ro". */
+
+html[lang="en"] [lang="fr"], html[lang="en"] [lang="ro"],
+html[lang="fr"] [lang="en"], html[lang="fr"] [lang="ro"],
+html[lang="ro"] [lang="en"], html[lang="ro"] [lang="fr"] { display: none !important; }
+
+/* The language switcher doesn't offer the language you're reading */
+html[lang="en"] .lang-switcher [hreflang="en"],
+html[lang="fr"] .lang-switcher [hreflang="fr"],
+html[lang="ro"] .lang-switcher [hreflang="ro"] { display: none; }

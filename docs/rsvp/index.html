@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RSVP — Emma &amp; Theodor</title>
   <link rel="stylesheet" href="rsvp.css" />
+  <link rel="stylesheet" href="../lang.css" />
 </head>
+<!--
+  One page, three languages: each text is written in English, French and
+  Romanian (lang="en" / "fr" / "ro") and ../lang.css shows the page's language.
+  fr.html and ro.html load this file in French or Romanian. Words written by
+  rsvp.js (buttons, errors, the summary) are in rsvp.js, in all three languages.
+-->
 <body class="photo">
   <div class="card">
     <span class="corner tl"></span>
@@ -13,26 +20,39 @@
     <span class="corner bl"></span>
     <span class="corner br"></span>
 
-    <a class="save-date-link" href="../index.html">Save the Date</a>
+    <nav class="top-nav">
+      <a lang="en" href="../index.html">Save the Date</a>
+      <a lang="fr" href="../fr.html">Faire-part</a>
+      <a lang="ro" href="../ro.html">Rețineți Data</a>
+    </nav>
     <div class="lang-switcher">
-      <a href="fr.html">Français</a>
-      <a href="ro.html">Română</a>
+      <a href="index.html" hreflang="en">English</a>
+      <a href="fr.html" hreflang="fr">Français</a>
+      <a href="ro.html" hreflang="ro">Română</a>
     </div>
 
     <div class="rsvp-header">
-      <p class="rsvp-eyebrow">Wedding RSVP</p>
+      <p class="rsvp-eyebrow">
+        <span lang="en">Wedding RSVP</span>
+        <span lang="fr">Confirmation de présence</span>
+        <span lang="ro">Confirmare prezență</span>
+      </p>
       <p class="rsvp-names">
         Emma Chirlomez
         <span class="ampersand">&amp;</span>
         Theodor Moroianu
       </p>
-      <p class="rsvp-date">Saturday, 7 August 2027</p>
+      <p class="rsvp-date">
+        <span lang="en">Saturday, 7 August 2027</span>
+        <span lang="fr">Le samedi 7 août 2027</span>
+        <span lang="ro">Sâmbătă, 7 august 2027</span>
+      </p>
       <p class="rsvp-venue">
-        <span class="rsvp-venue-label">Ceremony</span>
+        <span class="rsvp-venue-label"><span lang="en">Ceremony</span><span lang="fr">Cérémonie</span><span lang="ro">Ceremonie</span></span>
         <a class="rsvp-venue-link" href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener">Église Saint-Joseph, Dompierre-sur-Besbre, France</a>
       </p>
       <p class="rsvp-venue">
-        <span class="rsvp-venue-label">Reception</span>
+        <span class="rsvp-venue-label"><span lang="en">Reception</span><span lang="fr">Réception</span><span lang="ro">Recepție</span></span>
         <a class="rsvp-venue-link" href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener">Château de Beauvoir, Bourbonnais, France</a>
       </p>
     </div>
@@ -40,131 +60,189 @@
     <div class="divider"><span class="divider-symbol">✦</span></div>
 
     <section id="screen-key" class="screen" hidden>
-      <p class="screen-title">Invitation code</p>
-      <p class="key-prompt">Please enter the invite code from your invitation.</p>
-      <input id="key-input" class="key-input" type="text" placeholder="Your invite code" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+      <p class="screen-title">
+        <span lang="en">Invitation code</span>
+        <span lang="fr">Code d'invitation</span>
+        <span lang="ro">Cod de invitație</span>
+      </p>
+      <p class="key-prompt">
+        <span lang="en">Please enter the invite code from your invitation.</span>
+        <span lang="fr">Veuillez entrer le code figurant sur votre invitation.</span>
+        <span lang="ro">Vă rugăm să introduceți codul de pe invitația dumneavoastră.</span>
+      </p>
+      <!-- placeholder set by rsvp.js -->
+      <input id="key-input" class="key-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
       <p id="key-error" class="key-error"></p>
-      <button id="key-submit" class="btn btn-primary">Continue</button>
+      <button id="key-submit" class="btn btn-primary">
+        <span lang="en">Continue</span><span lang="fr">Continuer</span><span lang="ro">Continuați</span>
+      </button>
     </section>
 
     <section id="screen-loading" class="screen" hidden>
-      <p class="loading-text">Loading…</p>
+      <p class="loading-text">
+        <span lang="en">Loading…</span><span lang="fr">Chargement…</span><span lang="ro">Se încarcă…</span>
+      </p>
     </section>
 
     <!-- One invitee, nobody to add: the plain accept / decline question -->
     <section id="screen-question" class="screen" hidden>
-      <p class="screen-title">Invitation</p>
-      <p class="screen-greeting"><span class="guest-name"></span>, will you be joining us?</p>
+      <p class="screen-title">
+        <span lang="en">Invitation</span><span lang="fr">Invitation</span><span lang="ro">Invitație</span>
+      </p>
+      <p class="screen-greeting"><span class="guest-name"></span><span lang="en">, will you be joining us?</span><span lang="fr">, serez-vous parmi nous ?</span><span lang="ro">, veți putea fi alături de noi?</span></p>
       <div class="btn-row equal">
-        <button id="btn-yes" class="btn btn-primary">I joyfully accept</button>
-        <button id="btn-no"  class="btn btn-ghost">I regretfully decline</button>
+        <button id="btn-yes" class="btn btn-primary">
+          <span lang="en">I joyfully accept</span><span lang="fr">Avec joie</span><span lang="ro">Cu mare drag</span>
+        </button>
+        <button id="btn-no" class="btn btn-ghost">
+          <span lang="en">I regretfully decline</span><span lang="fr">Dans l'impossibilité</span><span lang="ro">Din păcate, nu pot</span>
+        </button>
       </div>
       <div class="btn-row back-row">
-        <button type="button" class="btn-link btn-back">← Back</button>
+        <button type="button" class="btn-link btn-back">
+          <span lang="en">← Back</span><span lang="fr">← Retour</span><span lang="ro">← Înapoi</span>
+        </button>
       </div>
     </section>
 
     <!-- Two or more people on one invitation -->
     <section id="screen-attendance" class="screen" hidden>
-      <p class="screen-title">Your invitation</p>
+      <p class="screen-title">
+        <span lang="en">Your invitation</span>
+        <span lang="fr">Votre invitation</span>
+        <span lang="ro">Invitația dumneavoastră</span>
+      </p>
       <p class="screen-greeting"><span class="invite-label"></span></p>
-      <p class="dietary-intro">Please let us know who will be able to join us.</p>
+      <p class="dietary-intro">
+        <span lang="en">Please let us know who will be able to join us.</span>
+        <span lang="fr">Merci de nous indiquer qui pourra se joindre à nous.</span>
+        <span lang="ro">Vă rugăm să ne spuneți cine va putea fi alături de noi.</span>
+      </p>
       <div id="guest-attendance" class="guest-rows"></div>
-      <button id="btn-add-guest" class="btn-link" type="button" hidden>+ Add someone</button>
+      <!-- text set by rsvp.js -->
+      <button id="btn-add-guest" class="btn-link" type="button" hidden></button>
       <p id="attendance-error" class="key-error"></p>
       <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Back</button>
-        <button id="btn-attendance-next" class="btn btn-primary">Continue</button>
+        <button type="button" class="btn btn-ghost btn-back">
+          <span lang="en">Back</span><span lang="fr">Retour</span><span lang="ro">Înapoi</span>
+        </button>
+        <!-- text set by rsvp.js -->
+        <button id="btn-attendance-next" class="btn btn-primary"></button>
       </div>
     </section>
 
     <!-- Meal preference and allergies, per person -->
     <section id="screen-details" class="screen" hidden>
-      <p class="screen-title">At the table</p>
-      <p class="dietary-intro">Tell us what everyone eats so we can make sure each plate is right.</p>
+      <p class="screen-title">
+        <span lang="en">At the table</span><span lang="fr">À table</span><span lang="ro">La masă</span>
+      </p>
+      <p class="dietary-intro">
+        <span lang="en">Tell us what everyone eats so we can make sure each plate is right.</span>
+        <span lang="fr">Dites-nous ce que chacun mange afin que nous puissions préparer les bonnes assiettes.</span>
+        <span lang="ro">Spuneți-ne ce mănâncă fiecare, ca să pregătim farfuriile potrivite.</span>
+      </p>
       <div id="guest-details"></div>
       <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Back</button>
-        <button id="btn-details-next" class="btn btn-primary">Continue</button>
+        <button type="button" class="btn btn-ghost btn-back">
+          <span lang="en">Back</span><span lang="fr">Retour</span><span lang="ro">Înapoi</span>
+        </button>
+        <button id="btn-details-next" class="btn btn-primary">
+          <span lang="en">Continue</span><span lang="fr">Continuer</span><span lang="ro">Continuați</span>
+        </button>
       </div>
     </section>
 
-    <!-- The choir, and anything the guests want to tell us -->
+    <!-- The brunch, the choir, and anything the guests want to tell us -->
     <section id="screen-notes" class="screen" hidden>
-      <p class="screen-title">One last thing</p>
+      <p class="screen-title">
+        <span lang="en">One last thing</span><span lang="fr">Encore une chose</span><span lang="ro">Încă un lucru</span>
+      </p>
+      <div id="brunch-block" hidden>
+        <p class="field-heading">
+          <span lang="en">Sunday brunch</span>
+          <span lang="fr">Le brunch du dimanche</span>
+          <span lang="ro">Brunch-ul de duminică</span>
+        </p>
+        <p class="dietary-intro">
+          <span lang="en">On Sunday 8 August, from 12 pm to 4 pm, we are hosting a relaxed brunch for everyone. Will you join us?</span>
+          <span lang="fr">Le dimanche 8 août, de 12h à 16h, nous organisons un brunch détendu pour tout le monde. Serez-vous des nôtres ?</span>
+          <span lang="ro">Duminică, 8 august, între 12:00 și 16:00, organizăm un brunch relaxat pentru toată lumea. Veniți și dumneavoastră?</span>
+        </p>
+        <div id="brunch-list" class="choir-list"></div>
+      </div>
       <div id="choir-block" hidden>
-        <p class="field-heading">The church choir</p>
-        <p class="dietary-intro">We are putting together a small choir to sing at the ceremony — everyone is welcome, no experience needed.</p>
+        <p class="field-heading">
+          <span lang="en">The church choir</span>
+          <span lang="fr">La chorale de l’église</span>
+          <span lang="ro">Corul de la biserică</span>
+        </p>
+        <p class="dietary-intro">
+          <span lang="en">We are putting together a small choir to sing at the ceremony — everyone is welcome, no experience needed.</span>
+          <span lang="fr">Nous formons une petite chorale pour chanter pendant la cérémonie — tout le monde est le bienvenu, aucune expérience requise.</span>
+          <span lang="ro">Pregătim un mic cor care va cânta în timpul ceremoniei — toată lumea este binevenită, fără experiență.</span>
+        </p>
         <div id="choir-list" class="choir-list"></div>
       </div>
-      <p class="field-heading">Anything else?</p>
-      <textarea id="notes" class="dietary-comments" placeholder="Comments or notes for us…"></textarea>
+      <p class="field-heading">
+        <span lang="en">Anything else?</span><span lang="fr">Autre chose ?</span><span lang="ro">Altceva?</span>
+      </p>
+      <!-- placeholder set by rsvp.js -->
+      <textarea id="notes" class="dietary-comments"></textarea>
       <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Back</button>
-        <button id="btn-submit" class="btn btn-primary">Confirm attendance</button>
+        <button type="button" class="btn btn-ghost btn-back">
+          <span lang="en">Back</span><span lang="fr">Retour</span><span lang="ro">Înapoi</span>
+        </button>
+        <!-- text set by rsvp.js (Confirm attendance / Send response) -->
+        <button id="btn-submit" class="btn btn-primary"></button>
       </div>
     </section>
 
+    <!-- After replying: what they sent -->
     <section id="screen-already" class="screen" hidden>
-      <p class="screen-title">Your response</p>
-      <div class="summary" id="summary"></div>
-      <button class="btn btn-update">Update my response</button>
-
-      <div id="stay-block" class="after-block" hidden>
-        <div class="divider"><span class="divider-symbol">✦</span></div>
-        <p class="field-heading">Where to stay</p>
-        <p class="dietary-intro">We have gathered places to stay near the church and the château. Once you have booked one, please mark it as taken so others don't spend time on it.</p>
-        <a class="btn-link" href="https://docs.google.com/spreadsheets/d/1HIdAC_2_qP5WGMM9Ng4zUYVJBIdMN_JJ5Gt6me850Dw/edit?gid=1419821447#gid=1419821447" target="_blank" rel="noopener">See the accommodation list →</a>
-      </div>
-
-      <!-- TODO: replace with the real millemercimariage.com link once it exists -->
-      <p class="gift-note">
-        Your presence is the most beautiful gift.
-        For those who have asked, we have also opened a small
-        <a href="https://millemercimariage.com/" target="_blank" rel="noopener">wedding fund</a>.
+      <p class="screen-title">
+        <span lang="en">Your response</span><span lang="fr">Votre réponse</span><span lang="ro">Răspunsul dumneavoastră</span>
       </p>
+      <div class="summary" id="summary"></div>
+
+      <!-- Hidden for now, until the information page is announced:
+      <a class="info-cta" lang="en" href="../info/index.html">
+        <span class="info-cta-eyebrow">Next</span>
+        <span class="info-cta-title">Wedding information</span>
+        <span class="info-cta-text">Where to stay, a map of the area, getting there and gifts</span>
+        <span class="info-cta-go">Open →</span>
+      </a>
+      <a class="info-cta" lang="fr" href="../info/fr.html">
+        <span class="info-cta-eyebrow">Et maintenant</span>
+        <span class="info-cta-title">Informations pratiques</span>
+        <span class="info-cta-text">Où dormir, une carte des environs, comment venir et les cadeaux</span>
+        <span class="info-cta-go">Voir →</span>
+      </a>
+      <a class="info-cta" lang="ro" href="../info/ro.html">
+        <span class="info-cta-eyebrow">Ce urmează</span>
+        <span class="info-cta-title">Informații practice</span>
+        <span class="info-cta-text">Unde vă puteți caza, o hartă a zonei, cum ajungeți și cadourile</span>
+        <span class="info-cta-go">Deschideți →</span>
+      </a>
+      -->
+
+      <button class="btn btn-ghost btn-update">
+        <span lang="en">Update my response</span><span lang="fr">Modifier ma réponse</span><span lang="ro">Modificați răspunsul</span>
+      </button>
     </section>
 
     <section id="screen-error" class="screen" hidden>
       <p class="result-icon">✦</p>
       <p id="error-text" class="dietary-intro"></p>
-      <button id="btn-retry" class="btn">Try again</button>
+      <button id="btn-retry" class="btn">
+        <span lang="en">Try again</span><span lang="fr">Réessayer</span><span lang="ro">Încercați din nou</span>
+      </button>
     </section>
 
   </div>
 
   <script src="api-base.js"></script>
   <script>
-    window.RSVP_CONFIG = {
-      apiBase: window.API_BASE,
-      labels: {
-        invalidKey:           'Invite code not found. Please check and try again.',
-        networkError:         'Unable to connect. Please try again later.',
-        submitError:          'Failed to submit your response. Please try again.',
-        coming:               'Coming',
-        notComing:            "Can't come",
-        continueLabel:        'Continue',
-        sendResponse:         'Send response',
-        addGuest:             '+ Add someone',
-        removeGuest:          'Remove',
-        guestNamePlaceholder: "Guest's name",
-        yourGuest:            'Your guest',
-        needGuestName:        'Please enter a name for each additional guest.',
-        allergiesLabel:       'Allergies',
-        allergiesPlaceholder: 'Allergies (nuts, shellfish…)',
-        attendanceLabel:      'Attendance',
-        noneAttending:        'Not attending',
-        choirLabel:           'Would like to sing in the choir',
-        choirYes:             'Yes, I would like to sing in the choir',
-        choirSummary:         'Church choir',
-        notesLabel:           'Comments',
-        diet: {
-          'none':       'No restrictions',
-          'vegetarian': 'Vegetarian',
-          'vegan':      'Vegan',
-        },
-      },
-    };
+    window.RSVP_CONFIG = { apiBase: window.API_BASE };
   </script>
   <script src="rsvp.js"></script>
 </body>

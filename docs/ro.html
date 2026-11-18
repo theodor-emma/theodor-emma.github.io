@@ -1,92 +1,30 @@
 <!DOCTYPE html>
+<!--
+  Romanian version of index.html in this folder: it loads that page with
+  <html lang="ro">, which shows the Romanian texts (see ../lang.css), and keeps
+  this address and this title. Edit index.html, never this file.
+-->
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rețineți Data — Theodor &amp; Emma</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body class="photo">
-  <div class="card">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-
-    <div class="lang-switcher">
-      <a href="index.html">English</a>
-      <a href="fr.html">Français</a>
-    </div>
-
-    <p class="save-the-date">Rețineți Data</p>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <div class="names">
-      Emma Chirlomez
-      <span class="ampersand">&amp;</span>
-      Theodor Moroianu
-    </div>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <div class="date-block">
-      <p class="date-label">Se căsătoresc</p>
-      <p class="date">Sâmbătă, 7 august 2027</p>
-    </div>
-
-    <div class="church-block">
-      <p class="venue-label">Ceremonie</p>
-      <a class="venue-link" href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener">
-        Église Saint-Joseph, Dompierre-sur-Besbre, France
-      </a>
-    </div>
-
-    <div class="venue-block">
-      <p class="venue-label">Recepție</p>
-      <a class="venue-link" href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener">
-        Château de Beauvoir, Bourbonnais, France
-      </a>
-    </div>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <div class="countdown" id="countdown">
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-days">—</span>
-        <span class="countdown-label">Zile</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-hours">—</span>
-        <span class="countdown-label">Ore</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-minutes">—</span>
-        <span class="countdown-label">Minute</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-seconds">—</span>
-        <span class="countdown-label">Secunde</span>
-      </div>
-    </div>
-
-    <div id="calendar-container"></div>
-
-    <p class="formal-invitation">Invitația oficială urmează.</p>
-  </div>
-
+  <style>html, body { margin: 0; background: #faf6ef; }</style>
   <script>
-    window.WEDDING_CONFIG = {
-      labels: {
-        addToCalendar:   'Adăugați în calendar',
-        googleCalendar:  'Google Calendar',
-        appleOutlook:    'Apple / Outlook (.ics)',
-        calendarTitle:   'Nunta lui Emma Chirlomez & Theodor Moroianu',
-        calendarDetails: 'Nunta lui Emma Chirlomez & Theodor Moroianu la Château de Beauvoir, Bourbonnais',
-        today:           'Astăzi e ziua ! ✦',
-      }
-    };
+    { // a block, so nothing here lingers in the page it loads
+    const title = document.title;
+    fetch('index.html')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(page => {
+        document.open();
+        document.write(page
+          .replace('<html lang="en">', '<html lang="ro">')
+          .replace(/<title>[^<]*<\/title>/, '<title>' + title + '</title>'));
+        document.close();
+      })
+      .catch(() => location.replace('index.html' + location.search + location.hash));
+    }
   </script>
-  <script src="main.js"></script>
-</body>
+</head>
+<body></body>
 </html>

@@ -8,8 +8,9 @@ One invitation (one code) covers one or more people:
   family    a household of named people, optionally allowed to add a few more
             (children, partners) themselves
 
-Every person carries their own answer: attending, diet, allergies and whether
-they would like to sing in the church choir.
+Every person carries their own answer: attending, diet, allergies, whether
+they would like to sing in the church choir and whether they will come to the
+Sunday brunch.
 """
 
 from datetime import datetime, timezone
@@ -86,6 +87,7 @@ def new_guest(name: str, source: str = "host") -> dict:
         "diet":      "none",
         "allergies": "",
         "choir":     False,
+        "brunch":    False,
     }
 
 
@@ -161,6 +163,7 @@ def _normalize_guest(raw: dict, index: int) -> dict:
     guest["diet"] = diet if diet in DIETS else "none"
     guest["allergies"] = str(raw.get("allergies") or "")[:MAX_ALLERGIES_LEN]
     guest["choir"] = raw.get("choir") is True
+    guest["brunch"] = raw.get("brunch") is True
     return guest
 
 
@@ -277,6 +280,7 @@ def public_invite(invite: dict) -> dict:
                 "diet":      g["diet"],
                 "allergies": g["allergies"],
                 "choir":     g["choir"],
+                "brunch":    g["brunch"],
             }
             for g in invite["guests"]
         ],
@@ -302,6 +306,7 @@ def admin_invite(invite: dict) -> dict:
         "invited_count":        len([g for g in guests if g["source"] == "host"]),
         "attending_count":      len(attending),
         "choir_count":          len([g for g in attending if g.get("choir")]),
+        "brunch_count":         len([g for g in attending if g.get("brunch")]),
         "responded_at":         _iso(invite.get("responded_at")),
         "created_at":           _iso(invite.get("created_at")),
     }

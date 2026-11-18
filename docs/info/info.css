@@ -1,0 +1,470 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+:root {
+  --cream: #faf6ef;
+  --gold: #b8975a;
+  --gold-light: #d4b37a;
+  --dark: #2c2416;
+  --muted: #7a6e5f;
+  --wine: #8e5a66;
+  --line: rgba(184, 151, 90, 0.28);
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--dark);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem clamp(0.75rem, 2.5vw, 2rem);
+}
+
+/* ── Photo backdrop, as on every other page ── */
+body.photo::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('../chateau.jpeg') center / cover no-repeat;
+  opacity: 0.32;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Card: the same frame as the other pages, wider so the map can breathe ── */
+.card {
+  max-width: 1180px;
+  width: 100%;
+  border: 1px solid var(--gold);
+  padding: clamp(2.6rem, 5vh, 3.5rem) clamp(1.1rem, 4vw, 3.2rem) clamp(2rem, 4vh, 3rem);
+  position: relative;
+  background: var(--cream);
+  z-index: 1;
+  margin: auto;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px solid var(--gold-light);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.corner {
+  position: absolute;
+  width: 28px; height: 28px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+.corner.tl { top: -1px;    left: -1px;  border-width: 2px 0 0 2px; }
+.corner.tr { top: -1px;    right: -1px; border-width: 2px 2px 0 0; }
+.corner.bl { bottom: -1px; left: -1px;  border-width: 0 0 2px 2px; }
+.corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+/* ── Language switcher ── */
+.lang-switcher {
+  position: absolute;
+  top: 1rem; right: 1.2rem;
+  display: flex;
+  gap: 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 2;
+}
+.lang-switcher a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.lang-switcher a:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+
+/* ── Links to the other pages, top left (the language switcher is top right) ── */
+.top-nav {
+  position: absolute;
+  top: 1rem; left: 1.2rem;
+  display: flex;
+  gap: 0.9rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 2;
+}
+.top-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.top-nav a:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+
+/* Phones: both corners share one line, so make them smaller */
+@media (max-width: 480px) {
+  .top-nav, .lang-switcher { top: 0.85rem; font-size: 0.55rem; letter-spacing: 0.06em; gap: 0.6rem; }
+  .top-nav { left: 0.95rem; }
+  .lang-switcher { right: 0.95rem; }
+}
+
+/* ── Header ── */
+.stay-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.stay-header .divider { margin-bottom: 0.4rem; }
+
+.eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+
+.stay-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.15;
+}
+
+.stay-date {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.7rem;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin: 1.4rem auto;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gold-light);
+}
+.divider-symbol {
+  display: block;
+  width: 16px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0Q13.8 10.2 24 12Q13.8 13.8 12 24Q10.2 13.8 0 12Q10.2 10.2 12 0Z' fill='%23b8975a'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
+}
+
+.stay-intro {
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+}
+
+.btn {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--gold);
+  background: var(--gold);
+  color: var(--cream);
+  padding: 0.8rem 1.8rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
+
+.stay-help {
+  margin-top: 0.9rem;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.stay-help a { color: var(--muted); }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0 clamp(1rem, 5vw, 3.5rem);
+  margin: 0.6rem 0 1.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 0.7rem 0.4rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.tab:hover { color: var(--gold); }
+.tab[aria-selected="true"] { color: var(--dark); border-bottom-color: var(--gold); }
+.tab:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+
+/* ── Map ── */
+#map {
+  height: clamp(420px, 68vh, 760px);
+  border: 1px solid var(--gold-light);
+  background: #ece6da;
+  z-index: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.6rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--dark);
+}
+.legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+.dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(44, 36, 22, 0.35);
+  flex: none;
+}
+.dot.stay      { background: var(--gold); }
+.dot.approx    { background: transparent; border: 1.5px dashed var(--muted); }
+.dot.place     { background: var(--wine); border-color: var(--wine); width: 14px; height: 14px; }
+
+.map-note {
+  text-align: center;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 0.6rem;
+}
+
+/* Popups and labels in the page's own type */
+.leaflet-container { font-family: 'Cormorant Garamond', Georgia, serif; }
+.leaflet-popup-content-wrapper {
+  background: var(--cream);
+  border: 1px solid var(--gold-light);
+  border-radius: 2px;
+  box-shadow: 0 6px 20px rgba(44, 36, 22, 0.18);
+}
+.leaflet-popup-tip { background: var(--cream); }
+.leaflet-popup-content { margin: 0.9rem 1.1rem; font-size: 1rem; line-height: 1.45; color: var(--dark); }
+.pop-name { font-size: 1.15rem; font-weight: 500; line-height: 1.25; }
+.pop-meta { color: var(--muted); font-style: italic; margin-bottom: 0.45rem; }
+.pop-approx { font-style: italic; color: var(--gold); }
+
+
+.place-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--wine);
+  color: var(--cream);
+  border: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(44, 36, 22, 0.3);
+}
+.place-label::before { border-top-color: var(--wine) !important; }
+
+/* ── Guide ── */
+.guide {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: clamp(1.05rem, 2vw, 1.18rem);
+  line-height: 1.65;
+}
+.guide h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 2.4rem 0 0.8rem;
+}
+.guide h2:first-child { margin-top: 0.4rem; }
+.guide p, .guide ul, .guide ol { margin-bottom: 0.9rem; }
+.guide ul, .guide ol { padding-left: 1.3rem; }
+.guide li { margin-bottom: 0.3rem; }
+.guide strong { font-weight: 500; }
+.guide a.btn { color: var(--cream); }
+
+/* Links in the text, the map note and the popups look like the Save the
+   Date page's: italic, dark, with a thin gold rule that turns gold on hover */
+.guide a:not(.btn), .map-note a, .leaflet-popup-content a {
+  font-style: italic;
+  color: var(--dark);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-light);
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.guide a:not(.btn):hover, .map-note a:hover, .leaflet-popup-content a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.table-wrap { overflow-x: auto; margin: 0.4rem 0 1.2rem; }
+.guide table { border-collapse: collapse; width: 100%; font-size: 1rem; }
+.guide th {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 0.5rem 0.8rem 0.5rem 0;
+  border-bottom: 1px solid var(--gold-light);
+}
+.guide td {
+  padding: 0.55rem 0.8rem 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.contact {
+  border-left: 2px solid var(--gold);
+  padding: 0.6rem 1rem;
+  background: rgba(184, 151, 90, 0.07);
+  margin: 1rem 0;
+}
+
+.sign-off {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.25rem;
+  margin-top: 2.2rem;
+}
+
+/* ── General ── */
+.venues {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 0.4rem 0 0.6rem;
+}
+.venue {
+  text-align: center;
+  border: 1px solid var(--line);
+  padding: 1.3rem 1rem 1.1rem;
+}
+.venue-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.35rem !important;
+}
+.venue-name { font-size: 1.45rem; font-style: italic; font-weight: 300; line-height: 1.2; margin-bottom: 0.1rem !important; }
+.venue-place { color: var(--muted); margin-bottom: 0.5rem !important; }
+.venue-links { font-size: 1rem; margin: 0 !important; }
+
+/* ── Accommodation lead ── */
+.lead { text-align: center; margin-bottom: 0.6rem; }
+
+/* ── Gifts ── */
+.gifts { text-align: center; max-width: 620px; }
+.gifts-lead { font-size: clamp(1.15rem, 2.4vw, 1.35rem); font-style: italic; line-height: 1.6; margin: 0.6rem 0 1.2rem !important; }
+.bank {
+  text-align: left;
+  border: 1px solid var(--gold-light);
+  background: rgba(184, 151, 90, 0.07);
+  padding: 1rem 1.3rem;
+  margin: 1.6rem auto 0;
+  max-width: 460px;
+}
+.bank div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 1rem; padding: 0.45rem 0; }
+.bank div + div { border-top: 1px solid var(--line); }
+.bank dt {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  width: 8.5rem;
+  flex: none;
+}
+.bank dd { flex: 1; min-width: 12rem; }
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 0.92rem; letter-spacing: 0.02em; }
+.copy {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: none;
+  border: 1px solid var(--gold-light);
+  padding: 0.2rem 0.55rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+  vertical-align: 0.1em;
+}
+.copy:hover { background: var(--gold); color: var(--cream); }
+
+@media (max-width: 560px) {
+  /* Five tabs don't fit on one line on a phone: wrap them onto two, centred */
+  .tabs { flex-wrap: wrap; justify-content: center; gap: 0 1rem; }
+  .tab { letter-spacing: 0.06em; font-size: 0.6rem; padding: 0.6rem 0.1rem; white-space: nowrap; }
+  #map { height: 62vh; }
+}
+
+/* Leaflet's focus ring only for keyboard users, in the page's gold */
+.leaflet-container:focus { outline: none; }
+.leaflet-container:focus-visible { outline: 1px solid var(--gold); outline-offset: 2px; }
+
+/* ── Schedule: times in a column, what happens beside them ── */
+.schedule {
+  list-style: none;
+  padding: 0 !important;
+  margin: 1rem 0 0.6rem;
+  border-left: 1px solid var(--gold-light);
+}
+.schedule li {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.35rem 0 0.35rem 1rem;
+  margin: 0 !important;
+  position: relative;
+}
+.schedule li::before {             /* a small gold bead on the line */
+  content: '';
+  position: absolute;
+  left: -4px; top: 0.95rem;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.schedule .time {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  min-width: 4.6rem;
+  flex: none;
+}
+.schedule-note { font-style: italic; color: var(--muted); font-size: 1rem; }

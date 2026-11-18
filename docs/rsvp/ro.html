@@ -1,171 +1,30 @@
 <!DOCTYPE html>
+<!--
+  Romanian version of index.html in this folder: it loads that page with
+  <html lang="ro">, which shows the Romanian texts (see ../lang.css), and keeps
+  this address and this title. Edit index.html, never this file.
+-->
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RSVP — Emma &amp; Theodor</title>
-  <link rel="stylesheet" href="rsvp.css" />
-</head>
-<body class="photo">
-  <div class="card">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-
-    <a class="save-date-link" href="../ro.html">Rețineți Data</a>
-    <div class="lang-switcher">
-      <a href="index.html">English</a>
-      <a href="fr.html">Français</a>
-    </div>
-
-    <div class="rsvp-header">
-      <p class="rsvp-eyebrow">Confirmare prezență</p>
-      <p class="rsvp-names">
-        Emma Chirlomez
-        <span class="ampersand">&amp;</span>
-        Theodor Moroianu
-      </p>
-      <p class="rsvp-date">Sâmbătă, 7 august 2027</p>
-      <p class="rsvp-venue">
-        <span class="rsvp-venue-label">Ceremonie</span>
-        <a class="rsvp-venue-link" href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener">Église Saint-Joseph, Dompierre-sur-Besbre, France</a>
-      </p>
-      <p class="rsvp-venue">
-        <span class="rsvp-venue-label">Recepție</span>
-        <a class="rsvp-venue-link" href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener">Château de Beauvoir, Bourbonnais, France</a>
-      </p>
-    </div>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <section id="screen-key" class="screen" hidden>
-      <p class="screen-title">Cod de invitație</p>
-      <p class="key-prompt">Vă rugăm să introduceți codul de pe invitația dumneavoastră.</p>
-      <input id="key-input" class="key-input" type="text" placeholder="Codul invitației" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-      <p id="key-error" class="key-error"></p>
-      <button id="key-submit" class="btn btn-primary">Continuați</button>
-    </section>
-
-    <section id="screen-loading" class="screen" hidden>
-      <p class="loading-text">Se încarcă…</p>
-    </section>
-
-    <!-- O singură persoană invitată, fără însoțitor -->
-    <section id="screen-question" class="screen" hidden>
-      <p class="screen-title">Invitație</p>
-      <p class="screen-greeting"><span class="guest-name"></span>, veți putea fi alături de noi?</p>
-      <div class="btn-row equal">
-        <button id="btn-yes" class="btn btn-primary">Cu mare drag</button>
-        <button id="btn-no"  class="btn btn-ghost">Din păcate, nu pot</button>
-      </div>
-      <div class="btn-row back-row">
-        <button type="button" class="btn-link btn-back">← Înapoi</button>
-      </div>
-    </section>
-
-    <!-- Mai multe persoane pe aceeași invitație -->
-    <section id="screen-attendance" class="screen" hidden>
-      <p class="screen-title">Invitația dumneavoastră</p>
-      <p class="screen-greeting"><span class="invite-label"></span></p>
-      <p class="dietary-intro">Vă rugăm să ne spuneți cine va putea fi alături de noi.</p>
-      <div id="guest-attendance" class="guest-rows"></div>
-      <button id="btn-add-guest" class="btn-link" type="button" hidden>+ Adăugați o persoană</button>
-      <p id="attendance-error" class="key-error"></p>
-      <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Înapoi</button>
-        <button id="btn-attendance-next" class="btn btn-primary">Continuați</button>
-      </div>
-    </section>
-
-    <!-- Preferințe culinare și alergii, pentru fiecare persoană -->
-    <section id="screen-details" class="screen" hidden>
-      <p class="screen-title">La masă</p>
-      <p class="dietary-intro">Spuneți-ne ce mănâncă fiecare, ca să pregătim farfuriile potrivite.</p>
-      <div id="guest-details"></div>
-      <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Înapoi</button>
-        <button id="btn-details-next" class="btn btn-primary">Continuați</button>
-      </div>
-    </section>
-
-    <!-- The choir, and anything the guests want to tell us -->
-    <section id="screen-notes" class="screen" hidden>
-      <p class="screen-title">Încă un lucru</p>
-      <div id="choir-block" hidden>
-        <p class="field-heading">Corul de la biserică</p>
-        <p class="dietary-intro">Pregătim un mic cor care va cânta în timpul ceremoniei — toată lumea este binevenită, fără experiență.</p>
-        <div id="choir-list" class="choir-list"></div>
-      </div>
-      <p class="field-heading">Altceva?</p>
-      <textarea id="notes" class="dietary-comments" placeholder="Comentarii sau mențiuni pentru noi…"></textarea>
-      <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Înapoi</button>
-        <button id="btn-submit" class="btn btn-primary">Confirmați prezența</button>
-      </div>
-    </section>
-
-    <section id="screen-already" class="screen" hidden>
-      <p class="screen-title">Răspunsul dumneavoastră</p>
-      <div class="summary" id="summary"></div>
-      <button class="btn btn-update">Modificați răspunsul</button>
-
-      <div id="stay-block" class="after-block" hidden>
-        <div class="divider"><span class="divider-symbol">✦</span></div>
-        <p class="field-heading">Unde vă puteți caza</p>
-        <p class="dietary-intro">Am adunat locuri de cazare aproape de biserică și de castel. După ce rezervați unul, vă rugăm să-l marcați ca ocupat, ca alții să nu-și piardă timpul cu el (tabelul este în engleză).</p>
-        <a class="btn-link" href="https://docs.google.com/spreadsheets/d/1HIdAC_2_qP5WGMM9Ng4zUYVJBIdMN_JJ5Gt6me850Dw/edit?gid=1419821447#gid=1419821447" target="_blank" rel="noopener">Vedeți lista de cazări →</a>
-      </div>
-
-      <!-- TODO: replace with the real millemercimariage.com link once it exists -->
-      <p class="gift-note">
-        Prezența dumneavoastră este cel mai frumos dar.
-        Pentru cei care ne-au întrebat, am deschis și un mic
-        <a href="https://millemercimariage.com/" target="_blank" rel="noopener">fond pentru nuntă</a>.
-      </p>
-    </section>
-
-    <section id="screen-error" class="screen" hidden>
-      <p class="result-icon">✦</p>
-      <p id="error-text" class="dietary-intro"></p>
-      <button id="btn-retry" class="btn">Încercați din nou</button>
-    </section>
-
-  </div>
-
-  <script src="api-base.js"></script>
+  <title>Confirmare prezență — Emma &amp; Theodor</title>
+  <style>html, body { margin: 0; background: #faf6ef; }</style>
   <script>
-    window.RSVP_CONFIG = {
-      apiBase: window.API_BASE,
-      labels: {
-        invalidKey:           'Cod de invitație negăsit. Vă rugăm verificați și încercați din nou.',
-        networkError:         'Nu se poate conecta. Vă rugăm încercați mai târziu.',
-        submitError:          'Trimiterea a eșuat. Vă rugăm încercați din nou.',
-        coming:               'Prezent(ă)',
-        notComing:            'Absent(ă)',
-        continueLabel:        'Continuați',
-        sendResponse:         'Trimiteți răspunsul',
-        addGuest:             '+ Adăugați o persoană',
-        removeGuest:          'Ștergeți',
-        guestNamePlaceholder: 'Numele persoanei',
-        yourGuest:            'Însoțitorul dumneavoastră',
-        needGuestName:        'Vă rugăm să completați numele fiecărei persoane adăugate.',
-        allergiesLabel:       'Alergii',
-        allergiesPlaceholder: 'Alergii (nuci, fructe de mare…)',
-        attendanceLabel:      'Prezență',
-        noneAttending:        'Absent(ă)',
-        choirLabel:           'Dorește să cânte în cor',
-        choirYes:             'Da, aș dori să cânt în cor',
-        choirSummary:         'Corul bisericii',
-        notesLabel:           'Comentarii',
-        diet: {
-          'none':       'Fără restricții',
-          'vegetarian': 'Vegetarian',
-          'vegan':      'Vegan',
-        },
-      },
-    };
+    { // a block, so nothing here lingers in the page it loads
+    const title = document.title;
+    fetch('index.html')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(page => {
+        document.open();
+        document.write(page
+          .replace('<html lang="en">', '<html lang="ro">')
+          .replace(/<title>[^<]*<\/title>/, '<title>' + title + '</title>'));
+        document.close();
+      })
+      .catch(() => location.replace('index.html' + location.search + location.hash));
+    }
   </script>
-  <script src="rsvp.js"></script>
-</body>
+</head>
+<body></body>
 </html>

@@ -1,92 +1,30 @@
 <!DOCTYPE html>
+<!--
+  French version of index.html in this folder: it loads that page with
+  <html lang="fr">, which shows the French texts (see ../lang.css), and keeps
+  this address and this title. Edit index.html, never this file.
+-->
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Faire-part de Mariage — Theodor &amp; Emma</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body class="photo">
-  <div class="card">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-
-    <div class="lang-switcher">
-      <a href="index.html">English</a>
-      <a href="ro.html">Română</a>
-    </div>
-
-    <p class="save-the-date">Faire-part de Mariage</p>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <div class="names">
-      Emma Chirlomez
-      <span class="ampersand">&amp;</span>
-      Theodor Moroianu
-    </div>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <div class="date-block">
-      <p class="date-label">Se marient</p>
-      <p class="date">Le samedi 7 août 2027</p>
-    </div>
-
-    <div class="church-block">
-      <p class="venue-label">Cérémonie</p>
-      <a class="venue-link" href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener">
-        Église Saint-Joseph, Dompierre-sur-Besbre, France
-      </a>
-    </div>
-
-    <div class="venue-block">
-      <p class="venue-label">Réception</p>
-      <a class="venue-link" href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener">
-        Château de Beauvoir, Bourbonnais, France
-      </a>
-    </div>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <div class="countdown" id="countdown">
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-days">—</span>
-        <span class="countdown-label">Jours</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-hours">—</span>
-        <span class="countdown-label">Heures</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-minutes">—</span>
-        <span class="countdown-label">Minutes</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="cd-seconds">—</span>
-        <span class="countdown-label">Secondes</span>
-      </div>
-    </div>
-
-    <div id="calendar-container"></div>
-
-    <p class="formal-invitation">Invitation officielle à venir.</p>
-  </div>
-
+  <style>html, body { margin: 0; background: #faf6ef; }</style>
   <script>
-    window.WEDDING_CONFIG = {
-      labels: {
-        addToCalendar:   'Ajouter au calendrier',
-        googleCalendar:  'Google Agenda',
-        appleOutlook:    'Apple / Outlook (.ics)',
-        calendarTitle:   'Mariage d’Emma Chirlomez & Theodor Moroianu',
-        calendarDetails: 'Mariage d’Emma Chirlomez & Theodor Moroianu au Château de Beauvoir, Bourbonnais',
-        today:           "C'est aujourd'hui ! ✦",
-      }
-    };
+    { // a block, so nothing here lingers in the page it loads
+    const title = document.title;
+    fetch('index.html')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(page => {
+        document.open();
+        document.write(page
+          .replace('<html lang="en">', '<html lang="fr">')
+          .replace(/<title>[^<]*<\/title>/, '<title>' + title + '</title>'));
+        document.close();
+      })
+      .catch(() => location.replace('index.html' + location.search + location.hash));
+    }
   </script>
-  <script src="main.js"></script>
-</body>
+</head>
+<body></body>
 </html>

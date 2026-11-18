@@ -1,15 +1,25 @@
 // ── Config ───────────────────────────────────────────────────────────────────
 const API_BASE = (window.RSVP_CONFIG && window.RSVP_CONFIG.apiBase) || 'http://localhost:8000';
-const L        = (window.RSVP_CONFIG && window.RSVP_CONFIG.labels)  || {};
+
+// The page's language: index.html is English; fr.html and ro.html load it
+// with <html lang="fr"> / "ro". Text written in index.html is switched by
+// ../lang.css; text this script writes picks its language with tr().
+const LANG = document.documentElement.lang;
+
+/** The text in the page's language. */
+function tr(en, fr, ro) {
+  return { en, fr, ro }[LANG] ?? en;
+}
 
 const DIETS = ['none', 'vegetarian', 'vegan'];
+const DIET_LABELS = {
+  none:       tr('No restrictions', 'Aucune restriction', 'Fără restricții'),
+  vegetarian: tr('Vegetarian', 'Végétarien', 'Vegetarian'),
+  vegan:      tr('Vegan', 'Végétalien', 'Vegan'),
+};
 
 // answers mirror the guest list while the form is being filled in
 const state = { key: null, invite: null, answers: [] };
-
-function t(path, fallback) {
-  return path.split('.').reduce((o, k) => (o == null ? o : o[k]), L) ?? fallback;
-}
 
 // Codes are printed in uppercase; forgive spaces, dashes and lower case
 function cleanKey(raw) {
@@ -76,7 +86,9 @@ async function fetchInvite(key) {
   try {
     const res = await fetch(API_BASE + '/invite/' + encodeURIComponent(key));
     if (res.status === 404) {
-      const msg = t('invalidKey', 'Invite code not found. Please check and try again.');
+      const msg = tr('Invite code not found. Please check and try again.',
+                     "Code d'invitation introuvable. Veuillez vérifier et réessayer.",
+                     'Cod de invitație negăsit. Vă rugăm verificați și încercați din nou.');
       if (keyIsFromUrl) showError(msg);
       else              showScreen('screen-key', msg);
       return;
@@ -93,7 +105,9 @@ async function fetchInvite(key) {
       startForm();
     }
   } catch (e) {
-    showError(t('networkError', 'Unable to connect. Please try again later.'));
+    showError(tr('Unable to connect. Please try again later.',
+                 'Impossible de se connecter. Veuillez réessayer plus tard.',
+                 'Nu se poate conecta. Vă rugăm încercați mai târziu.'));
   }
 }
 
@@ -116,6 +130,7 @@ async function submitRSVP() {
               diet:      a.attending ? a.diet : 'none',
               allergies: a.attending ? a.allergies.trim() : '',
               choir:     a.attending ? !!a.choir : false,
+              brunch:    a.attending ? !!a.brunch : false,
             })),
         }),
       }
@@ -126,7 +141,9 @@ async function submitRSVP() {
     renderSummary();
     showScreen('screen-already');
   } catch (e) {
-    showError(t('submitError', 'Failed to submit your response. Please try again.'));
+    showError(tr('Failed to submit your response. Please try again.',
+                 "Échec de l'envoi. Veuillez réessayer.",
+                 'Trimiterea a eșuat. Vă rugăm încercați din nou.'));
   }
 }
 
@@ -144,6 +161,7 @@ function adoptInvite(data) {
     diet:      DIETS.includes(g.diet) ? g.diet : 'none',
     allergies: g.allergies || '',
     choir:     g.choir === true,
+    brunch:    g.brunch === true,
   }));
 
   // A plus-one invitation always offers its companion row up front
@@ -161,7 +179,7 @@ function adoptInvite(data) {
 }
 
 function blankExtra() {
-  return { id: null, name: '', isExtra: true, attending: false, diet: 'none', allergies: '', choir: false };
+  return { id: null, name: '', isExtra: true, attending: false, diet: 'none', allergies: '', choir: false, brunch: false };
 }
 
 function extraCount() {
@@ -197,9 +215,11 @@ function renderAttendance() {
       const input = document.createElement('input');
       input.type        = 'text';
       input.className   = 'guest-row-input';
-      input.placeholder = t('guestNamePlaceholder', "Guest's name");
+      input.placeholder = tr("Guest's name", 'Nom de la personne', 'Numele persoanei');
       input.value       = answer.name;
-      input.setAttribute('aria-label', t('guestNamePlaceholder', "Guest's name"));
+      input.setAttribute('aria-label', tr("Guest's name",
+                                          'Nom de la personne',
+                                          'Numele persoanei'));
       input.addEventListener('input', () => { answer.name = input.value; });
       row.appendChild(input);
     } else {
@@ -215,8 +235,8 @@ function renderAttendance() {
       const remove = document.createElement('button');
       remove.type      = 'button';
       remove.className = 'guest-row-remove';
-      remove.title     = t('removeGuest', 'Remove');
-      remove.setAttribute('aria-label', t('removeGuest', 'Remove'));
+      remove.title     = tr('Remove', 'Retirer', 'Ștergeți');
+      remove.setAttribute('aria-label', tr('Remove', 'Retirer', 'Ștergeți'));
       remove.textContent = '×';
       remove.addEventListener('click', () => {
         state.answers.splice(idx, 1);
@@ -233,7 +253,7 @@ function renderAttendance() {
     const canAdd = state.invite.invite_type !== 'plus_one'
       && extraCount() < (state.invite.extra_guests_allowed || 0);
     addBtn.hidden = !canAdd;
-    addBtn.textContent = t('addGuest', '+ Add someone');
+    addBtn.textContent = tr('+ Add someone', '+ Ajouter une personne', '+ Adăugați o persoană');
   }
 
   const err = document.getElementById('attendance-error');
@@ -246,7 +266,9 @@ function buildToggle(answer, idx) {
   const wrap = document.createElement('div');
   wrap.className = 'toggle';
 
-  [['yes', t('coming', 'Coming')], ['no', t('notComing', "Can't come")]].forEach(([val, text]) => {
+  [['yes', tr('Coming',
+              'Présent(e)',
+              'Prezent(ă)')], ['no', tr("Can't come", 'Absent(e)', 'Absent(ă)')]].forEach(([val, text]) => {
     const btn = document.createElement('button');
     btn.type      = 'button';
     btn.className = 'toggle-btn' + ((val === 'yes') === !!answer.attending ? ' is-on' : '');
@@ -271,7 +293,7 @@ function attendingAnswers() {
 
 function updateNextLabel() {
   const btn = document.getElementById('btn-attendance-next');
-  if (btn) btn.textContent = t('continueLabel', 'Continue');
+  if (btn) btn.textContent = tr('Continue', 'Continuer', 'Continuați');
 }
 
 // ── Details (diet + allergies) screen ─────────────────────────────────────────
@@ -288,7 +310,9 @@ function renderDetails() {
     if (!isSimpleInvite()) {
       const name = document.createElement('p');
       name.className   = 'guest-detail-name';
-      name.textContent = answer.name.trim() || t('yourGuest', 'Your guest');
+      name.textContent = answer.name.trim() || tr('Your guest',
+                                                  'Votre accompagnant',
+                                                  'Însoțitorul dumneavoastră');
       block.appendChild(name);
     }
 
@@ -306,7 +330,7 @@ function renderDetails() {
       input.addEventListener('change', () => { answer.diet = diet; });
 
       const span = document.createElement('span');
-      span.textContent = t('diet.' + diet, diet);
+      span.textContent = DIET_LABELS[diet];
 
       label.append(input, span);
       radios.appendChild(label);
@@ -316,9 +340,11 @@ function renderDetails() {
     const allergies = document.createElement('input');
     allergies.type        = 'text';
     allergies.className   = 'dietary-other';
-    allergies.placeholder = t('allergiesPlaceholder', 'Allergies…');
+    allergies.placeholder = tr('Allergies (nuts, shellfish…)',
+                               'Allergies (fruits à coque, fruits de mer…)',
+                               'Alergii (nuci, fructe de mare…)');
     allergies.value       = answer.allergies;
-    allergies.setAttribute('aria-label', t('allergiesLabel', 'Allergies'));
+    allergies.setAttribute('aria-label', tr('Allergies', 'Allergies', 'Alergii'));
     allergies.addEventListener('input', () => { answer.allergies = allergies.value; });
     block.appendChild(allergies);
 
@@ -336,29 +362,34 @@ function renderSummary() {
   const guests = state.invite.guests;
   const anyAttending = guests.some(g => g.attending);
 
-  // Accommodation only matters to guests who are coming
-  const stay = document.getElementById('stay-block');
-  if (stay) stay.hidden = !anyAttending;
-
   if (!anyAttending) {
     host.appendChild(summaryRow(
-      t('attendanceLabel', 'Attendance'),
-      t('noneAttending', 'Not attending'),
+      tr('Attendance', 'Présence', 'Prezență'),
+      tr('Not attending', 'Absent(e)', 'Absent(ă)'),
     ));
   } else {
     guests.forEach(g => {
-      const bits = [g.attending ? t('coming', 'Coming') : t('notComing', "Can't come")];
+      const bits = [g.attending ? tr('Coming',
+                                     'Présent(e)',
+                                     'Prezent(ă)') : tr("Can't come", 'Absent(e)', 'Absent(ă)')];
       if (g.attending) {
-        if (g.diet && g.diet !== 'none') bits.push(t('diet.' + g.diet, g.diet));
-        if (g.allergies) bits.push(t('allergiesLabel', 'Allergies') + ': ' + g.allergies);
-        if (g.choir) bits.push(t('choirLabel', 'Would like to sing in the choir'));
+        if (g.diet && g.diet !== 'none') bits.push(DIET_LABELS[g.diet]);
+        if (g.allergies) bits.push(tr('Allergies', 'Allergies', 'Alergii') + ': ' + g.allergies);
+        if (g.choir) bits.push(tr('Would like to sing in the choir',
+                                  'Souhaite chanter dans la chorale',
+                                  'Dorește să cânte în cor'));
+        if (g.brunch) bits.push(tr('Coming to the Sunday brunch',
+                                   'Sera au brunch du dimanche',
+                                   'Vine la brunch-ul de duminică'));
       }
-      host.appendChild(summaryRow(g.name || t('yourGuest', 'Your guest'), bits.join(' · ')));
+      host.appendChild(summaryRow(g.name || tr('Your guest',
+                                               'Votre accompagnant',
+                                               'Însoțitorul dumneavoastră'), bits.join(' · ')));
     });
   }
 
   if (state.invite.notes) {
-    host.appendChild(summaryRow(t('notesLabel', 'Comments'), state.invite.notes));
+    host.appendChild(summaryRow(tr('Comments', 'Commentaires', 'Comentarii'), state.invite.notes));
   }
 }
 
@@ -393,40 +424,56 @@ function goToDetails() {
   showScreen('screen-details');
 }
 
-/** Last step: the choir sign-up (when anyone is coming) and a free-text note. */
-const CONFIRM_LABEL = (document.getElementById('btn-submit') || {}).textContent || '';
+/**
+ * One yes/no question for everyone coming: a single checkbox when only one
+ * person is coming, otherwise one per name.
+ */
+function renderChecklist(blockId, listId, field, attendees, soloLabel) {
+  const block = document.getElementById(blockId);
+  const list  = document.getElementById(listId);
+  if (!block || !list) return;
 
+  block.hidden = attendees.length === 0;
+  list.innerHTML = '';
+  attendees.forEach(answer => {
+    const label = document.createElement('label');
+    label.className = 'choir-item';
+
+    const box = document.createElement('input');
+    box.type    = 'checkbox';
+    box.checked = !!answer[field];
+    box.addEventListener('change', () => { answer[field] = box.checked; });
+
+    const text = document.createElement('span');
+    // One invitee needs no name — just the question
+    text.textContent = attendees.length === 1
+      ? soloLabel
+      : (answer.name.trim() || tr('Your guest',
+                                  'Votre accompagnant',
+                                  'Însoțitorul dumneavoastră'));
+
+    label.append(box, text);
+    list.appendChild(label);
+  });
+}
+
+/** Last step: brunch and choir (when anyone is coming) and a free-text note. */
 function goToNotes() {
   const attendees = attendingAnswers();
-  const block = document.getElementById('choir-block');
-  const list  = document.getElementById('choir-list');
-
-  if (block && list) {
-    block.hidden = attendees.length === 0;
-    list.innerHTML = '';
-    attendees.forEach(answer => {
-      const label = document.createElement('label');
-      label.className = 'choir-item';
-
-      const box = document.createElement('input');
-      box.type    = 'checkbox';
-      box.checked = !!answer.choir;
-      box.addEventListener('change', () => { answer.choir = box.checked; });
-
-      const text = document.createElement('span');
-      // One invitee needs no name — just the question
-      text.textContent = attendees.length === 1
-        ? t('choirYes', 'Yes, I would like to sing in the choir')
-        : (answer.name.trim() || t('yourGuest', 'Your guest'));
-
-      label.append(box, text);
-      list.appendChild(label);
-    });
-  }
+  renderChecklist('brunch-block', 'brunch-list', 'brunch', attendees,
+                  tr('Yes, I will come to the brunch',
+                     'Oui, je viendrai au brunch',
+                     'Da, voi veni la brunch'));
+  renderChecklist('choir-block', 'choir-list', 'choir', attendees,
+                  tr('Yes, I would like to sing in the choir',
+                     'Oui, je souhaite chanter dans la chorale',
+                     'Da, aș dori să cânt în cor'));
 
   const submit = document.getElementById('btn-submit');
   if (submit) {
-    submit.textContent = attendees.length ? CONFIRM_LABEL : t('sendResponse', 'Send response');
+    submit.textContent = attendees.length
+      ? tr('Confirm attendance', 'Confirmer ma présence', 'Confirmați prezența')
+      : tr('Send response', 'Envoyer ma réponse', 'Trimiteți răspunsul');
   }
 
   showScreen('screen-notes');
@@ -435,6 +482,17 @@ function goToNotes() {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Attributes can't be switched by lang.css, so they are set here
+  const keyInput0 = document.getElementById('key-input');
+  if (keyInput0) keyInput0.placeholder = tr('Your invite code',
+                                            "Votre code d'invitation",
+                                            'Codul invitației');
+  const notes0 = document.getElementById('notes');
+  if (notes0) notes0.placeholder = tr('Comments or notes for us…',
+                                      'Commentaires ou remarques pour nous…',
+                                      'Comentarii sau mențiuni pentru noi…');
+  updateNextLabel();
+
   const urlKey = cleanKey(new URLSearchParams(window.location.search).get('invite'));
 
   if (urlKey) {
@@ -482,7 +540,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const err = document.getElementById('attendance-error');
     const missingName = state.answers.some(a => a.isExtra && a.attending && !a.name.trim());
     if (missingName) {
-      if (err) err.textContent = t('needGuestName', 'Please enter a name for each additional guest.');
+      if (err) err.textContent = tr('Please enter a name for each additional guest.',
+                                    'Merci d’indiquer le nom de chaque personne supplémentaire.',
+                                    'Vă rugăm să completați numele fiecărei persoane adăugate.');
       return;
     }
     if (err) err.textContent = '';

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Information — Theodor &amp; Emma</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="info.css" />
+  <link rel="stylesheet" href="../lang.css" />
+</head>
+<!--
+  One page, three languages: each text is written in English, French and
+  Romanian (lang="en" / "fr" / "ro") and ../lang.css shows the page's language.
+  Short labels sit side by side; longer texts are one block per language.
+  fr.html and ro.html load this file in French or Romanian. Words written by
+  info.js (map popups, the Copy button) are in info.js, in all three languages.
+-->
+<body class="photo">
+  <div class="card">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+
+    <nav class="top-nav">
+      <a lang="en" href="../index.html">Save the Date</a>
+      <a lang="en" href="../rsvp/index.html">RSVP</a>
+      <a lang="fr" href="../fr.html">Faire-part</a>
+      <a lang="fr" href="../rsvp/fr.html">RSVP</a>
+      <a lang="ro" href="../ro.html">Rețineți Data</a>
+      <a lang="ro" href="../rsvp/ro.html">RSVP</a>
+    </nav>
+    <div class="lang-switcher">
+      <a href="index.html" hreflang="en">English</a>
+      <a href="fr.html" hreflang="fr">Français</a>
+      <a href="ro.html" hreflang="ro">Română</a>
+    </div>
+
+    <header class="stay-header">
+      <p class="eyebrow">Emma &amp; Theodor</p>
+      <h1 class="stay-title"><span lang="en">Information</span><span lang="fr">Informations</span><span lang="ro">Informații</span></h1>
+      <p class="stay-date"><span lang="en">Saturday, 7 August 2027 · Dompierre-sur-Besbre &amp; Château de Beauvoir</span><span lang="fr">Samedi 7 août 2027 · Dompierre-sur-Besbre &amp; Château de Beauvoir</span><span lang="ro">Sâmbătă, 7 august 2027 · Dompierre-sur-Besbre &amp; Château de Beauvoir</span></p>
+      <div class="divider"><span class="divider-symbol"></span></div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Information">
+      <button class="tab" role="tab" id="tab-general"       aria-controls="panel-general"       data-tab="general"><span lang="en">General</span><span lang="fr">Général</span><span lang="ro">General</span></button>
+      <button class="tab" role="tab" id="tab-day"           aria-controls="panel-day"           data-tab="day"><span lang="en">The day</span><span lang="fr">Le jour J</span><span lang="ro">Ziua nunții</span></button>
+      <button class="tab" role="tab" id="tab-accommodation" aria-controls="panel-accommodation" data-tab="accommodation"><span lang="en">Accommodation</span><span lang="fr">Hébergement</span><span lang="ro">Cazare</span></button>
+      <button class="tab" role="tab" id="tab-map"           aria-controls="panel-map"           data-tab="map"><span lang="en">Map</span><span lang="fr">Carte</span><span lang="ro">Hartă</span></button>
+      <button class="tab" role="tab" id="tab-gifts"         aria-controls="panel-gifts"         data-tab="gifts"><span lang="en">Gifts</span><span lang="fr">Cadeaux</span><span lang="ro">Cadouri</span></button>
+    </nav>
+
+    <!-- ── General ── -->
+    <section id="panel-general" role="tabpanel" aria-labelledby="tab-general" hidden>
+      <article class="guide">
+        <div class="venues">
+          <div class="venue">
+            <p class="venue-label"><span lang="en">Ceremony</span><span lang="fr">Cérémonie</span><span lang="ro">Ceremonie</span></p>
+            <p class="venue-name">Église Saint-Joseph</p>
+            <p class="venue-place">Dompierre-sur-Besbre, Allier</p>
+            <p class="venue-links">
+              <a href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener"><span lang="en">About the church</span><span lang="fr">L'église</span><span lang="ro">Despre biserică</span></a>
+              · <a href="https://www.google.com/maps/search/?api=1&amp;query=46.521027,3.6816493" target="_blank" rel="noopener"><span lang="en">Directions</span><span lang="fr">Itinéraire</span><span lang="ro">Traseu</span></a>
+            </p>
+          </div>
+          <div class="venue">
+            <p class="venue-label"><span lang="en">Reception</span><span lang="fr">Réception</span><span lang="ro">Recepție</span></p>
+            <p class="venue-name">Château de Beauvoir</p>
+            <p class="venue-place">Saint-Pourçain-sur-Besbre, Allier</p>
+            <p class="venue-links">
+              <a href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener"><span lang="en">About the château</span><span lang="fr">Le château</span><span lang="ro">Despre castel</span></a>
+              · <a href="https://www.google.com/maps/search/?api=1&amp;query=46.4665086,3.6349779" target="_blank" rel="noopener"><span lang="en">Directions</span><span lang="fr">Itinéraire</span><span lang="ro">Traseu</span></a>
+            </p>
+          </div>
+        </div>
+
+        <div lang="en">
+          <h2>Getting there</h2>
+          <p>Both places are in the Allier countryside, in the heart of France. The easiest way to get around is <strong>by car</strong>, so if you're flying in, we recommend renting one at the airport.</p>
+          <ul>
+            <li><strong>From Lyon Saint-Exupéry airport</strong>: about 200 km, roughly 2½ hours by car.</li>
+            <li><strong>From the Paris airports</strong>: about 315 km from Orly (3½ hours) and 360 km from Charles de Gaulle (4 hours).</li>
+            <li><strong>By train</strong>: the nearest station is <strong>Dompierre-Sept-Fons</strong>, 10 minutes from the château, served by regional trains from Moulins. <strong>Moulins-sur-Allier</strong>, about 35 minutes away, is the larger station, with direct trains from Paris.</li>
+          </ul>
+
+          <h2>Where to stay</h2>
+          <p>We've gathered nearly a hundred places to stay nearby, including rooms at the château itself. See the <a href="#accommodation">Accommodation</a> tab, or find them on the <a href="#map">Map</a>.</p>
+
+          <h2>Replying</h2>
+          <p>Please let us know whether you can come using the link or code in your invitation. If you have any question, contact Emma: <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a>.</p>
+          <p class="lead"><a class="btn" href="../rsvp/index.html">Reply to the invitation</a></p>
+        </div>
+
+        <div lang="fr">
+          <h2>Venir</h2>
+          <p>Les deux lieux sont dans la campagne de l'Allier. Le plus simple pour se déplacer est <strong>la voiture</strong>.</p>
+          <ul>
+            <li><strong>Depuis l'aéroport de Lyon Saint-Exupéry</strong> : environ 200 km, soit 2 h 30 de route.</li>
+            <li><strong>Depuis les aéroports de Paris</strong> : environ 315 km depuis Orly (3 h 30) et 360 km depuis Roissy-Charles-de-Gaulle (4 h).</li>
+            <li><strong>En train</strong> : la gare la plus proche est <strong>Dompierre-Sept-Fons</strong>, à 10 minutes du château, desservie par des TER depuis Moulins. La gare de <strong>Moulins-sur-Allier</strong>, à environ 35 minutes, est la plus grande, avec des trains directs depuis Paris.</li>
+          </ul>
+
+          <h2>Où dormir</h2>
+          <p>Nous avons rassemblé près d'une centaine d'hébergements à proximité, dont des chambres au château lui-même. Voir l'onglet <a href="#accommodation">Hébergement</a>, ou la <a href="#map">Carte</a>.</p>
+
+          <h2>Répondre</h2>
+          <p>Merci de nous dire si vous serez des nôtres grâce au lien ou au code de votre invitation. Pour toute question, contactez Emma : <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a>.</p>
+          <p class="lead"><a class="btn" href="../rsvp/fr.html">Répondre à l'invitation</a></p>
+        </div>
+
+        <div lang="ro">
+          <h2>Cum ajungeți</h2>
+          <p>Ambele locuri sunt la țară, în departamentul Allier, în inima Franței. Cel mai simplu este să vă deplasați <strong>cu mașina</strong>, așa că, dacă veniți cu avionul, vă recomandăm să închiriați una de la aeroport.</p>
+          <ul>
+            <li><strong>De la aeroportul Lyon Saint-Exupéry</strong>: aproximativ 200 km, cam 2 ore și jumătate cu mașina.</li>
+            <li><strong>De la aeroporturile din Paris</strong>: aproximativ 315 km de la Orly (3 ore și jumătate) și 360 km de la Charles de Gaulle (4 ore).</li>
+            <li><strong>Cu trenul</strong>: cea mai apropiată gară este <strong>Dompierre-Sept-Fons</strong>, la 10 minute de castel, cu trenuri regionale de la Moulins. Gara din <strong>Moulins-sur-Allier</strong>, la aproximativ 35 de minute, este cea mai mare, cu trenuri directe de la Paris.</li>
+          </ul>
+
+          <h2>Unde vă puteți caza</h2>
+          <p>Am adunat aproape o sută de locuri de cazare în apropiere, inclusiv camere chiar la castel. Vedeți fila <a href="#accommodation">Cazare</a> sau <a href="#map">Harta</a>.</p>
+
+          <h2>Răspunsul la invitație</h2>
+          <p>Vă rugăm să ne spuneți dacă veți putea veni, folosind linkul sau codul de pe invitație. Pentru orice întrebare, contactați-o pe Emma: <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a>.</p>
+          <p class="lead"><a class="btn" href="../rsvp/ro.html">Răspundeți la invitație</a></p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── The day: schedule, brunch, food, dress code ── -->
+    <section id="panel-day" role="tabpanel" aria-labelledby="tab-day" hidden>
+      <article class="guide">
+        <div lang="en">
+          <h2>Schedule</h2>
+          <p>The ceremony is held at the church in Dompierre-sur-Besbre, and the celebration continues at the Château de Beauvoir. The two are about <strong>7 km apart</strong>, roughly 10 minutes by car.</p>
+          <ol class="schedule">
+            <li><span class="time">3 pm</span><span class="what"><strong>Ceremony</strong> at the Église Saint-Joseph</span></li>
+            <li><span class="time">5:30 pm</span><span class="what"><strong>Cocktail</strong> in the château gardens</span></li>
+            <li><span class="time">7 pm</span><span class="what"><strong>Dinner</strong>: a buffet (see below)</span></li>
+            <li><span class="time">7:15 pm</span><span class="what"><strong>Speeches</strong> (about 15 minutes)</span></li>
+            <li><span class="time">9:30 pm</span><span class="what"><strong>Cake</strong></span></li>
+            <li><span class="time">10:30 pm</span><span class="what"><strong>First dance</strong></span></li>
+            <li><span class="time">Then</span><span class="what"><strong>DJ and dancing</strong> all night</span></li>
+          </ol>
+          <p class="schedule-note">Times may still move a little; we will confirm them closer to the day.</p>
+
+          <h2>Sunday brunch</h2>
+          <p>The day after, on <strong>Sunday 8 August from 12 pm to 4 pm</strong>, we are hosting a relaxed <strong>brunch</strong>: a slow afternoon to catch our breath, share stories from the night before and say goodbye before everyone heads home. Everyone is welcome, so please let us know in <a href="../rsvp/index.html">your reply</a> whether you will join us.</p>
+
+          <h2>Food</h2>
+          <p>Dinner is a <strong>buffet</strong>, with <strong>French cuisine</strong> alongside dishes from <strong>around the world</strong>. We are putting the menu together ourselves, and we want everyone to eat well.</p>
+          <p>Tell us about any <strong>dietary needs</strong> when you reply, and we will do our very best to make sure there is plenty for you. If something changes after you have replied, you can <a href="../rsvp/index.html">update your answer</a> at any time.</p>
+
+          <h2>Dress code</h2>
+          <p><strong>Formal.</strong> The day begins in church and carries on in the château gardens, so think elegant, but comfortable outdoors: a suit and tie, or a long or cocktail dress.</p>
+          <ul>
+            <li>Every colour is welcome, and since this is a garden wedding, we would love to see you in <strong>bright, summery shades</strong>.</li>
+            <li>Heels are very welcome, but much of the evening is spent on grass: you may want to bring a <strong>pair of flat shoes</strong> to change into for the garden.</li>
+            <li>August days are warm, but evenings in the countryside can cool down: bring a <strong>light layer</strong> for later.</li>
+          </ul>
+        </div>
+
+        <div lang="fr">
+          <h2>Programme</h2>
+          <p>La cérémonie a lieu à l'église de Dompierre-sur-Besbre, puis la fête continue au Château de Beauvoir. Les deux sont à environ <strong>7 km</strong> l'un de l'autre, une dizaine de minutes en voiture.</p>
+          <ol class="schedule">
+            <li><span class="time">15h00</span><span class="what"><strong>Cérémonie</strong> à l'église Saint-Joseph</span></li>
+            <li><span class="time">17h30</span><span class="what"><strong>Cocktail</strong> dans les jardins du château</span></li>
+            <li><span class="time">19h00</span><span class="what"><strong>Dîner</strong> sous forme de buffet (voir plus bas)</span></li>
+            <li><span class="time">19h15</span><span class="what"><strong>Discours</strong> (environ 15 minutes)</span></li>
+            <li><span class="time">21h30</span><span class="what"><strong>Gâteau</strong></span></li>
+            <li><span class="time">22h30</span><span class="what"><strong>Première danse</strong></span></li>
+            <li><span class="time">Ensuite</span><span class="what"><strong>DJ et danse</strong> toute la nuit</span></li>
+          </ol>
+          <p class="schedule-note">Les horaires peuvent encore un peu changer ; nous vous les confirmerons à l'approche du jour J.</p>
+
+          <h2>Le brunch du dimanche</h2>
+          <p>Le lendemain, <strong>le dimanche 8 août de 12h à 16h</strong>, nous organisons un <strong>brunch</strong> en toute simplicité : un après-midi tranquille pour reprendre nos esprits, se raconter la veille et se dire au revoir avant que chacun reprenne la route. Tout le monde est le bienvenu ; dites-nous dans <a href="../rsvp/fr.html">votre réponse</a> si vous serez des nôtres.</p>
+
+          <h2>Le repas</h2>
+          <p>Le dîner est un <strong>buffet</strong>, avec de la <strong>cuisine française</strong> et des plats venus <strong>d'ailleurs</strong>. Nous composons le menu nous-mêmes, et nous voulons que chacun mange bien.</p>
+          <p>Indiquez-nous vos <strong>régimes alimentaires</strong> en répondant, et nous ferons tout notre possible pour que vous ayez largement de quoi vous régaler. Si quelque chose change après votre réponse, vous pouvez <a href="../rsvp/fr.html">la modifier</a> à tout moment.</p>
+
+          <h2>Tenue</h2>
+          <p><strong>Tenue habillée.</strong> La journée commence à l'église et se poursuit dans les jardins du château : élégante, mais confortable en plein air. Costume et cravate, robe longue ou robe de cocktail.</p>
+          <ul>
+            <li>Toutes les couleurs sont les bienvenues, et comme c'est un mariage au jardin, nous serions ravis de vous voir en <strong>tons vifs et estivaux</strong>.</li>
+            <li>Les talons sont les bienvenus, mais une bonne partie de la soirée se passe sur l'herbe : pensez à prendre une <strong>paire de chaussures plates</strong> pour le jardin.</li>
+            <li>Les journées d'août sont chaudes, mais les soirées à la campagne peuvent être fraîches : prévoyez une <strong>petite veste</strong> pour plus tard.</li>
+          </ul>
+        </div>
+
+        <div lang="ro">
+          <h2>Programul zilei</h2>
+          <p>Ceremonia are loc la biserica din Dompierre-sur-Besbre, iar petrecerea continuă la Château de Beauvoir. Cele două sunt la aproximativ <strong>7 km</strong> una de alta, cam 10 minute cu mașina.</p>
+          <ol class="schedule">
+            <li><span class="time">15:00</span><span class="what"><strong>Cununia religioasă</strong> la biserica Saint-Joseph</span></li>
+            <li><span class="time">17:30</span><span class="what"><strong>Cocktail</strong> în grădinile castelului</span></li>
+            <li><span class="time">19:00</span><span class="what"><strong>Cina</strong>, în sistem bufet (vezi mai jos)</span></li>
+            <li><span class="time">19:15</span><span class="what"><strong>Discursuri</strong> (aproximativ 15 minute)</span></li>
+            <li><span class="time">21:30</span><span class="what"><strong>Tortul</strong></span></li>
+            <li><span class="time">22:30</span><span class="what"><strong>Primul dans</strong></span></li>
+            <li><span class="time">Apoi</span><span class="what"><strong>DJ și dans</strong> toată noaptea</span></li>
+          </ol>
+          <p class="schedule-note">Orele se mai pot schimba puțin; le vom confirma mai aproape de nuntă.</p>
+
+          <h2>Brunch-ul de duminică</h2>
+          <p>A doua zi, <strong>duminică, 8 august, între 12:00 și 16:00</strong>, organizăm un <strong>brunch</strong> relaxat: o după-amiază liniștită în care să ne tragem sufletul, să povestim despre seara dinainte și să ne luăm rămas-bun înainte de plecare. Toată lumea este binevenită; vă rugăm să ne spuneți în <a href="../rsvp/ro.html">răspunsul dumneavoastră</a> dacă veniți.</p>
+
+          <h2>Mâncarea</h2>
+          <p>Cina este un <strong>bufet</strong>, cu <strong>bucătărie franțuzească</strong> și preparate <strong>internaționale</strong>. Alcătuim meniul chiar noi și ne dorim ca toată lumea să mănânce bine.</p>
+          <p>Spuneți-ne de eventualele <strong>restricții alimentare</strong> când răspundeți la invitație, și vom face tot posibilul să aveți din belșug din ce vă place. Dacă se schimbă ceva după ce ați răspuns, puteți <a href="../rsvp/ro.html">modifica răspunsul</a> oricând.</p>
+
+          <h2>Ținuta</h2>
+          <p><strong>Ținută formală.</strong> Ziua începe la biserică și continuă în grădinile castelului, așa că alegeți ceva elegant, dar comod în aer liber: costum și cravată, rochie lungă sau de cocktail.</p>
+          <ul>
+            <li>Orice culoare este binevenită, iar pentru că este o nuntă în grădină, ne-ar bucura să vă vedem în <strong>nuanțe vii, de vară</strong>.</li>
+            <li>Tocurile sunt binevenite, dar o bună parte din seară se petrece pe iarbă: puteți lua și o <strong>pereche de pantofi fără toc</strong> de schimb pentru grădină.</li>
+            <li>Zilele de august sunt calde, dar serile la țară se pot răcori: luați și o <strong>jachetă subțire</strong> pentru mai târziu.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── Accommodation ── -->
+    <section id="panel-accommodation" role="tabpanel" aria-labelledby="tab-accommodation" hidden>
+      <article class="guide">
+        <div lang="en">
+          <div class="lead">
+            <p class="stay-intro">
+              We have gathered nearly a hundred places to stay around the church and the château
+              into one shared list: what each one sleeps and costs, how far it is, and who has
+              already booked it. Once you have booked a place, mark it as taken so nobody else
+              spends time on it.
+            </p>
+            <a class="btn" href="https://docs.google.com/spreadsheets/d/PLACEHOLDER" target="_blank" rel="noopener">Open the accommodation list</a>
+          </div>
+
+          <h2>The list at a glance</h2>
+          <p>For each place you'll find whether it's free on 7 August, the driving distance to the château and to the church, how many people it sleeps, its bedrooms, beds and bathrooms, the last price we saw online (with its unit: per night, per weekend, per week…), and a link, phone and email to book directly with the owner. Prices change, so treat them as a guide and confirm with the owner.</p>
+
+          <p>What the availability column means:</p>
+          <div class="table-wrap"><table>
+            <tr><th>Value</th><th>Meaning</th></tr>
+            <tr><td><strong>Free on 7 Aug (online calendar)</strong></td><td>The booking calendar showed the night of 7 August free when we checked. Book soon.</td></tr>
+            <tr><td><strong>Calendar not open yet</strong></td><td>The calendar doesn't go as far as August 2027 yet. Check again later, or contact the owner.</td></tr>
+            <tr><td><strong>Check the link or ask the owner</strong></td><td>There is an online calendar, but we couldn't read it (Airbnb, Booking, some Gîtes de France pages). Check the link yourself.</td></tr>
+            <tr><td><strong>Ask the owner</strong></td><td>No online calendar. Call or email them.</td></tr>
+          </table></div>
+
+          <h2>Marking a place as taken</h2>
+          <p>Everything in the list is locked except two columns:</p>
+          <ul>
+            <li><strong>Status</strong>: choose <strong>Taken</strong> once you've actually booked a place. The row turns grey so nobody else wastes time on it.</li>
+            <li><strong>Taken by</strong>: write your name, so we know who has it.</li>
+          </ul>
+          <p>Please mark a place as taken <strong>only once your booking is confirmed</strong>. If it still has room afterwards (a hotel with several rooms, for example), leave it Available and just add your name. If you cancel, set it back to Available and clear your name, and never change somebody else's row. Tip: filter the Status column to hide places that are already taken.</p>
+
+          <h2>The Pavillon de Chasse</h2>
+          <p>The first rows of the list are the <strong>Pavillon de Chasse</strong>, the hunting lodge a few steps from the château. It has <strong>8 double rooms for up to 16 guests</strong>:</p>
+          <div class="table-wrap"><table>
+            <tr><th>Room type</th><th>Rooms</th><th>Price</th></tr>
+            <tr><td>Room with its own bathroom and WC</td><td>2</td><td>285 € for 2 nights (2 people), or 190 € for 1 night</td></tr>
+            <tr><td>Room with a washbasin; shared showers and WCs on the landing</td><td>6</td><td>210 € for 2 nights (2 people), or 150 € for 1 night</td></tr>
+          </table></div>
+          <p>Sheets and towels are provided and beds are made when you arrive. There's a small kitchen, a lounge with a wood-pellet stove, and table tennis.</p>
+          <p class="contact">These rooms can't be booked online or marked in the list. To reserve one, contact Emma: <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a>. We'll confirm, and the château will send you a payment link.</p>
+
+          <h2>The Gîte du Moulin: let's fill it together</h2>
+          <p>The <strong>Gîte du Moulin</strong> is a large house on the château grounds, with a riverside garden looking onto the château. It can only be rented <strong>as a whole house, for at least 2 nights</strong>:</p>
+          <div class="table-wrap"><table>
+            <tr><th>Sleeps</th><th>Bedrooms</th><th>Bathrooms</th><th>Price for the house</th></tr>
+            <tr><td>14</td><td>6</td><td>3 + 3 separate WCs</td><td>1 600 € for 2 nights</td></tr>
+          </table></div>
+          <p>It's a lovely way to stay on site, but only if enough of us share it. With the house full, it comes to about <strong>115 € per person for 2 nights</strong>.</p>
+          <ol>
+            <li>In the <strong>Beauvoir gîtes (shared)</strong> tab, the house is listed room by room, with its beds.</li>
+            <li>If you're interested, write your name(s) next to the room you'd like, and how many of you there are.</li>
+            <li>The sheet adds up how many people have signed up, how many places are left, and the estimated cost per person.</li>
+            <li>Once the house has enough people, <strong>Emma books it and splits the cost</strong>. Until then, your name is only a sign of interest, not a booking, so please don't book the house yourself.</li>
+          </ol>
+          <p class="contact">Questions? Contact Emma: <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a></p>
+
+          <h2>Practical tips</h2>
+          <ul>
+            <li><strong>Book early.</strong> It's a rural area in mid-August, and Le PAL, a big zoo and theme park nearby, fills a lot of rooms.</li>
+            <li>Many gîtes are listed with <strong>Gîtes de France Allier</strong> (<a href="tel:+33482756855">+33 4 82 75 68 55</a>). Give them the reference number from the list (for example "G21172") and they'll find it straight away.</li>
+            <li>Some gîtes <strong>only rent by the week</strong>, usually Saturday to Saturday. Check the price unit.</li>
+            <li>You'll need a <strong>car</strong>. The church in Dompierre-sur-Besbre and the château are about 7 km apart.</li>
+          </ul>
+        </div>
+
+        <div lang="fr">
+          <div class="lead">
+            <p class="stay-intro">Nous avons rassemblé près d'une centaine d'hébergements autour de l'église et du château dans un tableau partagé : combien de personnes chacun accueille, son prix, sa distance, et qui l'a déjà réservé. Une fois votre hébergement réservé, marquez-le comme pris pour que personne d'autre ne perde de temps dessus. Le tableau est en anglais ; ce guide explique chaque colonne.</p>
+            <a class="btn" href="https://docs.google.com/spreadsheets/d/PLACEHOLDER" target="_blank" rel="noopener">Ouvrir la liste des hébergements</a>
+          </div>
+
+          <h2>Le tableau en un coup d'œil</h2>
+          <p>Pour chaque hébergement, vous trouverez s'il est libre le 7 août (<strong>Aug 7 availability</strong>), la distance en voiture jusqu'au château et jusqu'à l'église (<strong>Km to château</strong>, <strong>Km to church</strong>), le nombre de couchages, chambres, lits et salles de bain (<strong>Sleeps</strong>, <strong>Bedrooms</strong>, <strong>Beds</strong>, <strong>Bathrooms</strong>), le dernier prix vu en ligne avec son unité (par nuit, par week-end, par semaine…), et un lien, un téléphone et un e-mail pour réserver directement auprès du propriétaire. Les prix changent : c'est une indication, à confirmer avec le propriétaire.</p>
+
+          <p>Ce que veut dire la colonne de disponibilité :</p>
+          <div class="table-wrap"><table>
+            <tr><th>Valeur</th><th>Signification</th></tr>
+            <tr><td><strong>Free on 7 Aug (online calendar)</strong></td><td>Le calendrier de réservation indiquait la nuit du 7 août libre lors de notre vérification. Réservez vite !</td></tr>
+            <tr><td><strong>Calendar not open yet</strong></td><td>Le calendrier ne va pas encore jusqu'à août 2027. Revérifiez plus tard, ou contactez le propriétaire.</td></tr>
+            <tr><td><strong>Check the link or ask the owner</strong></td><td>Il y a un calendrier en ligne, mais nous n'avons pas pu le lire (Airbnb, Booking, certaines pages Gîtes de France). Vérifiez vous-même via le lien.</td></tr>
+            <tr><td><strong>Ask the owner</strong></td><td>Pas de calendrier en ligne. Appelez ou écrivez au propriétaire.</td></tr>
+          </table></div>
+
+          <h2>Marquer un hébergement comme pris</h2>
+          <p>Tout le tableau est verrouillé, sauf deux colonnes :</p>
+          <ul>
+            <li><strong>Status</strong> : choisissez <strong>Taken</strong> (pris) quand vous avez <strong>réellement réservé</strong>. La ligne devient grise et personne d'autre ne perd de temps dessus.</li>
+            <li><strong>Taken by</strong> : écrivez votre nom, pour qu'on sache qui l'a pris.</li>
+          </ul>
+          <p>Merci de ne marquer <strong>Taken</strong> qu'une fois la réservation <strong>confirmée</strong>. S'il reste de la place après votre réservation (un hôtel avec plusieurs chambres, par exemple), laissez <strong>Available</strong> et ajoutez simplement votre nom. Si vous annulez, remettez <strong>Available</strong> et effacez votre nom, et ne modifiez jamais la ligne de quelqu'un d'autre. Astuce : filtrez la colonne <strong>Status</strong> pour masquer les hébergements déjà pris.</p>
+
+          <h2>Le Pavillon de Chasse</h2>
+          <p>Les premières lignes du tableau correspondent au <strong>Pavillon de Chasse</strong>, à quelques pas du château. Il compte <strong>8 chambres doubles, jusqu'à 16 personnes</strong> :</p>
+          <div class="table-wrap"><table>
+            <tr><th>Type de chambre</th><th>Nombre</th><th>Tarif</th></tr>
+            <tr><td>Chambre avec salle de bain et WC privatifs</td><td>2</td><td>285 € les 2 nuits (2 pers.), ou 190 € pour 1 nuit</td></tr>
+            <tr><td>Chambre avec lavabo ; douches et WC partagés sur le palier</td><td>6</td><td>210 € les 2 nuits (2 pers.), ou 150 € pour 1 nuit</td></tr>
+          </table></div>
+          <p>Draps et serviettes fournis, lits faits à l'arrivée. Il y a une cuisine d'appoint, un salon avec poêle à pellets, un ping-pong et un baby-foot.</p>
+          <p class="contact">Ces chambres ne se réservent pas en ligne et ne se marquent pas dans le tableau. Pour en réserver une, contactez Emma : <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a>. Nous confirmons la réservation, puis le château vous envoie un lien de paiement.</p>
+
+          <h2>Le Gîte du Moulin : remplissons-le ensemble</h2>
+          <p>Le <strong>Gîte du Moulin</strong> est une grande maison du domaine, avec un jardin au bord de la rivière et vue sur le château. Il se loue <strong>uniquement en entier, pour 2 nuits minimum</strong> :</p>
+          <div class="table-wrap"><table>
+            <tr><th>Couchages</th><th>Chambres</th><th>Salles de bain</th><th>Prix de la maison</th></tr>
+            <tr><td>14</td><td>6</td><td>3 + 3 WC séparés</td><td>1 600 € les 2 nuits</td></tr>
+          </table></div>
+          <p>C'est une très belle façon de dormir sur place, mais seulement si nous sommes assez nombreux à le partager. Maison pleine, cela revient à environ <strong>115 € par personne pour 2 nuits</strong>.</p>
+          <ol>
+            <li>Dans l'onglet <strong>Beauvoir gîtes (shared)</strong>, la maison est détaillée chambre par chambre, avec ses lits.</li>
+            <li>Si vous êtes intéressés, écrivez votre/vos nom(s) dans <strong>Guest names</strong> à côté de la chambre souhaitée, et le nombre de personnes dans <strong>People</strong>.</li>
+            <li>Le tableau calcule le nombre d'inscrits, les places restantes et le coût estimé par personne.</li>
+            <li>Quand la maison a assez de monde, <strong>Emma la réserve et répartit le coût</strong>. D'ici là, votre inscription est une simple marque d'intérêt, pas une réservation : merci de ne pas réserver la maison vous-mêmes.</li>
+          </ol>
+          <p class="contact">Des questions ? Contactez Emma : <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a></p>
+
+          <h2>Conseils pratiques</h2>
+          <ul>
+            <li><strong>Réservez tôt.</strong> C'est la campagne, mi-août, et Le PAL (grand parc animalier et d'attractions tout proche) remplit beaucoup d'hébergements.</li>
+            <li>Beaucoup de gîtes passent par <strong>Gîtes de France Allier</strong> (<a href="tel:+33482756855">04 82 75 68 55</a>). Donnez-leur le numéro de référence indiqué dans le tableau (par exemple « G21172 ») et ils trouvent l'annonce tout de suite.</li>
+            <li>Certains gîtes <strong>ne se louent qu'à la semaine</strong>, souvent du samedi au samedi. Regardez l'unité du prix (<strong>Price unit</strong>).</li>
+            <li>Une <strong>voiture</strong> est indispensable. L'église de Dompierre-sur-Besbre et le château sont à environ 7 km l'un de l'autre.</li>
+          </ul>
+        </div>
+
+        <div lang="ro">
+          <div class="lead">
+            <p class="stay-intro">Am adunat aproape o sută de locuri de cazare din jurul bisericii și al castelului într-un tabel comun: câte persoane încap, cât costă, cât de departe sunt și cine le-a rezervat deja. După ce ați rezervat un loc, marcați-l ca ocupat, ca nimeni altcineva să nu-și piardă timpul cu el. Tabelul este în engleză; ghidul de mai jos explică fiecare coloană.</p>
+            <a class="btn" href="https://docs.google.com/spreadsheets/d/PLACEHOLDER" target="_blank" rel="noopener">Deschideți lista de cazări</a>
+          </div>
+
+          <h2>Tabelul pe scurt</h2>
+          <p>Pentru fiecare cazare găsiți dacă este liberă pe 7 august (<strong>Aug 7 availability</strong>), distanța cu mașina până la castel și până la biserică (<strong>Km to château</strong>, <strong>Km to church</strong>), câte persoane încap și câte dormitoare, paturi și băi are (<strong>Sleeps</strong>, <strong>Bedrooms</strong>, <strong>Beds</strong>, <strong>Bathrooms</strong>), ultimul preț văzut online cu unitatea lui (pe noapte, pe weekend, pe săptămână…), plus un link, un telefon și un e-mail pentru rezervare direct la proprietar. Prețurile se schimbă, așa că sunt doar orientative; confirmați-le cu proprietarul.</p>
+
+          <p>Ce înseamnă coloana de disponibilitate:</p>
+          <div class="table-wrap"><table>
+            <tr><th>Valoare</th><th>Înțeles</th></tr>
+            <tr><td><strong>Free on 7 Aug (online calendar)</strong></td><td>Calendarul de rezervări arăta noaptea de 7 august liberă când am verificat. Rezervați repede!</td></tr>
+            <tr><td><strong>Calendar not open yet</strong></td><td>Calendarul nu ajunge încă până în august 2027. Verificați din nou mai târziu sau contactați proprietarul.</td></tr>
+            <tr><td><strong>Check the link or ask the owner</strong></td><td>Există un calendar online, dar nu l-am putut citi (Airbnb, Booking, unele pagini Gîtes de France). Verificați singuri prin link.</td></tr>
+            <tr><td><strong>Ask the owner</strong></td><td>Nu există calendar online. Sunați sau scrieți-i proprietarului.</td></tr>
+          </table></div>
+
+          <h2>Cum marcați un loc ca ocupat</h2>
+          <p>Tot tabelul este blocat, cu excepția a două coloane:</p>
+          <ul>
+            <li><strong>Status</strong>: alegeți <strong>Taken</strong> (ocupat) după ce ați <strong>rezervat efectiv</strong> un loc. Rândul devine gri, ca nimeni să nu mai piardă timp cu el.</li>
+            <li><strong>Taken by</strong>: scrieți-vă numele, ca să știm cine l-a rezervat.</li>
+          </ul>
+          <p>Vă rugăm să marcați <strong>Taken</strong> doar după ce rezervarea este <strong>confirmată</strong>. Dacă locul mai are spațiu după rezervarea dumneavoastră (de exemplu, un hotel cu mai multe camere), lăsați <strong>Available</strong> și adăugați doar numele. Dacă anulați, puneți la loc <strong>Available</strong> și ștergeți-vă numele, și nu modificați niciodată rândul altcuiva. Sfat: filtrați coloana <strong>Status</strong> ca să ascundeți locurile deja ocupate.</p>
+
+          <h2>Pavillon de Chasse</h2>
+          <p>Primele rânduri din tabel sunt pentru <strong>Pavillon de Chasse</strong>, casa de vânătoare aflată la câțiva pași de castel. Are <strong>8 camere duble, pentru până la 16 persoane</strong>:</p>
+          <div class="table-wrap"><table>
+            <tr><th>Tip de cameră</th><th>Camere</th><th>Preț</th></tr>
+            <tr><td>Cameră cu baie și toaletă proprii</td><td>2</td><td>285 € pentru 2 nopți (2 pers.), sau 190 € pentru 1 noapte</td></tr>
+            <tr><td>Cameră cu chiuvetă; dușuri și toalete comune pe hol</td><td>6</td><td>210 € pentru 2 nopți (2 pers.), sau 150 € pentru 1 noapte</td></tr>
+          </table></div>
+          <p>Lenjeria și prosoapele sunt incluse, iar paturile sunt făcute la sosire. Există o bucătărie mică, un salon cu sobă pe peleți, tenis de masă și fotbal de masă.</p>
+          <p class="contact">Aceste camere nu se rezervă online și nu se marchează în tabel. Ca să rezervați una, contactați-o pe Emma: <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a>. Confirmăm rezervarea, apoi castelul vă trimite un link de plată.</p>
+
+          <h2>Gîte du Moulin: să-l umplem împreună</h2>
+          <p><strong>Gîte du Moulin</strong> este o casă mare de pe domeniul castelului, cu o grădină pe malul râului și vedere spre castel. Se închiriază <strong>doar întreagă, pentru minimum 2 nopți</strong>:</p>
+          <div class="table-wrap"><table>
+            <tr><th>Persoane</th><th>Dormitoare</th><th>Băi</th><th>Prețul casei</th></tr>
+            <tr><td>14</td><td>6</td><td>3 + 3 toalete separate</td><td>1 600 € pentru 2 nopți</td></tr>
+          </table></div>
+          <p>Este o variantă minunată de a dormi chiar la castel, dar numai dacă suntem destui ca s-o împărțim. Cu casa plină, costul este de aproximativ <strong>115 € de persoană pentru 2 nopți</strong>.</p>
+          <ol>
+            <li>În fila <strong>Beauvoir gîtes (shared)</strong>, casa este listată cameră cu cameră, cu paturile ei.</li>
+            <li>Dacă vă interesează, scrieți-vă numele în <strong>Guest names</strong> lângă camera dorită și numărul de persoane în <strong>People</strong>.</li>
+            <li>Tabelul calculează câte persoane s-au înscris, câte locuri mai sunt și costul estimat de persoană.</li>
+            <li>Când casa are destui oameni, <strong>Emma o rezervă și împarte costul</strong>. Până atunci, înscrierea este doar un semn de interes, nu o rezervare, așa că vă rugăm să nu rezervați singuri casa.</li>
+          </ol>
+          <p class="contact">Întrebări? Contactați-o pe Emma: <a href="mailto:emma.chirlomez@gmail.com">emma.chirlomez@gmail.com</a> · <a href="tel:+40720410905">+40 720 410 905</a></p>
+
+          <h2>Sfaturi practice</h2>
+          <ul>
+            <li><strong>Rezervați din timp.</strong> Este o zonă rurală, la mijlocul lui august, iar Le PAL (o grădină zoologică și un parc de distracții mare din apropiere) ocupă multe locuri de cazare.</li>
+            <li>Multe gîte-uri sunt listate la <strong>Gîtes de France Allier</strong> (<a href="tel:+33482756855">+33 4 82 75 68 55</a>). Dacă le dați numărul de referință din tabel (de exemplu „G21172”), găsesc anunțul imediat.</li>
+            <li>Unele gîte-uri <strong>se închiriază doar la săptămână</strong>, de obicei de sâmbătă până sâmbătă. Verificați unitatea prețului (<strong>Price unit</strong>).</li>
+            <li>Aveți nevoie de <strong>mașină</strong>. Biserica din Dompierre-sur-Besbre și castelul sunt la aproximativ 7 km una de alta.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── Map ── -->
+    <section id="panel-map" role="tabpanel" aria-labelledby="tab-map" hidden>
+      <div id="map" aria-label="Map of places to stay"></div>
+      <div class="legend">
+        <span><i class="dot stay"></i><span><span lang="en">Place to stay</span><span lang="fr">Hébergement</span><span lang="ro">Loc de cazare</span></span></span>
+        <span><i class="dot approx"></i><span><span lang="en">Approximate location</span><span lang="fr">Emplacement approximatif</span><span lang="ro">Locație aproximativă</span></span></span>
+        <span><i class="dot place"></i><span><span lang="en">Church &amp; château</span><span lang="fr">Église &amp; château</span><span lang="ro">Biserica &amp; castelul</span></span></span>
+      </div>
+      <p class="map-note"><span lang="en">Tap a place for its details. To see which places are already taken, open the <a href="#accommodation">accommodation list</a>.</span><span lang="fr">Touchez un lieu pour voir ses détails. Pour savoir lesquels sont déjà pris, ouvrez la <a href="#accommodation">liste des hébergements</a>.</span><span lang="ro">Atingeți un loc ca să vedeți detaliile. Ca să aflați ce locuri sunt deja ocupate, deschideți <a href="#accommodation">lista de cazări</a>.</span></p>
+    </section>
+
+    <!-- ── Gifts ── -->
+    <section id="panel-gifts" role="tabpanel" aria-labelledby="tab-gifts" hidden>
+      <article class="guide gifts">
+        <div lang="en">
+          <p class="gifts-lead">
+            We know that many of you are travelling a long way to be with us,
+            and having you there is the most beautiful gift we could ask for.
+            Please don't feel you need to bring anything.
+          </p>
+          <p>If you would still like to give us something, we would be grateful for a contribution by bank transfer, rather than a gift you would have to carry all the way to France, and we would then have to carry home to London.</p>
+        </div>
+
+        <div lang="fr">
+          <p class="gifts-lead">Votre présence est le plus beau des cadeaux, et nous ne vous demandons rien de plus.</p>
+          <p>Si vous souhaitez tout de même nous faire un cadeau, nous serions heureux d'une participation par virement bancaire, plutôt qu'un cadeau que nous devrions ensuite rapporter jusqu'à Londres.</p>
+        </div>
+
+        <div lang="ro">
+          <p class="gifts-lead">Știm că mulți dintre dumneavoastră faceți un drum lung ca să fiți alături de noi, iar prezența dumneavoastră este cel mai frumos dar pe care ni l-am putea dori. Nu vă simțiți obligați să aduceți nimic.</p>
+          <p>Dacă doriți totuși să ne oferiți ceva, v-am fi recunoscători pentru o contribuție prin transfer bancar, în locul unui cadou pe care ar trebui să-l cărați până în Franța, iar noi apoi până acasă, la Londra.</p>
+        </div>
+
+        <!-- TODO: fill in the real bank details -->
+        <dl class="bank">
+          <div><dt><span lang="en">Account holder</span><span lang="fr">Titulaire du compte</span><span lang="ro">Titularul contului</span></dt><dd>Emma Chirlomez &amp; Theodor Moroianu</dd></div>
+          <div><dt>IBAN</dt><dd><span class="mono" id="iban">FR00 0000 0000 0000 0000 0000 000</span> <button type="button" class="copy" data-copy="iban"><span lang="en">Copy</span><span lang="fr">Copier</span><span lang="ro">Copiați</span></button></dd></div>
+          <div><dt>BIC</dt><dd><span class="mono" id="bic">XXXXXXXX</span> <button type="button" class="copy" data-copy="bic"><span lang="en">Copy</span><span lang="fr">Copier</span><span lang="ro">Copiați</span></button></dd></div>
+          <div><dt><span lang="en">Reference</span><span lang="fr">Référence</span><span lang="ro">Referință</span></dt><dd><span lang="en">Your name</span><span lang="fr">Votre nom</span><span lang="ro">Numele dumneavoastră</span></dd></div>
+        </dl>
+
+        <p class="sign-off"><span lang="en">Thank you, from the bottom of our hearts.</span><span lang="fr">Merci du fond du cœur.</span><span lang="ro">Vă mulțumim din toată inima.</span></p>
+      </article>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="places.js"></script>
+  <script src="info.js"></script>
+</body>
+</html>

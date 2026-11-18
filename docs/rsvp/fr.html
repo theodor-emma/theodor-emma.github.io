@@ -1,171 +1,30 @@
 <!DOCTYPE html>
+<!--
+  French version of index.html in this folder: it loads that page with
+  <html lang="fr">, which shows the French texts (see ../lang.css), and keeps
+  this address and this title. Edit index.html, never this file.
+-->
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RSVP — Emma &amp; Theodor</title>
-  <link rel="stylesheet" href="rsvp.css" />
-</head>
-<body class="photo">
-  <div class="card">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-
-    <a class="save-date-link" href="../fr.html">Faire-part</a>
-    <div class="lang-switcher">
-      <a href="index.html">English</a>
-      <a href="ro.html">Română</a>
-    </div>
-
-    <div class="rsvp-header">
-      <p class="rsvp-eyebrow">Confirmation de présence</p>
-      <p class="rsvp-names">
-        Emma Chirlomez
-        <span class="ampersand">&amp;</span>
-        Theodor Moroianu
-      </p>
-      <p class="rsvp-date">Le samedi 7 août 2027</p>
-      <p class="rsvp-venue">
-        <span class="rsvp-venue-label">Cérémonie</span>
-        <a class="rsvp-venue-link" href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener">Église Saint-Joseph, Dompierre-sur-Besbre, France</a>
-      </p>
-      <p class="rsvp-venue">
-        <span class="rsvp-venue-label">Réception</span>
-        <a class="rsvp-venue-link" href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener">Château de Beauvoir, Bourbonnais, France</a>
-      </p>
-    </div>
-
-    <div class="divider"><span class="divider-symbol">✦</span></div>
-
-    <section id="screen-key" class="screen" hidden>
-      <p class="screen-title">Code d'invitation</p>
-      <p class="key-prompt">Veuillez entrer le code figurant sur votre invitation.</p>
-      <input id="key-input" class="key-input" type="text" placeholder="Votre code d'invitation" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-      <p id="key-error" class="key-error"></p>
-      <button id="key-submit" class="btn btn-primary">Continuer</button>
-    </section>
-
-    <section id="screen-loading" class="screen" hidden>
-      <p class="loading-text">Chargement…</p>
-    </section>
-
-    <!-- Une seule personne invitée, sans accompagnant possible -->
-    <section id="screen-question" class="screen" hidden>
-      <p class="screen-title">Invitation</p>
-      <p class="screen-greeting"><span class="guest-name"></span>, serez-vous parmi nous ?</p>
-      <div class="btn-row equal">
-        <button id="btn-yes" class="btn btn-primary">Avec joie</button>
-        <button id="btn-no"  class="btn btn-ghost">Dans l'impossibilité</button>
-      </div>
-      <div class="btn-row back-row">
-        <button type="button" class="btn-link btn-back">← Retour</button>
-      </div>
-    </section>
-
-    <!-- Plusieurs personnes sur la même invitation -->
-    <section id="screen-attendance" class="screen" hidden>
-      <p class="screen-title">Votre invitation</p>
-      <p class="screen-greeting"><span class="invite-label"></span></p>
-      <p class="dietary-intro">Merci de nous indiquer qui pourra se joindre à nous.</p>
-      <div id="guest-attendance" class="guest-rows"></div>
-      <button id="btn-add-guest" class="btn-link" type="button" hidden>+ Ajouter une personne</button>
-      <p id="attendance-error" class="key-error"></p>
-      <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Retour</button>
-        <button id="btn-attendance-next" class="btn btn-primary">Continuer</button>
-      </div>
-    </section>
-
-    <!-- Repas et allergies, pour chaque personne -->
-    <section id="screen-details" class="screen" hidden>
-      <p class="screen-title">À table</p>
-      <p class="dietary-intro">Dites-nous ce que chacun mange afin que nous puissions préparer les bonnes assiettes.</p>
-      <div id="guest-details"></div>
-      <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Retour</button>
-        <button id="btn-details-next" class="btn btn-primary">Continuer</button>
-      </div>
-    </section>
-
-    <!-- The choir, and anything the guests want to tell us -->
-    <section id="screen-notes" class="screen" hidden>
-      <p class="screen-title">Encore une chose</p>
-      <div id="choir-block" hidden>
-        <p class="field-heading">La chorale de l’église</p>
-        <p class="dietary-intro">Nous formons une petite chorale pour chanter pendant la cérémonie — tout le monde est le bienvenu, aucune expérience requise.</p>
-        <div id="choir-list" class="choir-list"></div>
-      </div>
-      <p class="field-heading">Autre chose ?</p>
-      <textarea id="notes" class="dietary-comments" placeholder="Commentaires ou remarques pour nous…"></textarea>
-      <div class="btn-row">
-        <button type="button" class="btn btn-ghost btn-back">Retour</button>
-        <button id="btn-submit" class="btn btn-primary">Confirmer ma présence</button>
-      </div>
-    </section>
-
-    <section id="screen-already" class="screen" hidden>
-      <p class="screen-title">Votre réponse</p>
-      <div class="summary" id="summary"></div>
-      <button class="btn btn-update">Modifier ma réponse</button>
-
-      <div id="stay-block" class="after-block" hidden>
-        <div class="divider"><span class="divider-symbol">✦</span></div>
-        <p class="field-heading">Où dormir</p>
-        <p class="dietary-intro">Nous avons rassemblé des hébergements près de l'église et du château. Une fois le vôtre réservé, merci de le marquer comme pris pour que personne ne perde de temps dessus (le tableau est en anglais).</p>
-        <a class="btn-link" href="https://docs.google.com/spreadsheets/d/1HIdAC_2_qP5WGMM9Ng4zUYVJBIdMN_JJ5Gt6me850Dw/edit?gid=1419821447#gid=1419821447" target="_blank" rel="noopener">Voir la liste des hébergements →</a>
-      </div>
-
-      <!-- TODO: replace with the real millemercimariage.com link once it exists -->
-      <p class="gift-note">
-        Votre présence est notre plus beau cadeau.
-        Pour ceux qui nous l'ont demandé, nous avons aussi ouvert une petite
-        <a href="https://millemercimariage.com/" target="_blank" rel="noopener">cagnotte</a>.
-      </p>
-    </section>
-
-    <section id="screen-error" class="screen" hidden>
-      <p class="result-icon">✦</p>
-      <p id="error-text" class="dietary-intro"></p>
-      <button id="btn-retry" class="btn">Réessayer</button>
-    </section>
-
-  </div>
-
-  <script src="api-base.js"></script>
+  <title>Confirmation de présence — Emma &amp; Theodor</title>
+  <style>html, body { margin: 0; background: #faf6ef; }</style>
   <script>
-    window.RSVP_CONFIG = {
-      apiBase: window.API_BASE,
-      labels: {
-        invalidKey:           "Code d'invitation introuvable. Veuillez vérifier et réessayer.",
-        networkError:         'Impossible de se connecter. Veuillez réessayer plus tard.',
-        submitError:          "Échec de l'envoi. Veuillez réessayer.",
-        coming:               'Présent(e)',
-        notComing:            'Absent(e)',
-        continueLabel:        'Continuer',
-        sendResponse:         'Envoyer ma réponse',
-        addGuest:             '+ Ajouter une personne',
-        removeGuest:          'Retirer',
-        guestNamePlaceholder: 'Nom de la personne',
-        yourGuest:            'Votre accompagnant',
-        needGuestName:        'Merci d’indiquer le nom de chaque personne supplémentaire.',
-        allergiesLabel:       'Allergies',
-        allergiesPlaceholder: 'Allergies (fruits à coque, fruits de mer…)',
-        attendanceLabel:      'Présence',
-        noneAttending:        'Absent(e)',
-        choirLabel:           'Souhaite chanter dans la chorale',
-        choirYes:             'Oui, je souhaite chanter dans la chorale',
-        choirSummary:         'Chorale de l’église',
-        notesLabel:           'Commentaires',
-        diet: {
-          'none':       'Aucune restriction',
-          'vegetarian': 'Végétarien',
-          'vegan':      'Végétalien',
-        },
-      },
-    };
+    { // a block, so nothing here lingers in the page it loads
+    const title = document.title;
+    fetch('index.html')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(page => {
+        document.open();
+        document.write(page
+          .replace('<html lang="en">', '<html lang="fr">')
+          .replace(/<title>[^<]*<\/title>/, '<title>' + title + '</title>'));
+        document.close();
+      })
+      .catch(() => location.replace('index.html' + location.search + location.hash));
+    }
   </script>
-  <script src="rsvp.js"></script>
-</body>
+</head>
+<body></body>
 </html>

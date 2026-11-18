@@ -76,19 +76,26 @@ body.photo::before {
 .corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
 /* ── Save the date link (top-left, mirrors lang switcher) ── */
-.save-date-link {
+/* ── Links to the other pages, top left (the language switcher is top right) ── */
+.top-nav {
   position: absolute;
   top: 1rem; left: 1.2rem;
+  display: flex;
+  gap: 0.9rem;
   font-family: 'Cinzel', serif;
   font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  z-index: 2;
+}
+.top-nav a {
   color: var(--muted);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: color 0.2s, border-color 0.2s;
 }
-.save-date-link:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+.top-nav a:hover { color: var(--gold); border-bottom-color: var(--gold-light); }
+
 
 /* ── Lang switcher ── */
 .lang-switcher {
@@ -597,34 +604,47 @@ body.photo::before {
   color: var(--dark);
 }
 
-/* ── After the response: where to stay + gift note ── */
-.after-block {
-  max-width: 400px;
-  margin: 1.4rem auto 0;
-}
-
-.after-block .btn-link {
-  display: inline-block;
+/* ── After replying: the way to the information page ── */
+.info-cta {
+  display: block;
+  max-width: 420px;
+  margin: 1.8rem auto 1.4rem;
+  padding: 1.5rem 1.4rem 1.3rem;
+  background: var(--gold);
+  color: var(--cream);
   text-decoration: none;
+  text-align: center;
+  outline: 1px solid var(--gold);
+  outline-offset: 4px;
+  box-shadow: 0 8px 24px rgba(44, 36, 22, 0.16);
+  transition: background 0.2s, transform 0.2s;
 }
-
-/* Deliberately quiet: small, muted, no button */
-.gift-note {
-  max-width: 360px;
-  margin: 2.2rem auto 0;
-  font-size: 0.85rem;
+.info-cta:hover, .info-cta:focus-visible { background: var(--gold-light); transform: translateY(-1px); }
+.info-cta > span { display: block; }
+.info-cta-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.info-cta-title {
+  font-size: clamp(1.6rem, 6vw, 2rem);
   font-style: italic;
-  color: var(--muted);
-  line-height: 1.6;
+  font-weight: 300;
+  line-height: 1.2;
+  margin: 0.2rem 0 0.4rem;
 }
-
-.gift-note a {
-  color: var(--muted);
-  text-decoration: none;
-  border-bottom: 1px solid var(--gold-light);
+.info-cta-text { font-size: 1.05rem; line-height: 1.4; }
+.info-cta-go {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(250, 246, 239, 0.45);
 }
-
-.gift-note a:hover { color: var(--gold); }
 
 /* ── Key screen (inline, no modal) ── */
 .key-prompt {
@@ -662,4 +682,11 @@ body.photo::before {
   font-style: italic;
   margin-bottom: 0.8rem;
   min-height: 1.2em;
+}
+
+/* Phones: both corners share one line, so make them smaller */
+@media (max-width: 480px) {
+  .top-nav, .lang-switcher { top: 0.85rem; font-size: 0.55rem; letter-spacing: 0.06em; gap: 0.6rem; }
+  .top-nav { left: 0.95rem; }
+  .lang-switcher { right: 0.95rem; }
 }

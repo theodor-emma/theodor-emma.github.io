@@ -103,6 +103,7 @@ class GuestAnswer(BaseModel):
     diet:      str  = "none"
     allergies: str  = Field("", max_length=MAX_ALLERGIES_LEN)
     choir:     bool = False
+    brunch:    bool = False
 
 
 class RSVPRequest(BaseModel):
@@ -169,6 +170,7 @@ def apply_rsvp(invite: dict, body: RSVPRequest) -> dict:
             guest["diet"] = diet
             guest["allergies"] = allergies
             guest["choir"] = bool(ans.choir) and bool(ans.attending)
+            guest["brunch"] = bool(ans.brunch) and bool(ans.attending)
             answered[guest["id"]] = guest
         else:
             # Someone the guests added themselves; only keep those who are coming
@@ -179,6 +181,7 @@ def apply_rsvp(invite: dict, body: RSVPRequest) -> dict:
             guest["diet"] = diet
             guest["allergies"] = allergies
             guest["choir"] = bool(ans.choir)
+            guest["brunch"] = bool(ans.brunch)
             extras.append(guest)
 
     if len(extras) > invite["extra_guests_allowed"]:
@@ -193,7 +196,7 @@ def apply_rsvp(invite: dict, body: RSVPRequest) -> dict:
             guests.append(answered[host["id"]])
         else:
             # Not submitted → treat as not attending, keep their details
-            guests.append({**host, "attending": False, "choir": False})
+            guests.append({**host, "attending": False, "choir": False, "brunch": False})
     guests.extend(extras)
 
     return {

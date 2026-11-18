@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Save the Date — Theodor &amp; Emma</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="lang.css" />
 </head>
+<!--
+  One page, three languages: each text is written in English, French and
+  Romanian (lang="en" / "fr" / "ro") and lang.css shows the page's language.
+  fr.html and ro.html load this file in French or Romanian.
+-->
 <body class="photo">
   <div class="card">
     <span class="corner tl"></span>
@@ -13,12 +19,27 @@
     <span class="corner bl"></span>
     <span class="corner br"></span>
 
+    <!-- Hidden for now, until these pages are announced:
+    <nav class="top-nav">
+      <a lang="en" href="info/index.html">Information</a>
+      <a lang="en" href="rsvp/index.html">RSVP</a>
+      <a lang="fr" href="info/fr.html">Informations</a>
+      <a lang="fr" href="rsvp/fr.html">RSVP</a>
+      <a lang="ro" href="info/ro.html">Informații</a>
+      <a lang="ro" href="rsvp/ro.html">RSVP</a>
+    </nav>
+    -->
     <div class="lang-switcher">
-      <a href="fr.html">Français</a>
-      <a href="ro.html">Română</a>
+      <a href="index.html" hreflang="en">English</a>
+      <a href="fr.html" hreflang="fr">Français</a>
+      <a href="ro.html" hreflang="ro">Română</a>
     </div>
 
-    <p class="save-the-date">Save the Date</p>
+    <p class="save-the-date">
+      <span lang="en">Save the Date</span>
+      <span lang="fr">Faire-part de Mariage</span>
+      <span lang="ro">Rețineți Data</span>
+    </p>
 
     <div class="divider"><span class="divider-symbol">✦</span></div>
 
@@ -31,19 +52,35 @@
     <div class="divider"><span class="divider-symbol">✦</span></div>
 
     <div class="date-block">
-      <p class="date-label">Are getting married on</p>
-      <p class="date">Saturday, August 7<sup>th</sup>, 2027</p>
+      <p class="date-label">
+        <span lang="en">Are getting married on</span>
+        <span lang="fr">Se marient</span>
+        <span lang="ro">Se căsătoresc</span>
+      </p>
+      <p class="date">
+        <span lang="en">Saturday, August 7<sup>th</sup>, 2027</span>
+        <span lang="fr">Le samedi 7 août 2027</span>
+        <span lang="ro">Sâmbătă, 7 august 2027</span>
+      </p>
     </div>
 
     <div class="church-block">
-      <p class="venue-label">Ceremony</p>
+      <p class="venue-label">
+        <span lang="en">Ceremony</span>
+        <span lang="fr">Cérémonie</span>
+        <span lang="ro">Ceremonie</span>
+      </p>
       <a class="venue-link" href="https://www.allier-auvergne-tourisme.com/xixe-sia-cle/dompierre-sur-besbre/eglise-saint-joseph/4685050" target="_blank" rel="noopener">
         Église Saint-Joseph, Dompierre-sur-Besbre, France
       </a>
     </div>
 
     <div class="venue-block">
-      <p class="venue-label">Reception</p>
+      <p class="venue-label">
+        <span lang="en">Reception</span>
+        <span lang="fr">Réception</span>
+        <span lang="ro">Recepție</span>
+      </p>
       <a class="venue-link" href="https://www.beauvoir-bourbonnais.fr/" target="_blank" rel="noopener">
         Château de Beauvoir, Bourbonnais, France
       </a>
@@ -54,39 +91,39 @@
     <div class="countdown" id="countdown">
       <div class="countdown-unit">
         <span class="countdown-value" id="cd-days">—</span>
-        <span class="countdown-label">Days</span>
+        <span class="countdown-label"><span lang="en">Days</span><span lang="fr">Jours</span><span lang="ro">Zile</span></span>
       </div>
       <div class="countdown-unit">
         <span class="countdown-value" id="cd-hours">—</span>
-        <span class="countdown-label">Hours</span>
+        <span class="countdown-label"><span lang="en">Hours</span><span lang="fr">Heures</span><span lang="ro">Ore</span></span>
       </div>
       <div class="countdown-unit">
         <span class="countdown-value" id="cd-minutes">—</span>
-        <span class="countdown-label">Minutes</span>
+        <span class="countdown-label"><span lang="en">Minutes</span><span lang="fr">Minutes</span><span lang="ro">Minute</span></span>
       </div>
       <div class="countdown-unit">
         <span class="countdown-value" id="cd-seconds">—</span>
-        <span class="countdown-label">Seconds</span>
+        <span class="countdown-label"><span lang="en">Seconds</span><span lang="fr">Secondes</span><span lang="ro">Secunde</span></span>
       </div>
     </div>
 
+    <!-- Hidden for now, until the information page is announced:
+    <div class="actions">
+      <div id="calendar-container"></div>
+      <a class="calendar-btn" lang="en" href="info/index.html">Information</a>
+      <a class="calendar-btn" lang="fr" href="info/fr.html">Informations</a>
+      <a class="calendar-btn" lang="ro" href="info/ro.html">Informații</a>
+    </div>
+    -->
     <div id="calendar-container"></div>
 
-    <p class="formal-invitation">Formal invitation to follow.</p>
+    <p class="formal-invitation">
+      <span lang="en">Formal invitation to follow.</span>
+      <span lang="fr">Invitation officielle à venir.</span>
+      <span lang="ro">Invitația oficială urmează.</span>
+    </p>
   </div>
 
-  <script>
-    window.WEDDING_CONFIG = {
-      labels: {
-        addToCalendar:   'Add to Calendar',
-        googleCalendar:  'Google Calendar',
-        appleOutlook:    'Apple / Outlook (.ics)',
-        calendarTitle:   'Wedding of Emma Chirlomez & Theodor Moroianu',
-        calendarDetails: 'Wedding of Emma Chirlomez & Theodor Moroianu at Château de Beauvoir, Bourbonnais',
-        today:           'Today is the day! ✦',
-      }
-    };
-  </script>
   <script src="main.js"></script>
 </body>
 </html>
