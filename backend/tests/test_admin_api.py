@@ -2,7 +2,7 @@
 
 import pytest
 
-from conftest import ADMIN
+from conftest import ADMIN, added, adults, child
 
 
 # ── Access ────────────────────────────────────────────────────────────────────
@@ -26,49 +26,60 @@ def test_guest_routes_stay_open(api, single):
 
 # ── Creating ──────────────────────────────────────────────────────────────────
 
-@pytest.mark.parametrize("invite_type,names,extra,expected_extra", [
-    ("single",   ["Solo"],                    0, 0),
-    ("couple",   ["Jean", "Claire"],          0, 0),
-    ("plus_one", ["Alex"],                    0, 1),   # always exactly one companion
-    ("family",   ["A", "B", "C"],             2, 2),
+@pytest.mark.parametrize("guests,extra", [
+    (adults("Solo"),                              0),   # one person
+    (adults("Alex"),                              1),   # a person and a +1
+    (adults("Jean", "Claire"),                    0),   # a couple
+    (adults("Paul", "Sophie") + [child("Léa")],   0),   # a family, all named
+    (adults("Paul", "Sophie"),                    3),   # a family, children unnamed
 ])
-def test_create_each_kind_of_invitation(api, invite_type, names, extra, expected_extra):
-    invite = api.new(invite_type=invite_type, guest_names=names, extra_guests_allowed=extra)
-    assert invite["invite_type"] == invite_type
-    assert [g["name"] for g in invite["guests"]] == names
-    assert invite["invited_count"] == len(names)
-    assert invite["extra_guests_allowed"] == expected_extra
+def test_create_each_kind_of_invitation(api, guests, extra):
+    invite = api.new(guests=guests, extra_guests_allowed=extra)
+    assert "invite_type" not in invite
+    assert [{"name": g["name"], "is_child": g["is_child"]} for g in invite["guests"]] == guests
+    assert invite["invited_count"] == len(guests)
+    assert invite["extra_guests_allowed"] == extra
     assert invite["responded"] is False and invite["attending"] is None
 
 
-@pytest.mark.parametrize("invite_type,names", [
-    ("couple", ["Only One"]),
-    ("couple", ["One", "Two", "Three"]),
-    ("single", ["One", "Two"]),
-    ("plus_one", []),
-    ("family", []),
-])
-def test_the_number_of_names_must_match_the_type(api, invite_type, names):
-    res = api.create(invite_type=invite_type, guest_names=names)
+@pytest.mark.parametrize("guests", [[], adults("   "), adults(*[f"P{i}" for i in range(13)])])
+def test_an_invitation_needs_a_sensible_number_of_names(api, guests):
+    res = api.create(guests=guests)
     assert res.status_code == 400
     assert "invitation needs" in res.json()["detail"]
 
 
-def test_unknown_type_falls_back_to_a_single_invitation(api):
-    invite = api.new(invite_type="banquet", guest_names=["Solo"])
-    assert invite["invite_type"] == "single"
+@pytest.mark.parametrize("extra", [-1, 9])
+def test_the_extra_allowance_must_be_in_range(api, extra):
+    res = api.create(guests=adults("Solo"), extra_guests_allowed=extra)
+    assert res.status_code == 400
 
 
 def test_blank_names_are_dropped(api):
-    res = api.create(invite_type="couple", guest_names=["Jean", "   "])
-    assert res.status_code == 400          # only one real name left
+    invite = api.new(guests=adults("Jean", "   "))
+    assert [g["name"] for g in invite["guests"]] == ["Jean"]
+
+
+def test_and_your_children_needs_no_number(api):
+    invite = api.new(guests=adults("Ana", "Paul"), extras_are_children=True)
+    assert invite["extras_are_children"] is True
+    assert invite["extra_guests_allowed"] == 8
+
+
+def test_switching_between_children_and_a_number(api, single):
+    invite = api.edit(single["key"], extras_are_children=True).json()
+    assert (invite["extras_are_children"], invite["extra_guests_allowed"]) == (True, 8)
+    invite = api.edit(single["key"], extras_are_children=False).json()
+    assert (invite["extras_are_children"], invite["extra_guests_allowed"]) == (False, 0)
+    invite = api.edit(single["key"], extras_are_children=False, extra_guests_allowed=1).json()
+    assert invite["extra_guests_allowed"] == 1
 
 
 def test_a_plain_name_still_works(api):
     """The quick-add shorthand the older admin page used."""
     invite = api.new(name="Marie Pichard")
-    assert invite["invite_type"] == "single"
     assert invite["display_label"] == "Marie Pichard"
+    assert invite["guests"][0]["is_child"] is False
 
 
 def test_each_invitation_gets_its_own_code(api):
@@ -77,7 +88,7 @@ def test_each_invitation_gets_its_own_code(api):
 
 
 def test_a_created_invitation_is_written_to_the_database(api, collection):
-    invite = api.new(invite_type="family", guest_names=["A", "B"], label="Household")
+    invite = api.new(guests=adults("A", "B"), label="Household")
     stored = api.stored(invite["key"])
     assert stored["label"] == "Household"
     assert [g["name"] for g in stored["guests"]] == ["A", "B"]
@@ -85,8 +96,14 @@ def test_a_created_invitation_is_written_to_the_database(api, collection):
 
 
 def test_over_long_text_is_refused(api):
-    res = api.create(invite_type="single", guest_names=["N" * 200])
+    res = api.create(guests=adults("N" * 200))
     assert res.status_code == 422
+
+
+def test_the_rsvp_limits_do_not_apply_to_the_admin_fields(api):
+    invite = api.new(name="Marie", label="L" * 120, email="e" * 140 + "@example.com")
+    assert len(invite["label"]) == 120
+    assert invite["email"].endswith("@example.com")
 
 
 # ── Email address ─────────────────────────────────────────────────────────────
@@ -113,32 +130,48 @@ def test_an_address_can_be_added_and_removed_later(api, single):
     assert api.edit(single["key"], email="").json()["email"] == ""
 
 
+# ── Who is responsible ────────────────────────────────────────────────────────
+
+def test_an_invitation_can_have_someone_responsible(api):
+    invite = api.new(name="Marie", responsible="  Clotilde ")
+    assert invite["responsible"] == "Clotilde"
+    assert api.stored(invite["key"])["responsible"] == "Clotilde"
+
+
+def test_who_is_responsible_can_change_and_is_kept_private(api, single):
+    assert single["responsible"] == ""
+    assert api.edit(single["key"], responsible="Sergiu").json()["responsible"] == "Sergiu"
+    assert api.edit(single["key"], label="Marie").json()["responsible"] == "Sergiu"
+    assert api.stored(single["key"])["history"][0]["changes"][0]["field"] == "responsible"
+    assert "responsible" not in api.invite(single["key"]).json()
+
+
 # ── Adding a whole list at once ───────────────────────────────────────────────
 
 def test_a_pasted_list_becomes_invitations(api, collection):
     res = api.client.post("/admin/invites/bulk", params=ADMIN, json={"invites": [
-        {"invite_type": "single", "guest_names": ["Marie Pichard"], "email": "marie@example.com"},
-        {"invite_type": "couple", "guest_names": ["Jean Martin", "Claire Martin"], "language": "fr"},
-        {"invite_type": "plus_one", "guest_names": ["Alexandru Ionescu"], "language": "ro"},
-        {"invite_type": "family", "guest_names": ["Paul", "Sophie", "Léa"],
+        {"guests": adults("Marie Pichard"), "email": "marie@example.com"},
+        {"guests": adults("Jean Martin", "Claire Martin"), "language": "fr"},
+        {"guests": adults("Alexandru Ionescu"), "language": "ro", "extra_guests_allowed": 1},
+        {"guests": adults("Paul", "Sophie") + [child("Léa")],
          "label": "Famille Duval", "extra_guests_allowed": 2},
     ]})
     assert res.status_code == 200, res.text
 
     created = res.json()["created"]
-    assert [c["invite_type"] for c in created] == ["single", "couple", "plus_one", "family"]
     assert created[0]["email"] == "marie@example.com"
     assert created[2]["extra_guests_allowed"] == 1
     assert created[3]["display_label"] == "Famille Duval"
+    assert created[3]["guests"][2]["is_child"] is True
     assert collection.count_documents({}) == 4
     assert len({c["key"] for c in created}) == 4
 
 
 def test_one_bad_line_adds_nothing_at_all(api, collection):
     res = api.client.post("/admin/invites/bulk", params=ADMIN, json={"invites": [
-        {"invite_type": "single", "guest_names": ["Fine"]},
-        {"invite_type": "couple", "guest_names": ["Only One"]},
-        {"invite_type": "family", "guest_names": []},
+        {"guests": adults("Fine")},
+        {"guests": adults("Too many"), "extra_guests_allowed": 99},
+        {"guests": []},
     ]})
     assert res.status_code == 400
     assert "line 2" in res.json()["detail"] and "line 3" in res.json()["detail"]
@@ -170,14 +203,18 @@ def test_responses_list_carries_the_dashboard_counts(api, family, single):
     assert row["invited_count"] == 3
     assert row["attending_count"] == 0
     assert row["choir_count"] == 0
+    assert row["children_count"] == 0
     assert row["display_label"] == "Famille Duval"
-    assert row["responded_at"] is None
+    assert row["last_submitted_at"] is None
+    assert row["history_count"] == 0
 
 
 def test_dates_are_serialised_for_the_dashboard(api, single):
     api.answer(single["key"], [{"id": single["guests"][0]["id"], "attending": True}])
     row = api.responses().json()[0]
-    assert isinstance(row["responded_at"], str)
+    assert isinstance(row["last_submitted_at"], str)
+    assert isinstance(row["first_submitted_at"], str)
+    assert row["history_count"] == 1
     assert isinstance(row["created_at"], str)
 
 
@@ -189,7 +226,7 @@ def test_renaming_keeps_the_answers_in_place(api, family):
         {"id": ids[0], "attending": True, "diet": "vegan", "allergies": "nuts", "choir": True},
     ])
 
-    res = api.edit(family["key"], guest_names=["Paul Duval-Martin", "Sophie Duval", "Léa Duval"])
+    res = api.edit(family["key"], guests=adults("Paul Duval-Martin", "Sophie Duval") + [child("Léa Duval")])
     assert res.status_code == 200
     paul = res.json()["guests"][0]
     assert paul["name"] == "Paul Duval-Martin"
@@ -197,26 +234,37 @@ def test_renaming_keeps_the_answers_in_place(api, family):
 
 
 def test_adding_a_person_to_a_household(api, family):
-    invite = api.edit(family["key"], guest_names=[g["name"] for g in family["guests"]] + ["Bébé Duval"]).json()
+    invite = api.edit(family["key"], guests=[
+        {"name": g["name"], "is_child": g["is_child"]} for g in family["guests"]
+    ] + [child("Bébé Duval")]).json()
     assert invite["invited_count"] == 4
-    assert invite["guests"][-1]["name"] == "Bébé Duval"
+    assert (invite["guests"][-1]["name"], invite["guests"][-1]["is_child"]) == ("Bébé Duval", True)
 
 
-def test_changing_type_must_still_fit_the_names(api, family):
-    res = api.edit(family["key"], invite_type="single")
-    assert res.status_code == 400
+def test_someone_can_be_marked_as_a_child_later(api, family):
+    invite = api.edit(family["key"], guests=[child("Paul Duval")] + adults("Sophie Duval")).json()
+    assert [g["is_child"] for g in invite["guests"]] == [True, False]
 
-    ok = api.edit(family["key"], invite_type="couple", guest_names=["Paul Duval", "Sophie Duval"])
-    assert ok.status_code == 200
-    assert ok.json()["invite_type"] == "couple"
+
+def test_editing_cannot_leave_an_invitation_empty(api, family):
+    assert api.edit(family["key"], guests=[]).status_code == 400
+
+
+def test_editing_an_old_invitation_replaces_its_type(api, collection):
+    collection.insert_one({"key": "OLDTYPE2", "invite_type": "single", "label": "", "language": "en",
+                           "extra_guests_allowed": 0, "notes": "", "responded_at": None,
+                           "guests": [{"id": "g0", "name": "Solo", "source": "host"}]})
+    assert api.edit("OLDTYPE2", extra_guests_allowed=1).json()["extra_guests_allowed"] == 1
+    assert "invite_type" not in api.stored("OLDTYPE2")
+    assert api.invite("OLDTYPE2").json()["extra_guests_allowed"] == 1
 
 
 def test_lowering_the_extra_allowance_drops_surplus_guests(api, family):
     ids = [g["id"] for g in family["guests"]]
     api.answer(family["key"], [
         {"id": ids[0], "attending": True},
-        {"id": None, "name": "Mamie", "attending": True},
-        {"id": None, "name": "Papi", "attending": True},
+        added("Mamie"),
+        added("Papi"),
     ])
     assert len(api.invite(family["key"]).json()["guests"]) == 5
 
@@ -227,7 +275,22 @@ def test_lowering_the_extra_allowance_drops_surplus_guests(api, family):
 def test_clearing_the_label_falls_back_to_the_names(api, family):
     invite = api.edit(family["key"], label="").json()
     assert invite["label"] == ""
-    assert invite["display_label"] == "Paul Duval, Sophie Duval & Léa Duval"
+    assert invite["display_label"] == "Paul, Sophie & Léa Duval"
+
+
+def test_admin_edits_are_in_the_history(api, single):
+    api.edit(single["key"], label="Marie", extra_guests_allowed=1)
+    entry = api.stored(single["key"])["history"][-1]
+    assert entry["by"] == "admin"
+    assert {c["field"] for c in entry["changes"]} == {"label", "extra_guests_allowed"}
+
+
+def test_removing_the_pizza_invitation_clears_the_answers(api):
+    invite = api.new(guests=adults("Ana"), pizza_party_invited=True)
+    api.answer(invite["key"], [{"id": invite["guests"][0]["id"], "attending": True, "pizza_party": True}])
+    edited = api.edit(invite["key"], pizza_party_invited=False).json()
+    assert edited["pizza_party_invited"] is False
+    assert edited["guests"][0]["pizza_party"] is False
 
 
 def test_editing_an_unknown_invitation(api):

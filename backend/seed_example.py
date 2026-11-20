@@ -16,32 +16,40 @@ client = MongoClient(os.getenv("MONGODB_URI", "mongodb://localhost:27017"))
 invites = client[os.getenv("MONGODB_DB", "wedding")]["invites"]
 
 
-# (invite_type, guest names, label, extra guests the invitees may add, language)
+def adults(*names):
+    return [(name, False) for name in names]
+
+
+def child(name):
+    return [(name, True)]
+
+
+# (guests, label, extra guests the invitees may add, language)
 examples = [
-    ("single",   ["Marie Pichard"],                                   "",                 0, "fr"),
-    ("plus_one", ["Alexandru Ionescu"],                               "",                 1, "ro"),
-    ("couple",   ["Jean Martin", "Claire Martin"],                    "",                 0, "fr"),
-    ("family",   ["Paul Duval", "Sophie Duval", "Léa Duval"],         "Famille Duval",    2, "fr"),
-    ("family",   ["Andrei Popescu", "Ioana Popescu"],                 "Familia Popescu",  3, "ro"),
-    ("single",   ["Sarah Whitfield"],                                 "",                 0, "en"),
+    (adults("Marie Pichard"),                                        "",                0, "fr"),
+    (adults("Alexandru Ionescu"),                                    "",                1, "ro"),
+    (adults("Jean Martin", "Claire Martin"),                         "",                0, "fr"),
+    (adults("Paul Duval", "Sophie Duval") + child("Léa Duval"),      "Famille Duval",   2, "fr"),
+    (adults("Andrei Popescu", "Ioana Popescu"),                      "Familia Popescu", 3, "ro"),
+    (adults("Sarah Whitfield"),                                      "",                0, "en"),
 ]
 
 for i in range(20):
-    examples.append(("single", [f"Sample #{i}"], "", 0, "en"))
+    examples.append((adults(f"Sample #{i}"), "", 0, "en"))
 
-for invite_type, names, label, extra, language in examples:
+for guests, label, extra, language in examples:
     invite = new_invite(
-        invite_type=invite_type,
-        guest_names=names,
+        guests=guests,
         label=label,
         extra_guests_allowed=extra,
         language=language,
     )
+    first_name = guests[0][0]
     # Idempotent on the first guest's name so re-running does not duplicate people
-    existing = invites.find_one({"guests.0.name": names[0]}) or invites.find_one({"name": names[0]})
+    existing = invites.find_one({"guests.0.name": first_name}) or invites.find_one({"name": first_name})
     if existing:
         print(f"{display_label(invite):34s}  exists, skipped")
         continue
 
     invites.insert_one(dict(invite))
-    print(f"{display_label(invite):34s}  {invite_type:9s}  key: {invite['key']}")
+    print(f"{display_label(invite):34s}  key: {invite['key']}")

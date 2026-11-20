@@ -1,6 +1,7 @@
 """
 Rewrite invite documents from the old one-row-per-invitation format
-(name / dietary_restrictions / plus_one…) into the current guest-list format.
+(name / dietary_restrictions / plus_one…), or the later one with an invitation
+type, into the current guest-list format.
 
 The API tolerates both shapes, so this is only about tidying the database.
 
@@ -30,29 +31,31 @@ LEGACY_FIELDS = [
     "plus_one",
     "plus_one_name",
     "plus_one_dietary",
+    "invite_type",
+    "responded_at",
 ]
 
 converted = 0
 skipped = 0
 
 for doc in invites.find({}):
-    if isinstance(doc.get("guests"), list) and "invite_type" in doc:
+    if isinstance(doc.get("guests"), list) and "invite_type" not in doc:
         skipped += 1
         continue
 
     invite = normalize_invite(doc)
     update = {
-        "invite_type":          invite["invite_type"],
         "label":                invite["label"],
         "language":             invite["language"],
         "guests":               invite["guests"],
         "extra_guests_allowed": invite["extra_guests_allowed"],
         "notes":                invite["notes"],
-        "responded_at":         invite["responded_at"],
+        "first_submitted_at":   invite["first_submitted_at"],
+        "last_submitted_at":    invite["last_submitted_at"],
     }
 
     people = ", ".join(f"{g['name'] or '(unnamed)'} [{g['source']}]" for g in invite["guests"])
-    print(f"{invite['key']:10s} {invite['invite_type']:9s} {display_label(invite):28s} → {people}")
+    print(f"{invite['key']:10s} {display_label(invite):28s} → {people}")
 
     if APPLY:
         invites.update_one(

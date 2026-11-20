@@ -21,6 +21,14 @@ from fastapi.testclient import TestClient  # noqa: E402
 ADMIN = {"admin_key": ADMIN_SECRET}
 
 
+def adults(*names):
+    return [{"name": name, "is_child": False} for name in names]
+
+
+def child(name):
+    return {"name": name, "is_child": True}
+
+
 @pytest.fixture
 def collection(monkeypatch):
     """A fresh, empty invites collection for each test."""
@@ -29,9 +37,14 @@ def collection(monkeypatch):
     return coll
 
 
+# Every test request comes from this (documentation-range) IPv4 address
+TEST_IP = "203.0.113.5"
+
+
 @pytest.fixture
 def client(collection):
-    return TestClient(main.app)
+    main.guess_limiter.reset()
+    return TestClient(main.app, client=(TEST_IP, 50000))
 
 
 class Api:
@@ -88,8 +101,7 @@ def api(client, collection):
 def family(api):
     """A household of three who may bring two more — the richest shape."""
     return api.new(
-        invite_type="family",
-        guest_names=["Paul Duval", "Sophie Duval", "Léa Duval"],
+        guests=adults("Paul Duval", "Sophie Duval") + [child("Léa Duval")],
         label="Famille Duval",
         extra_guests_allowed=2,
         language="fr",
@@ -98,16 +110,21 @@ def family(api):
 
 @pytest.fixture
 def single(api):
-    return api.new(invite_type="single", guest_names=["Marie Pichard"], language="fr")
+    return api.new(guests=adults("Marie Pichard"), language="fr")
 
 
 @pytest.fixture
 def plus_one(api):
-    return api.new(invite_type="plus_one", guest_names=["Alexandru Ionescu"], language="ro")
+    return api.new(guests=adults("Alexandru Ionescu"), extra_guests_allowed=1, language="ro")
 
 
 def guest_ids(invite):
     return [g["id"] for g in invite["guests"]]
+
+
+def added(name, is_child=False, **fields):
+    """One entry of an RSVP payload for someone the invitees bring themselves."""
+    return {"id": None, "name": name, "is_child": is_child, "attending": True, **fields}
 
 
 def answer_for(invite, index, **fields):
